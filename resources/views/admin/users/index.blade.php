@@ -64,6 +64,14 @@
 
                             <td class="px-5 py-3.5 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end space-x-2">
+                                    @if ($u->role === 'customer')
+                                        <a href="{{ route('admin.addresses.index', ['user_id' => $u->id]) }}" 
+                                           class="text-xs font-semibold px-2 py-1 rounded-lg text-cyan-700 bg-cyan-50 hover:bg-cyan-100 transition"
+                                           title="Kelola Alamat Pelanggan">
+                                            <i class="fa-solid fa-location-dot mr-1"></i> Alamat
+                                        </a>
+                                    @endif
+
                                     <!-- Role update dropdown form -->
                                     <form method="POST" action="{{ route('admin.users.role', $u) }}" class="inline-flex items-center">
                                         @csrf

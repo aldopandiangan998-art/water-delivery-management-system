@@ -51,6 +51,10 @@
                 <i class="fa-solid fa-map-location-dot w-5 mr-3 text-center text-emerald-400"></i> Peta Kurir Real-Time
             </a>
 
+            <a href="{{ route('admin.addresses.index') }}" class="flex items-center px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.addresses.*') ? 'bg-cyan-600 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                <i class="fa-solid fa-location-dot w-5 mr-3 text-center text-cyan-400"></i> Alamat Pelanggan
+            </a>
+
             <div class="pt-3 pb-1 px-3 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Katalog & Stok</div>
 
             <a href="{{ route('admin.products.index') }}" class="flex items-center px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.products.*') ? 'bg-cyan-600 text-white font-semibold' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">

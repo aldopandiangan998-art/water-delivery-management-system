@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AddressController as AdminAddressController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DeliveryController as AdminDeliveryController;
 use App\Http\Controllers\Admin\FinanceController as AdminFinanceController;
@@ -88,6 +89,9 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::post('/deliveries/{delivery}/complete', [AdminDeliveryController::class, 'complete'])->name('deliveries.complete');
     Route::post('/api/deliveries/{delivery}/location', [AdminDeliveryController::class, 'updateLocation'])->name('deliveries.location');
     Route::get('/api/deliveries/live-drivers', [AdminDeliveryController::class, 'apiLiveDrivers'])->name('deliveries.live-drivers');
+
+    Route::resource('addresses', AdminAddressController::class);
+    Route::post('/addresses/{address}/default', [AdminAddressController::class, 'setDefault'])->name('addresses.set-default');
 
     Route::resource('products', AdminProductController::class);
     Route::post('/products/{product}/adjust-stock', [AdminProductController::class, 'adjustStock'])->name('products.adjust-stock');
