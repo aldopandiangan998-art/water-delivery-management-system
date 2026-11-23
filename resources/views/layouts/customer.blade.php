@@ -14,8 +14,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     @stack('styles')
+
+    <style>
+        /* Sleek custom scrollbar for customer sidebar navigation */
+        .custom-sidebar-scroll {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar-thumb {
+            background-color: rgba(148, 163, 184, 0.35);
+            border-radius: 9999px;
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(148, 163, 184, 0.65);
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-800 antialiased font-sans flex flex-col" x-data="{ sidebarOpen: false }">
+<body class="min-h-screen bg-slate-50 text-slate-800 antialiased font-sans flex flex-col" x-data="{ sidebarOpen: (window.innerWidth >= 768) }">
 
     @php
         $activeCustomerOrdersCount = \App\Models\Order::where('user_id', Auth::id())
@@ -26,21 +49,9 @@
         $cleanWhatsapp = preg_replace('/[^0-9]/', '', $companyWhatsapp);
     @endphp
 
-    <!-- Mobile Backdrop Overlay -->
-    <div x-show="sidebarOpen" 
-         x-transition:enter="transition-opacity ease-linear duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition-opacity ease-linear duration-300"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-xs md:hidden" 
-         @click="sidebarOpen = false" 
-         x-cloak></div>
-
-    <!-- DEDICATED LEFT SIDEBAR NAVIGATION FOR CUSTOMER (Docked on Desktop md:fixed) -->
-    <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 shadow-2xl transition-transform duration-300 ease-in-out md:translate-x-0"
-           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
+    <!-- DEDICATED LEFT SIDEBAR NAVIGATION FOR CUSTOMER (Non-blocking & Independently Scrollable) -->
+    <aside class="fixed inset-y-0 left-0 z-40 w-64 h-screen max-h-screen bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 shadow-2xl transition-all duration-300 ease-in-out"
+           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
 
         <!-- Sidebar Top: Brand & Member Status -->
         <div class="h-16 flex items-center justify-between px-5 bg-slate-950 border-b border-slate-800 shrink-0">
@@ -63,7 +74,7 @@
             </a>
 
             <!-- Mobile Close Button -->
-            <button type="button" @click="sidebarOpen = false" class="md:hidden text-slate-400 hover:text-white p-1">
+            <button type="button" @click="sidebarOpen = false" class="md:hidden text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition" title="Tutup Navigasi">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
@@ -84,8 +95,8 @@
             </div>
         </div>
 
-        <!-- Sidebar Navigation Menu Links -->
-        <nav class="flex-1 px-3 py-4 space-y-6 overflow-y-auto text-xs font-semibold scrollbar-thin scrollbar-thumb-slate-700">
+        <!-- Sidebar Navigation Menu Links (Independently Scrollable) -->
+        <nav class="flex-1 min-h-0 px-3 py-4 space-y-6 overflow-y-auto overscroll-contain custom-sidebar-scroll text-xs font-semibold">
 
             <!-- Group 1: Layanan Pesanan -->
             <div class="space-y-1">
@@ -255,17 +266,19 @@
 
     </aside>
 
-    <!-- MAIN RIGHT CONTENT WRAPPER (Docked beside left sidebar on desktop md:pl-64) -->
-    <div class="flex-1 flex flex-col min-w-0 md:pl-64">
+    <!-- MAIN RIGHT CONTENT WRAPPER (Smooth Responsive Transition, Non-blocking) -->
+    <div class="flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out"
+         :class="sidebarOpen ? 'md:pl-64' : 'md:pl-0'">
 
         <!-- Top Header Bar -->
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-2xs">
             <div class="flex items-center space-x-3">
-                <!-- Hamburger menu button for Mobile/Tablet -->
+                <!-- Sidebar Toggle Button (Non-blocking, Works on Desktop & Mobile) -->
                 <button type="button" 
-                        @click="sidebarOpen = true" 
-                        class="md:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
-                    <i class="fa-solid fa-bars text-lg"></i>
+                        @click="sidebarOpen = !sidebarOpen" 
+                        class="p-2.5 rounded-xl text-slate-600 hover:text-cyan-600 hover:bg-cyan-50 border border-slate-200 transition-all duration-200 flex items-center justify-center cursor-pointer shadow-2xs"
+                        title="Buka / Tutup Navigasi Sidebar">
+                    <i class="fa-solid fa-bars-staggered text-base"></i>
                 </button>
 
                 <div>
