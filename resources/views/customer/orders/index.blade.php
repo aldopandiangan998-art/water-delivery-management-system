@@ -74,6 +74,13 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2">
+                    @if (in_array($order->status, ['pending', 'confirmed']))
+                        <a href="{{ $order->whatsapp_url }}" target="_blank"
+                           class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition flex items-center">
+                            <i class="fa-brands fa-whatsapp mr-1 text-sm text-emerald-600"></i> Kirim WA
+                        </a>
+                    @endif
+
                     @if ($order->delivery && in_array($order->delivery->status, ['assigned', 'in_transit', 'arrived']))
                         <a href="{{ route('customer.orders.track', $order) }}" 
                            class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 shadow-xs transition flex items-center">

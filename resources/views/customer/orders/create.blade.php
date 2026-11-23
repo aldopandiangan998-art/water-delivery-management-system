@@ -220,6 +220,11 @@
                             class="w-full py-3.5 px-4 rounded-xl text-white font-extrabold text-sm transition flex items-center justify-center">
                         <i class="fa-solid fa-paper-plane mr-2"></i> Konfirmasi & Pesan Sekarang
                     </button>
+
+                    <p class="text-[11px] text-slate-500 text-center mt-2 flex items-center justify-center">
+                        <i class="fa-brands fa-whatsapp text-emerald-600 mr-1.5 text-sm"></i>
+                        Dapat langsung diteruskan ke WhatsApp Admin setelah klik pesan.
+                    </p>
                 </div>
             </div>
         </div>

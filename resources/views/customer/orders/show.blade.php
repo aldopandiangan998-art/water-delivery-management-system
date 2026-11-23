@@ -34,6 +34,31 @@
         </div>
     </div>
 
+    <!-- WhatsApp Direct Confirmation Banner -->
+    <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border-2 border-emerald-300 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-start space-x-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm text-2xl">
+                <i class="fa-brands fa-whatsapp"></i>
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h2 class="text-sm sm:text-base font-black text-slate-900">Kirim & Konfirmasi ke WhatsApp Admin</h2>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Rekomendasi Cepat</span>
+                </div>
+                <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                    Pesanan Anda sudah tersimpan di sistem. Klik tombol di bawah untuk langsung meneruskan rincian pesanan, alamat, dan pin lokasi Anda ke WhatsApp Admin agar pesanan segera disiapkan & diantar!
+                </p>
+            </div>
+        </div>
+
+        <a href="{{ $order->whatsapp_url }}" target="_blank"
+           class="w-full sm:w-auto px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2 shrink-0">
+            <i class="fa-brands fa-whatsapp text-lg"></i>
+            <span>Kirim ke WhatsApp Admin</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
+        </a>
+    </div>
+
     <!-- Delivery & Driver Status Card -->
     @if ($order->delivery)
         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-4">

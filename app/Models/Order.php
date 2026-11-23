@@ -111,4 +111,42 @@ class Order extends Model
             default => ['label' => $this->payment_status, 'color' => 'bg-gray-100 text-gray-800 border-gray-200'],
         };
     }
+
+    public function getWhatsappUrlAttribute(): string
+    {
+        $adminPhone = BusinessSetting::get('company_whatsapp', '6281223456789');
+        $cleanPhone = preg_replace('/[^0-9]/', '', $adminPhone);
+        if (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62' . substr($cleanPhone, 1);
+        }
+
+        $itemsText = "";
+        foreach ($this->items as $item) {
+            $exchangeNote = $item->is_exchange ? " (Tukar Galon)" : "";
+            $itemsText .= "• {$item->quantity}x {$item->product_name}{$exchangeNote} - Rp " . number_format($item->subtotal, 0, ',', '.') . "\n";
+        }
+
+        $mapLink = "";
+        if ($this->delivery_latitude && $this->delivery_longitude) {
+            $mapLink = "\n📍 Link Maps: https://maps.google.com/?q={$this->delivery_latitude},{$this->delivery_longitude}";
+        }
+
+        $notesText = $this->customer_notes ? "\n📝 Catatan: {$this->customer_notes}" : "";
+        $benchmarkText = $this->delivery_benchmark ? "\n🧭 Patokan: {$this->delivery_benchmark}" : "";
+        $paymentLabel = $this->payment_method === 'cod' ? 'COD (Bayar Tunai di Tempat)' : 'Transfer Bank';
+
+        $message = "Halo Admin AquaFlow, saya mau konfirmasi pesanan baru:\n\n"
+            . "📌 No. Pesanan: #{$this->order_number}\n"
+            . "👤 Penerima: {$this->recipient_name} ({$this->recipient_phone})\n"
+            . "🏠 Alamat: {$this->delivery_address_text}{$benchmarkText}{$mapLink}\n\n"
+            . "📦 Rincian Pesanan:\n"
+            . $itemsText
+            . "💵 Ongkir: Rp " . number_format($this->delivery_fee, 0, ',', '.') . "\n"
+            . "💰 Total Tagihan: Rp " . number_format($this->total_amount, 0, ',', '.') . "\n"
+            . "💳 Pembayaran: {$paymentLabel}"
+            . $notesText . "\n\n"
+            . "Mohon segera diproses dan diantar ya min, terima kasih!";
+
+        return "https://wa.me/{$cleanPhone}?text=" . rawurlencode($message);
+    }
 }

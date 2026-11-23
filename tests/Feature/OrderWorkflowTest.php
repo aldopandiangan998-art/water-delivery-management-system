@@ -201,4 +201,45 @@ class OrderWorkflowTest extends TestCase
         $response->assertSessionHas('error');
         $this->assertEquals('ready_for_delivery', $order->fresh()->status);
     }
+
+    public function test_order_generates_valid_whatsapp_confirmation_url(): void
+    {
+        $this->actingAs($this->customer);
+
+        $order = Order::create([
+            'order_number' => 'ORD-WA-TEST',
+            'user_id' => $this->customer->id,
+            'recipient_name' => 'Budi Santoso',
+            'recipient_phone' => '08123456789',
+            'delivery_address_text' => 'Jl. Sukajadi No. 50',
+            'delivery_latitude' => -6.8850,
+            'delivery_longitude' => 107.5960,
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+            'payment_method' => 'cod',
+            'subtotal' => 14000,
+            'delivery_fee' => 3000,
+            'total_amount' => 17000,
+        ]);
+
+        \App\Models\OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $this->product->id,
+            'product_name' => 'Air RO Murni Galon',
+            'unit' => 'galon',
+            'price' => 7000,
+            'cost_price' => 2000,
+            'quantity' => 2,
+            'is_exchange' => true,
+            'subtotal' => 14000,
+        ]);
+
+        $url = $order->whatsapp_url;
+
+        $this->assertStringStartsWith('https://wa.me/', $url);
+        $this->assertStringContainsString('ORD-WA-TEST', $url);
+        $this->assertStringContainsString(rawurlencode('Budi Santoso'), $url);
+        $this->assertStringContainsString(rawurlencode('Air RO Murni Galon'), $url);
+        $this->assertStringContainsString(rawurlencode('17.000'), $url);
+    }
 }

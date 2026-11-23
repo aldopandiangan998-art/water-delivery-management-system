@@ -174,7 +174,7 @@ class OrderController extends Controller
                 'changed_by' => Auth::id(),
             ]);
 
-            return redirect()->route('customer.orders.show', $order)->with('success', "Pesanan #{$order->order_number} berhasil dikirim! Menunggu konfirmasi admin.");
+            return redirect()->route('customer.orders.show', $order)->with('success', "Pesanan #{$order->order_number} berhasil dibuat! Silakan klik tombol hijau di bawah untuk mengirimkan konfirmasi pesanan ke WhatsApp Admin agar segera diproses.");
         });
     }
 
