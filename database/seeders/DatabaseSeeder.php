@@ -31,8 +31,8 @@ class DatabaseSeeder extends Seeder
         $settings = [
             'company_name' => 'AquaFlow Fresh & Pure',
             'company_tagline' => 'Depot Air Minum Higienis & Antar Cepat Langsung ke Rumah Anda',
-            'company_phone' => '0812-2345-6789',
-            'company_whatsapp' => '6281223456789',
+            'company_phone' => '0881-0261-46848',
+            'company_whatsapp' => '62881026146848',
             'company_address' => 'Jl. Sukajadi No. 128, Sukajadi, Kota Bandung, Jawa Barat 40162',
             'company_email' => 'support@aquaflowdelivery.com',
             'bank_name' => 'BCA',
@@ -107,7 +107,7 @@ class DatabaseSeeder extends Seeder
         $admin = User::create([
             'name' => 'Admin Operasional',
             'email' => 'admin@aquaflow.com',
-            'phone' => '0812-2222-3333',
+            'phone' => '0881-0261-46848',
             'role' => 'admin',
             'is_active' => true,
             'password' => Hash::make('password'),

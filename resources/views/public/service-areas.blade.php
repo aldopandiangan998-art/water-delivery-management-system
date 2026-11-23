@@ -50,7 +50,7 @@
 
     <div class="mt-10 text-center">
         <p class="text-sm text-slate-500 mb-4">Lokasi Anda belum tercantum di atas? Hubungi kami via WhatsApp untuk konfirmasi pengantaran khusus.</p>
-        <a href="https://wa.me/6281223456789?text=Halo%20AquaFlow,%20apakah%20bisa%20antar%20ke%20alamat%20saya?" target="_blank"
+        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', \App\Models\BusinessSetting::get('company_whatsapp', '62881026146848')) }}?text=Halo%20AquaFlow,%20apakah%20bisa%20antar%20ke%20alamat%20saya?" target="_blank"
            class="inline-flex items-center px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm transition">
             <i class="fa-brands fa-whatsapp text-lg mr-2"></i> Tanya Admin via WhatsApp
         </a>
