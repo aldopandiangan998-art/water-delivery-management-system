@@ -63,19 +63,14 @@
                 <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider text-center mb-3">
                     Akses Cepat Uji Coba Demo:
                 </p>
-                <div class="grid grid-cols-3 gap-2 text-xs">
+                <div class="grid grid-cols-2 gap-3 text-xs">
                     <button type="button" onclick="setDemo('customer@aquaflow.com', 'password')" 
-                            class="p-2 border border-slate-200 rounded-lg text-center hover:bg-cyan-50 hover:border-cyan-300 transition">
+                            class="p-2.5 border border-slate-200 rounded-xl text-center hover:bg-cyan-50 hover:border-cyan-300 transition">
                         <i class="fa-solid fa-user text-cyan-600 block mb-1"></i>
-                        <span class="font-medium text-slate-700">Customer</span>
-                    </button>
-                    <button type="button" onclick="setDemo('driver1@aquaflow.com', 'password')" 
-                            class="p-2 border border-slate-200 rounded-lg text-center hover:bg-emerald-50 hover:border-emerald-300 transition">
-                        <i class="fa-solid fa-motorcycle text-emerald-600 block mb-1"></i>
-                        <span class="font-medium text-slate-700">Driver</span>
+                        <span class="font-medium text-slate-700">Pelanggan</span>
                     </button>
                     <button type="button" onclick="setDemo('admin@aquaflow.com', 'password')" 
-                            class="p-2 border border-slate-200 rounded-lg text-center hover:bg-indigo-50 hover:border-indigo-300 transition">
+                            class="p-2.5 border border-slate-200 rounded-xl text-center hover:bg-indigo-50 hover:border-indigo-300 transition">
                         <i class="fa-solid fa-gauge-high text-indigo-600 block mb-1"></i>
                         <span class="font-medium text-slate-700">Admin</span>
                     </button>

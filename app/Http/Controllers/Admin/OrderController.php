@@ -42,7 +42,7 @@ class OrderController extends Controller
         }
 
         $orders = $query->paginate(15)->withQueryString();
-        $drivers = User::where('role', 'driver')->orWhere('role', 'admin')->where('is_active', true)->get();
+        $drivers = User::whereIn('role', ['admin', 'super_admin'])->where('is_active', true)->get();
 
         return view('admin.orders.index', compact('orders', 'drivers'));
     }
@@ -61,7 +61,7 @@ class OrderController extends Controller
             'review',
         ]);
 
-        $drivers = User::whereIn('role', ['driver', 'admin', 'super_admin'])->where('is_active', true)->get();
+        $drivers = User::whereIn('role', ['admin', 'super_admin'])->where('is_active', true)->get();
 
         return view('admin.orders.show', compact('order', 'drivers'));
     }

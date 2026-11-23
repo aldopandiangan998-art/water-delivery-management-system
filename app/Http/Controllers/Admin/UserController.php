@@ -38,7 +38,7 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'role' => ['required', 'in:super_admin,admin,driver,customer'],
+            'role' => ['required', 'in:super_admin,admin,customer'],
         ]);
 
         $user->update(['role' => $validated['role']]);

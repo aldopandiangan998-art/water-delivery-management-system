@@ -24,8 +24,8 @@ class EnsureUserHasRole
             return $next($request);
         }
 
-        // Admin has access to both admin and driver routes
-        if ($request->user()->isAdmin() && (in_array('admin', $roles) || in_array('driver', $roles))) {
+        // Admin has access to admin routes
+        if ($request->user()->isAdmin() && in_array('admin', $roles)) {
             return $next($request);
         }
 

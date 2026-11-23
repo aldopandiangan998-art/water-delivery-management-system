@@ -21,7 +21,6 @@ class DeliveryAndTrackingTest extends TestCase
     use RefreshDatabase;
 
     protected User $admin;
-    protected User $driver;
     protected User $customer;
     protected User $otherCustomer;
     protected Order $order;
@@ -37,14 +36,6 @@ class DeliveryAndTrackingTest extends TestCase
             'name' => 'Admin Test',
             'email' => 'admin@test.com',
             'role' => 'admin',
-            'is_active' => true,
-            'password' => Hash::make('password'),
-        ]);
-
-        $this->driver = User::create([
-            'name' => 'Asep Driver',
-            'email' => 'driver@test.com',
-            'role' => 'driver',
             'is_active' => true,
             'password' => Hash::make('password'),
         ]);
@@ -85,16 +76,16 @@ class DeliveryAndTrackingTest extends TestCase
         $this->delivery = Delivery::create([
             'delivery_number' => 'DEL-TEST-001',
             'order_id' => $this->order->id,
-            'driver_id' => $this->driver->id,
+            'driver_id' => $this->admin->id,
             'status' => 'assigned',
         ]);
     }
 
-    public function test_driver_can_start_delivery(): void
+    public function test_admin_can_start_delivery(): void
     {
-        $this->actingAs($this->driver);
+        $this->actingAs($this->admin);
 
-        $response = $this->post(route('driver.deliveries.start', $this->delivery));
+        $response = $this->post(route('admin.deliveries.start', $this->delivery));
         $response->assertSessionHas('success');
 
         $this->assertEquals('in_transit', $this->delivery->fresh()->status);
@@ -102,12 +93,12 @@ class DeliveryAndTrackingTest extends TestCase
         $this->assertEquals('ready_for_delivery', $this->order->fresh()->status);
     }
 
-    public function test_driver_can_update_live_gps_coordinates(): void
+    public function test_admin_can_update_live_gps_coordinates(): void
     {
-        $this->actingAs($this->driver);
+        $this->actingAs($this->admin);
         $this->delivery->update(['status' => 'in_transit']);
 
-        $response = $this->postJson(route('driver.deliveries.location', $this->delivery), [
+        $response = $this->postJson(route('admin.deliveries.location', $this->delivery), [
             'latitude' => -6.8860,
             'longitude' => 107.5970,
             'accuracy' => 4.5,
@@ -119,7 +110,7 @@ class DeliveryAndTrackingTest extends TestCase
 
         $this->assertDatabaseHas('delivery_locations', [
             'delivery_id' => $this->delivery->id,
-            'driver_id' => $this->driver->id,
+            'driver_id' => $this->admin->id,
             'latitude' => -6.8860,
             'longitude' => 107.5970,
         ]);
@@ -132,7 +123,7 @@ class DeliveryAndTrackingTest extends TestCase
 
         DeliveryLocation::create([
             'delivery_id' => $this->delivery->id,
-            'driver_id' => $this->driver->id,
+            'driver_id' => $this->admin->id,
             'latitude' => -6.8865,
             'longitude' => 107.5965,
             'accuracy' => 5.0,
@@ -144,7 +135,7 @@ class DeliveryAndTrackingTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson([
             'delivery_status' => 'in_transit',
-            'driver_name' => 'Asep Driver',
+            'driver_name' => 'Admin Test',
             'driver_lat' => -6.8865,
             'driver_lng' => 107.5965,
             'is_stale' => false,
@@ -162,21 +153,21 @@ class DeliveryAndTrackingTest extends TestCase
         $apiResponse->assertStatus(403);
     }
 
-    public function test_driver_can_complete_delivery_with_proof_photo_and_payment(): void
+    public function test_admin_can_complete_delivery_with_proof_photo_and_payment(): void
     {
-        $this->actingAs($this->driver);
+        $this->actingAs($this->admin);
         $this->delivery->update(['status' => 'in_transit']);
 
         $file = UploadedFile::fake()->image('bukti_antar.jpg');
 
-        $response = $this->post(route('driver.deliveries.complete', $this->delivery), [
+        $response = $this->post(route('admin.deliveries.complete', $this->delivery), [
             'photo' => $file,
             'empty_gallons_returned' => 2,
             'payment_received' => 14000,
             'driver_notes' => 'Diserahkan langsung ke Pak Budi',
         ]);
 
-        $response->assertRedirect(route('driver.dashboard'));
+        $response->assertRedirect(route('admin.deliveries.index'));
         $this->assertEquals('delivered', $this->delivery->fresh()->status);
         $this->assertEquals('completed', $this->order->fresh()->status);
         $this->assertEquals('paid', $this->order->fresh()->payment_status);

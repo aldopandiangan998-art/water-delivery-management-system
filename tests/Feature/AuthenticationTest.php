@@ -72,26 +72,6 @@ class AuthenticationTest extends TestCase
         $this->assertAuthenticatedAs($admin);
     }
 
-    public function test_driver_redirected_to_driver_dashboard_on_login(): void
-    {
-        $driver = User::create([
-            'name' => 'Driver User',
-            'email' => 'driver@example.com',
-            'phone' => '081277778888',
-            'role' => 'driver',
-            'is_active' => true,
-            'password' => Hash::make('password123'),
-        ]);
-
-        $response = $this->post('/login', [
-            'email' => 'driver@example.com',
-            'password' => 'password123',
-        ]);
-
-        $response->assertRedirect(route('driver.dashboard'));
-        $this->assertAuthenticatedAs($driver);
-    }
-
     public function test_inactive_user_cannot_login(): void
     {
         User::create([

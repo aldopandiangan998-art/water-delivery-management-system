@@ -1,14 +1,14 @@
 @extends('layouts.admin')
 
-@section('page_title', 'Tugas Pengantaran & Kurir')
+@section('page_title', 'Tugas Pengantaran')
 
 @section('content')
 <div class="space-y-6">
 
     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-            <h1 class="text-xl font-black text-slate-900 tracking-tight">Tugas Pengantaran Kurir</h1>
-            <p class="text-xs text-slate-500">Monitor status kurir lapangan, rute, dan bukti serah terima foto.</p>
+            <h1 class="text-xl font-black text-slate-900 tracking-tight">Tugas Pengantaran</h1>
+            <p class="text-xs text-slate-500">Kelola pengantaran pesanan, pantau posisi GPS real-time, dan konfirmasi serah terima.</p>
         </div>
         <div class="flex items-center space-x-2">
             <a href="{{ route('admin.deliveries.map') }}" class="px-4 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition flex items-center">
@@ -24,7 +24,7 @@
                 <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="px-5 py-3.5">No. Pengantaran</th>
-                        <th class="px-5 py-3.5">Kurir</th>
+                        <th class="px-5 py-3.5">Petugas</th>
                         <th class="px-5 py-3.5">Tujuan & Penerima</th>
                         <th class="px-5 py-3.5">Status Pengantaran</th>
                         <th class="px-5 py-3.5">Waktu Mulai / Selesai</th>
@@ -75,9 +75,12 @@
                                 @endif
                             </td>
 
-                            <td class="px-5 py-3.5 text-right whitespace-nowrap">
+                            <td class="px-5 py-3.5 text-right whitespace-nowrap space-x-1.5">
+                                <a href="{{ route('admin.deliveries.show', $del) }}" class="text-xs font-bold text-emerald-700 hover:text-emerald-900 bg-emerald-50 px-2.5 py-1 rounded-lg">
+                                    Proses Antar
+                                </a>
                                 <a href="{{ route('admin.orders.show', $del->order) }}" class="text-xs font-bold text-cyan-600 hover:text-cyan-800 bg-cyan-50 px-2.5 py-1 rounded-lg">
-                                    Lihat Order
+                                    Detail Order
                                 </a>
                             </td>
                         </tr>

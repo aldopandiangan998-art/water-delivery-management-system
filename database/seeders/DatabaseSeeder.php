@@ -93,7 +93,7 @@ class DatabaseSeeder extends Seeder
             'notes' => 'Sekitar RS Hasan Sadikin & Dr. Djunjunan',
         ]);
 
-        // 3. Users: Admin, Staff, Drivers, Customers
+        // 3. Users: Admin, Staff, Customers
         $superAdmin = User::create([
             'name' => 'Owner / Super Admin',
             'email' => 'superadmin@aquaflow.com',
@@ -109,26 +109,6 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@aquaflow.com',
             'phone' => '0812-2222-3333',
             'role' => 'admin',
-            'is_active' => true,
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-        ]);
-
-        $driver1 = User::create([
-            'name' => 'Asep Driver 1',
-            'email' => 'driver1@aquaflow.com',
-            'phone' => '0813-3333-4444',
-            'role' => 'driver',
-            'is_active' => true,
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-        ]);
-
-        $driver2 = User::create([
-            'name' => 'Dedi Driver 2',
-            'email' => 'driver2@aquaflow.com',
-            'phone' => '0814-4444-5555',
-            'role' => 'driver',
             'is_active' => true,
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
@@ -401,7 +381,7 @@ class DatabaseSeeder extends Seeder
             'order_id' => $orderPast->id,
             'status' => 'completed',
             'notes' => 'Pesanan telah diantar dan dibayar tunai',
-            'changed_by' => $driver1->id,
+            'changed_by' => $admin->id,
             'created_at' => Carbon::yesterday()->setHour(10)->setMinute(45),
         ]);
 
@@ -409,7 +389,7 @@ class DatabaseSeeder extends Seeder
         $deliveryPast = Delivery::create([
             'delivery_number' => 'DEL-' . date('Ymd') . '-0001',
             'order_id' => $orderPast->id,
-            'driver_id' => $driver1->id,
+            'driver_id' => $admin->id,
             'status' => 'delivered',
             'started_at' => Carbon::yesterday()->setHour(10)->setMinute(10),
             'arrived_at' => Carbon::yesterday()->setHour(10)->setMinute(35),
@@ -420,7 +400,7 @@ class DatabaseSeeder extends Seeder
         DeliveryStatusHistory::create([
             'delivery_id' => $deliveryPast->id,
             'status' => 'assigned',
-            'notes' => 'Ditugaskan ke Asep Driver 1',
+            'notes' => 'Ditugaskan ke Admin Operasional',
             'changed_by' => $admin->id,
             'created_at' => Carbon::yesterday()->setHour(9)->setMinute(30),
         ]);
@@ -429,7 +409,7 @@ class DatabaseSeeder extends Seeder
             'delivery_id' => $deliveryPast->id,
             'status' => 'delivered',
             'notes' => 'Pengantaran sukses',
-            'changed_by' => $driver1->id,
+            'changed_by' => $admin->id,
             'created_at' => Carbon::yesterday()->setHour(10)->setMinute(45),
         ]);
 
@@ -440,8 +420,8 @@ class DatabaseSeeder extends Seeder
             'payment_method' => 'cod',
             'amount' => 21000,
             'status' => 'paid',
-            'notes' => 'Uang pas Rp 21.000 diterima driver di tempat',
-            'received_by' => $driver1->id,
+            'notes' => 'Uang pas Rp 21.000 diterima petugas di tempat',
+            'received_by' => $admin->id,
             'paid_at' => Carbon::yesterday()->setHour(10)->setMinute(45),
         ]);
 
@@ -450,7 +430,7 @@ class DatabaseSeeder extends Seeder
             'order_id' => $orderPast->id,
             'user_id' => $customer1->id,
             'rating' => 5,
-            'comment' => 'Airnya sangat jernih dan segar, galon bersih disegel rapat. Driver Asep sangat ramah dan cepat sampai. Mantap!',
+            'comment' => 'Airnya sangat jernih dan segar, galon bersih disegel rapat. Pelayanan admin sangat ramah dan cepat sampai. Mantap!',
             'is_approved' => true,
             'approved_by' => $admin->id,
             'created_at' => Carbon::yesterday()->setHour(12)->setMinute(0),
@@ -495,7 +475,7 @@ class DatabaseSeeder extends Seeder
         $deliveryActive = Delivery::create([
             'delivery_number' => 'DEL-' . date('Ymd') . '-0002',
             'order_id' => $orderActive->id,
-            'driver_id' => $driver1->id,
+            'driver_id' => $admin->id,
             'status' => 'in_transit',
             'started_at' => now()->subMinutes(12),
             'driver_notes' => 'Sedang dalam perjalanan melintasi Jl. Sukajadi',
@@ -513,7 +493,7 @@ class DatabaseSeeder extends Seeder
         foreach ($routePoints as $pt) {
             DeliveryLocation::create([
                 'delivery_id' => $deliveryActive->id,
-                'driver_id' => $driver1->id,
+                'driver_id' => $admin->id,
                 'latitude' => $pt[0],
                 'longitude' => $pt[1],
                 'accuracy' => 5.2,

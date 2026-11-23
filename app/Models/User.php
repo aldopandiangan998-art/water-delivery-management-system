@@ -45,11 +45,6 @@ class User extends Authenticatable
         return in_array($this->role, ['super_admin', 'admin']);
     }
 
-    public function isDriver(): bool
-    {
-        return $this->role === 'driver' || $this->isAdmin();
-    }
-
     public function isCustomer(): bool
     {
         return $this->role === 'customer';

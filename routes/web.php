@@ -12,7 +12,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Customer\AddressController as CustomerAddressController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
 use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
-use App\Http\Controllers\Driver\DriverController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\StorageController;
 use Illuminate\Support\Facades\Route;
@@ -69,20 +68,6 @@ Route::middleware(['auth', 'role:customer,admin,super_admin'])->prefix('customer
 
 /*
 |--------------------------------------------------------------------------
-| Driver Portal Routes
-|--------------------------------------------------------------------------
-*/
-Route::middleware(['auth', 'role:driver,admin,super_admin'])->prefix('driver')->name('driver.')->group(function () {
-    Route::get('/dashboard', [DriverController::class, 'index'])->name('dashboard');
-    Route::get('/deliveries/{delivery}', [DriverController::class, 'show'])->name('deliveries.show');
-    Route::post('/deliveries/{delivery}/start', [DriverController::class, 'start'])->name('deliveries.start');
-    Route::post('/deliveries/{delivery}/arrive', [DriverController::class, 'arrive'])->name('deliveries.arrive');
-    Route::post('/deliveries/{delivery}/complete', [DriverController::class, 'complete'])->name('deliveries.complete');
-    Route::post('/api/deliveries/{delivery}/location', [DriverController::class, 'updateLocation'])->name('deliveries.location');
-});
-
-/*
-|--------------------------------------------------------------------------
 | Admin Dashboard Routes
 |--------------------------------------------------------------------------
 */
@@ -97,6 +82,11 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
 
     Route::get('/deliveries', [AdminDeliveryController::class, 'index'])->name('deliveries.index');
     Route::get('/deliveries/map', [AdminDeliveryController::class, 'map'])->name('deliveries.map');
+    Route::get('/deliveries/{delivery}', [AdminDeliveryController::class, 'show'])->name('deliveries.show');
+    Route::post('/deliveries/{delivery}/start', [AdminDeliveryController::class, 'start'])->name('deliveries.start');
+    Route::post('/deliveries/{delivery}/arrive', [AdminDeliveryController::class, 'arrive'])->name('deliveries.arrive');
+    Route::post('/deliveries/{delivery}/complete', [AdminDeliveryController::class, 'complete'])->name('deliveries.complete');
+    Route::post('/api/deliveries/{delivery}/location', [AdminDeliveryController::class, 'updateLocation'])->name('deliveries.location');
     Route::get('/api/deliveries/live-drivers', [AdminDeliveryController::class, 'apiLiveDrivers'])->name('deliveries.live-drivers');
 
     Route::resource('products', AdminProductController::class);

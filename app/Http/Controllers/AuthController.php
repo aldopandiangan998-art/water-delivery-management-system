@@ -96,10 +96,6 @@ class AuthController extends Controller
             return redirect()->route('admin.dashboard');
         }
 
-        if ($user->role === 'driver') {
-            return redirect()->route('driver.dashboard');
-        }
-
         return redirect()->route('customer.dashboard');
     }
 }

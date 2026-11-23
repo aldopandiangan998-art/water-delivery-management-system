@@ -8,7 +8,7 @@
     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
             <h1 class="text-xl font-black text-slate-900 tracking-tight">Manajemen Akun & Hak Akses</h1>
-            <p class="text-xs text-slate-500">Kelola daftar pengguna, tetapkan peran (Super Admin, Admin, Kurir, Pelanggan), dan status akun.</p>
+            <p class="text-xs text-slate-500">Kelola daftar pengguna, tetapkan peran (Super Admin, Admin, Pelanggan), dan status akun.</p>
         </div>
     </div>
 
@@ -70,7 +70,6 @@
                                         @method('PUT')
                                         <select name="role" onchange="this.form.submit()" class="text-xs border border-slate-200 rounded-lg p-1 bg-white font-medium">
                                             <option value="customer" {{ $u->role === 'customer' ? 'selected' : '' }}>Pelanggan</option>
-                                            <option value="driver" {{ $u->role === 'driver' ? 'selected' : '' }}>Kurir (Driver)</option>
                                             <option value="admin" {{ $u->role === 'admin' ? 'selected' : '' }}>Admin</option>
                                             <option value="super_admin" {{ $u->role === 'super_admin' ? 'selected' : '' }}>Super Admin</option>
                                         </select>

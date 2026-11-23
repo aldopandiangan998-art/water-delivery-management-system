@@ -166,24 +166,31 @@
                 </form>
             </div>
 
-            <!-- 2. Assign Driver Control -->
+            <!-- 2. Assign Delivery Staff Control -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
-                <h3 class="font-bold text-sm text-slate-900 uppercase tracking-wider">Penugasan Kurir</h3>
+                <h3 class="font-bold text-sm text-slate-900 uppercase tracking-wider">Petugas Pengantar</h3>
 
                 @if ($order->delivery && $order->delivery->driver)
-                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1">
-                        <div class="font-bold text-emerald-900">Kurir Ditugaskan:</div>
-                        <div class="text-sm font-black text-slate-800">{{ $order->delivery->driver->name }}</div>
-                        <div class="text-slate-500">Status Kurir: <span class="capitalize font-semibold text-emerald-700">{{ $order->delivery->status }}</span></div>
+                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-2">
+                        <div>
+                            <div class="font-bold text-emerald-900">Petugas Ditugaskan:</div>
+                            <div class="text-sm font-black text-slate-800">{{ $order->delivery->driver->name }}</div>
+                            <div class="text-slate-500">Status Pengantaran: <span class="capitalize font-semibold text-emerald-700">{{ $order->delivery->status_badge['label'] ?? $order->delivery->status }}</span></div>
+                        </div>
+
+                        <a href="{{ route('admin.deliveries.show', $order->delivery) }}" 
+                           class="block text-center py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold text-xs shadow-xs transition">
+                            <i class="fa-solid fa-truck-fast mr-1"></i> Buka Kontrol Pengantaran & Bukti
+                        </a>
                     </div>
                 @endif
 
                 <form method="POST" action="{{ route('admin.orders.assign-driver', $order) }}" class="space-y-3">
                     @csrf
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Ganti / Pilih Kurir</label>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Ganti / Pilih Petugas Pengantar (Admin)</label>
                         <select name="driver_id" required class="w-full text-xs border border-slate-300 rounded-xl p-2.5 bg-white font-medium">
-                            <option value="">Pilih Driver</option>
+                            <option value="">Pilih Petugas (Admin)</option>
                             @foreach ($drivers as $dr)
                                 <option value="{{ $dr->id }}" {{ ($order->delivery?->driver_id == $dr->id) ? 'selected' : '' }}>
                                     {{ $dr->name }} ({{ $dr->phone ?? '-' }})
@@ -193,7 +200,7 @@
                     </div>
 
                     <button type="submit" class="w-full py-2 px-4 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition">
-                        Tugaskan Kurir Ini
+                        Tugaskan Petugas Ini
                     </button>
                 </form>
             </div>

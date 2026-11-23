@@ -28,12 +28,6 @@
                         </a>
                     @endif
 
-                    @if (Auth::user()->role === 'driver')
-                        <a href="{{ route('driver.dashboard') }}" class="inline-flex items-center px-3.5 py-1.5 rounded-lg text-sm font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition border border-emerald-200">
-                            <i class="fa-solid fa-motorcycle mr-1.5"></i> Driver Dashboard
-                        </a>
-                    @endif
-
                     <div x-data="{ dropdownOpen: false }" class="relative">
                         <button @click="dropdownOpen = !dropdownOpen" class="flex items-center space-x-2 text-sm font-medium text-slate-700 hover:text-cyan-600 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 transition">
                             <div class="w-7 h-7 rounded-full bg-cyan-100 text-cyan-700 font-bold flex items-center justify-center text-xs">
@@ -103,9 +97,6 @@
                 <a href="{{ route('customer.orders.index') }}" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-50">Pesanan Saya</a>
                 @if (Auth::user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-lg text-base font-medium text-indigo-600 bg-indigo-50">Admin Panel</a>
-                @endif
-                @if (Auth::user()->role === 'driver')
-                    <a href="{{ route('driver.dashboard') }}" class="block px-3 py-2 rounded-lg text-base font-medium text-emerald-600 bg-emerald-50">Driver Panel</a>
                 @endif
                 <form method="POST" action="{{ route('logout') }}" class="mt-2">
                     @csrf
