@@ -15,12 +15,7 @@
 
     @stack('styles')
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-800 antialiased font-sans flex flex-col" 
-      x-data="{ 
-          sidebarOpen: false,
-          sidebarExpanded: (localStorage.getItem('customer_sidebar_expanded') !== 'false')
-      }"
-      x-init="$watch('sidebarExpanded', val => localStorage.setItem('customer_sidebar_expanded', val))">
+<body class="min-h-screen bg-slate-50 text-slate-800 antialiased font-sans flex flex-col" x-data="{ sidebarOpen: false }">
 
     @php
         $activeCustomerOrdersCount = \App\Models\Order::where('user_id', Auth::id())
@@ -31,38 +26,29 @@
         $cleanWhatsapp = preg_replace('/[^0-9]/', '', $companyWhatsapp);
     @endphp
 
-    <!-- Mobile Backdrop Overlay with Smooth Fade -->
+    <!-- Mobile Backdrop Overlay -->
     <div x-show="sidebarOpen" 
-         x-transition:enter="transition-opacity ease-out duration-300"
+         x-transition:enter="transition-opacity ease-linear duration-300"
          x-transition:enter-start="opacity-0"
          x-transition:enter-end="opacity-100"
-         x-transition:leave="transition-opacity ease-in duration-200"
+         x-transition:leave="transition-opacity ease-linear duration-300"
          x-transition:leave-start="opacity-100"
          x-transition:leave-end="opacity-0"
          class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-xs md:hidden" 
          @click="sidebarOpen = false" 
          x-cloak></div>
 
-    <!-- DEDICATED LEFT SIDEBAR NAVIGATION FOR CUSTOMER (Smooth Animated Dock) -->
-    <aside class="fixed inset-y-0 left-0 z-50 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 shadow-2xl transition-all duration-300 ease-in-out"
-           :class="{
-               'w-64': sidebarExpanded || sidebarOpen,
-               'w-20': !sidebarExpanded && !sidebarOpen,
-               'translate-x-0': sidebarOpen,
-               '-translate-x-full md:translate-x-0': !sidebarOpen
-           }">
+    <!-- DEDICATED LEFT SIDEBAR NAVIGATION FOR CUSTOMER (Docked on Desktop md:fixed) -->
+    <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 shadow-2xl transition-transform duration-300 ease-in-out md:translate-x-0"
+           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'">
 
         <!-- Sidebar Top: Brand & Member Status -->
-        <div class="h-16 flex items-center justify-between px-4 bg-slate-950 border-b border-slate-800 shrink-0 overflow-hidden">
-            <a href="{{ route('customer.dashboard') }}" class="flex items-center space-x-3 overflow-hidden">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-md shrink-0">
+        <div class="h-16 flex items-center justify-between px-5 bg-slate-950 border-b border-slate-800 shrink-0">
+            <a href="{{ route('customer.dashboard') }}" class="flex items-center space-x-3">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-md">
                     <i class="fa-solid fa-droplet text-lg"></i>
                 </div>
-                <div x-show="sidebarExpanded || sidebarOpen"
-                     x-transition:enter="transition-all ease-out duration-250 delay-75"
-                     x-transition:enter-start="opacity-0 -translate-x-3"
-                     x-transition:enter-end="opacity-100 translate-x-0"
-                     class="overflow-hidden whitespace-nowrap">
+                <div>
                     <div class="text-base font-black text-white tracking-tight flex items-center">
                         <span>Aqua<span class="text-cyan-400">Flow</span></span>
                         <span class="ml-2 px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-cyan-950 text-cyan-300 border border-cyan-800">
@@ -70,112 +56,71 @@
                         </span>
                     </div>
                     <span class="text-[10px] flex items-center font-semibold text-emerald-400 mt-0.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5 shrink-0"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5"></span>
                         Pelanggan Terverifikasi
                     </span>
                 </div>
             </a>
 
-            <!-- Toggle Icon Button in Sidebar Header (Smooth Desktop Collapse & Mobile Close) -->
-            <button type="button" 
-                    @click="if (window.innerWidth < 768) { sidebarOpen = false; } else { sidebarExpanded = !sidebarExpanded; }" 
-                    class="text-slate-400 hover:text-white hover:bg-slate-800 p-1.5 rounded-xl transition duration-200"
-                    title="Buka / Tutup Navigasi">
-                <i class="fa-solid text-sm" 
-                   :class="(sidebarExpanded || sidebarOpen) ? 'fa-angles-left' : 'fa-angles-right'"></i>
+            <!-- Mobile Close Button -->
+            <button type="button" @click="sidebarOpen = false" class="md:hidden text-slate-400 hover:text-white p-1">
+                <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
 
         <!-- Sidebar Customer Saldo Gallon Card -->
-        <div class="p-3 bg-slate-950/40 border-b border-slate-800/80 overflow-hidden">
+        <div class="p-3 bg-slate-950/40 border-b border-slate-800/80">
             <div class="p-3 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-850 border border-slate-700/60 shadow-xs">
                 <div class="flex items-center justify-between">
-                    <span x-show="sidebarExpanded || sidebarOpen" 
-                          x-transition:enter="transition-opacity duration-200"
-                          x-transition:enter-start="opacity-0"
-                          x-transition:enter-end="opacity-100"
-                          class="text-[10px] font-bold uppercase tracking-wider text-slate-400 truncate">
-                        Titipan Galon
-                    </span>
-                    <i class="fa-solid fa-bottle-water text-cyan-400 text-sm mx-auto md:mx-0"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Titipan Galon Anda</span>
+                    <i class="fa-solid fa-bottle-water text-cyan-400 text-sm"></i>
                 </div>
-                <div class="text-xl font-black text-white mt-1" :class="{ 'text-center md:text-left': !sidebarExpanded && !sidebarOpen }">
-                    {{ $gallonDeposit }} <span x-show="sidebarExpanded || sidebarOpen" class="text-xs font-normal text-slate-400">galon</span>
+                <div class="text-xl font-black text-white mt-1">
+                    {{ $gallonDeposit }} <span class="text-xs font-normal text-slate-400">galon kosong</span>
                 </div>
-                <div x-show="sidebarExpanded || sidebarOpen" 
-                     x-transition:enter="transition-opacity duration-200"
-                     x-transition:enter-start="opacity-0"
-                     x-transition:enter-end="opacity-100"
-                     class="text-[10px] text-cyan-300 mt-0.5 truncate">
-                    Siap tukar saat pesan
+                <div class="text-[10px] text-cyan-300 mt-0.5">
+                    Siap ditukar otomatis saat pesan
                 </div>
             </div>
         </div>
 
         <!-- Sidebar Navigation Menu Links -->
-        <nav class="flex-1 px-3 py-4 space-y-5 overflow-y-auto overflow-x-hidden text-xs font-semibold scrollbar-thin scrollbar-thumb-slate-700">
+        <nav class="flex-1 px-3 py-4 space-y-6 overflow-y-auto text-xs font-semibold scrollbar-thin scrollbar-thumb-slate-700">
 
             <!-- Group 1: Layanan Pesanan -->
             <div class="space-y-1">
-                <div x-show="sidebarExpanded || sidebarOpen"
-                     x-transition:enter="transition-opacity duration-200"
-                     x-transition:enter-start="opacity-0"
-                     x-transition:enter-end="opacity-100"
-                     class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider whitespace-nowrap">
+                <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                     Layanan Pesanan
                 </div>
 
                 <!-- Dashboard -->
                 <a href="{{ route('customer.dashboard') }}" 
-                   title="Dashboard Saya"
-                   class="flex items-center px-3 py-2.5 rounded-xl transition-all duration-200 group {{ request()->routeIs('customer.dashboard') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <i class="fa-solid fa-house w-5 text-center text-sm shrink-0 transition-transform duration-200 group-hover:scale-110 {{ request()->routeIs('customer.dashboard') ? 'text-white' : 'text-cyan-400' }}"></i>
-                    <span x-show="sidebarExpanded || sidebarOpen"
-                          x-transition:enter="transition-all ease-out duration-200 delay-50"
-                          x-transition:enter-start="opacity-0 -translate-x-2"
-                          x-transition:enter-end="opacity-100 translate-x-0"
-                          class="ml-3 truncate whitespace-nowrap">
-                        Dashboard Saya
-                    </span>
+                   class="flex items-center px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.dashboard') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fa-solid fa-house w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.dashboard') ? 'text-white' : 'text-cyan-400' }}"></i>
+                    <span>Dashboard Saya</span>
                 </a>
 
                 <!-- Order Water -->
                 <a href="{{ route('customer.orders.create') }}" 
-                   title="Pesan Air Galon"
-                   class="flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group {{ request()->routeIs('customer.orders.create') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <div class="flex items-center overflow-hidden">
-                        <i class="fa-solid fa-cart-plus w-5 text-center text-sm shrink-0 transition-transform duration-200 group-hover:scale-110 {{ request()->routeIs('customer.orders.create') ? 'text-white' : 'text-blue-400' }}"></i>
-                        <span x-show="sidebarExpanded || sidebarOpen"
-                              x-transition:enter="transition-all ease-out duration-200 delay-50"
-                              x-transition:enter-start="opacity-0 -translate-x-2"
-                              x-transition:enter-end="opacity-100 translate-x-0"
-                              class="ml-3 truncate whitespace-nowrap">
-                            Pesan Air Galon
-                        </span>
+                   class="flex items-center justify-between px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.orders.create') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-cart-plus w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.orders.create') ? 'text-white' : 'text-blue-400' }}"></i>
+                        <span>Pesan Air Galon</span>
                     </div>
-                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-cyan-500 text-white shadow-2xs shrink-0"
-                          :class="{ 'hidden': !sidebarExpanded && !sidebarOpen }">
+                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-cyan-500 text-white shadow-2xs">
                         Pesan Cepat
                     </span>
                 </a>
 
                 <!-- Orders History & Tracking -->
                 <a href="{{ route('customer.orders.index') }}" 
-                   title="Pesanan Saya"
-                   class="flex items-center justify-between px-3 py-2.5 rounded-xl transition-all duration-200 group {{ request()->routeIs('customer.orders.index') || request()->routeIs('customer.orders.show') || request()->routeIs('customer.orders.track') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <div class="flex items-center overflow-hidden">
-                        <i class="fa-solid fa-box-archive w-5 text-center text-sm shrink-0 transition-transform duration-200 group-hover:scale-110 {{ request()->routeIs('customer.orders.index') || request()->routeIs('customer.orders.show') || request()->routeIs('customer.orders.track') ? 'text-white' : 'text-emerald-400' }}"></i>
-                        <span x-show="sidebarExpanded || sidebarOpen"
-                              x-transition:enter="transition-all ease-out duration-200 delay-50"
-                              x-transition:enter-start="opacity-0 -translate-x-2"
-                              x-transition:enter-end="opacity-100 translate-x-0"
-                              class="ml-3 truncate whitespace-nowrap">
-                            Pesanan Saya
-                        </span>
+                   class="flex items-center justify-between px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.orders.index') || request()->routeIs('customer.orders.show') || request()->routeIs('customer.orders.track') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-box-archive w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.orders.index') || request()->routeIs('customer.orders.show') || request()->routeIs('customer.orders.track') ? 'text-white' : 'text-emerald-400' }}"></i>
+                        <span>Pesanan Saya</span>
                     </div>
                     @if ($activeCustomerOrdersCount > 0)
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 animate-pulse shrink-0"
-                              :class="{ 'hidden': !sidebarExpanded && !sidebarOpen }">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 animate-pulse">
                             {{ $activeCustomerOrdersCount }} Aktif
                         </span>
                     @endif
@@ -183,119 +128,144 @@
 
                 <!-- Address Book -->
                 <a href="{{ route('customer.addresses.index') }}" 
-                   title="Alamat Pengantaran"
-                   class="flex items-center px-3 py-2.5 rounded-xl transition-all duration-200 group {{ request()->routeIs('customer.addresses.*') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <i class="fa-solid fa-location-dot w-5 text-center text-sm shrink-0 transition-transform duration-200 group-hover:scale-110 {{ request()->routeIs('customer.addresses.*') ? 'text-white' : 'text-purple-400' }}"></i>
-                    <span x-show="sidebarExpanded || sidebarOpen"
-                          x-transition:enter="transition-all ease-out duration-200 delay-50"
-                          x-transition:enter-start="opacity-0 -translate-x-2"
-                          x-transition:enter-end="opacity-100 translate-x-0"
-                          class="ml-3 truncate whitespace-nowrap">
-                        Alamat Pengantaran
-                    </span>
+                   class="flex items-center px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.addresses.*') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fa-solid fa-location-dot w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.addresses.*') ? 'text-white' : 'text-purple-400' }}"></i>
+                    <span>Alamat Pengantaran</span>
                 </a>
             </div>
 
             <!-- Group 2: Akun & Bantuan -->
             <div class="space-y-1">
-                <div x-show="sidebarExpanded || sidebarOpen"
-                     x-transition:enter="transition-opacity duration-200"
-                     x-transition:enter-start="opacity-0"
-                     x-transition:enter-end="opacity-100"
-                     class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider whitespace-nowrap">
+                <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
                     Akun & Bantuan
                 </div>
 
                 <!-- Profile -->
                 <a href="{{ route('customer.profile') }}" 
-                   title="Profil & Kata Sandi"
-                   class="flex items-center px-3 py-2.5 rounded-xl transition-all duration-200 group {{ request()->routeIs('customer.profile') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <i class="fa-solid fa-user-gear w-5 text-center text-sm shrink-0 transition-transform duration-200 group-hover:scale-110 {{ request()->routeIs('customer.profile') ? 'text-white' : 'text-amber-400' }}"></i>
-                    <span x-show="sidebarExpanded || sidebarOpen"
-                          x-transition:enter="transition-all ease-out duration-200 delay-50"
-                          x-transition:enter-start="opacity-0 -translate-x-2"
-                          x-transition:enter-end="opacity-100 translate-x-0"
-                          class="ml-3 truncate whitespace-nowrap">
-                        Profil & Kata Sandi
-                    </span>
+                   class="flex items-center px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.profile') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                    <i class="fa-solid fa-user-gear w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.profile') ? 'text-white' : 'text-amber-400' }}"></i>
+                    <span>Profil & Kata Sandi</span>
                 </a>
 
                 <!-- WhatsApp CS Support -->
                 <a href="https://wa.me/{{ $cleanWhatsapp }}?text=Halo%20Admin%20AquaFlow,%20saya%20pelanggan%20mau%20tanya%20pesanan" target="_blank"
-                   title="Hubungi CS Depot"
-                   class="flex items-center px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-emerald-400 transition-all duration-200 group">
-                    <i class="fa-brands fa-whatsapp w-5 text-center text-sm text-emerald-400 shrink-0 transition-transform duration-200 group-hover:scale-110"></i>
-                    <span x-show="sidebarExpanded || sidebarOpen"
-                          x-transition:enter="transition-all ease-out duration-200 delay-50"
-                          x-transition:enter-start="opacity-0 -translate-x-2"
-                          x-transition:enter-end="opacity-100 translate-x-0"
-                          class="ml-3 truncate whitespace-nowrap">
-                        Hubungi CS Depot
-                    </span>
+                   class="flex items-center px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-emerald-400 transition duration-150">
+                    <i class="fa-brands fa-whatsapp w-5 mr-3 text-center text-sm text-emerald-400"></i>
+                    <span>Hubungi CS Depot</span>
                 </a>
 
                 <!-- Visit Public Web -->
                 <a href="{{ route('home') }}" target="_blank"
-                   title="Lihat Web Utama"
-                   class="flex items-center px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200 group">
-                    <i class="fa-solid fa-globe w-5 text-center text-sm text-slate-400 shrink-0 transition-transform duration-200 group-hover:scale-110"></i>
-                    <span x-show="sidebarExpanded || sidebarOpen"
-                          x-transition:enter="transition-all ease-out duration-200 delay-50"
-                          x-transition:enter-start="opacity-0 -translate-x-2"
-                          x-transition:enter-end="opacity-100 translate-x-0"
-                          class="ml-3 truncate whitespace-nowrap">
-                        Lihat Web Utama
-                    </span>
+                   class="flex items-center px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition duration-150">
+                    <i class="fa-solid fa-globe w-5 mr-3 text-center text-sm text-slate-400"></i>
+                    <span>Lihat Web Utama</span>
                 </a>
             </div>
 
         </nav>
 
-        <!-- Sidebar Bottom: Customer Profile & Fast Logout -->
-        <div class="p-3 bg-slate-950 border-t border-slate-800 shrink-0">
-            <div class="flex items-center justify-between">
+        <!-- Sidebar Bottom: Customer Profile & Dropup Menu with Logout -->
+        <div x-data="{ userMenuOpen: false }" class="relative p-3 bg-slate-950 border-t border-slate-800 shrink-0">
+            <!-- Dropup Floating Menu -->
+            <div x-show="userMenuOpen"
+                 x-cloak
+                 @click.away="userMenuOpen = false"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+                 class="absolute bottom-full left-2 right-2 mb-2 bg-slate-900 border border-slate-700/90 rounded-2xl shadow-2xl p-2 z-50 overflow-hidden"
+                 style="display: none;">
+                
+                <!-- Account Summary -->
+                <div class="px-3 py-2.5 bg-slate-950/80 rounded-xl mb-1.5 border border-slate-800">
+                    <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Akun Pelanggan</p>
+                    <p class="text-xs font-bold text-white truncate mt-0.5">{{ Auth::user()->name }}</p>
+                    <p class="text-[10px] text-slate-400 truncate">{{ Auth::user()->email }}</p>
+                    <div class="mt-1.5 flex items-center">
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                            <i class="fa-solid fa-user-tag mr-1 text-[9px]"></i>
+                            {{ strtoupper(str_replace('_', ' ', Auth::user()->profile?->customer_type ?? 'Household')) }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Fast Actions -->
+                <div class="space-y-0.5">
+                    <a href="{{ route('customer.profile') }}" 
+                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-user-gear w-5 text-slate-400 text-center mr-2"></i>
+                        <span>Profil & Kata Sandi</span>
+                    </a>
+                    <a href="{{ route('customer.addresses.index') }}" 
+                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-location-dot w-5 text-slate-400 text-center mr-2"></i>
+                        <span>Alamat Pengantaran</span>
+                    </a>
+                    <a href="{{ route('customer.orders.index') }}" 
+                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-clock-rotate-left w-5 text-slate-400 text-center mr-2"></i>
+                        <span>Riwayat Pesanan</span>
+                    </a>
+                    <a href="{{ route('home') }}" target="_blank"
+                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
+                        <i class="fa-solid fa-globe w-5 text-slate-400 text-center mr-2"></i>
+                        <span>Lihat Web Utama</span>
+                    </a>
+                </div>
+
+                <div class="my-1.5 border-t border-slate-800"></div>
+
+                <!-- Logout Action -->
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" 
+                            class="w-full flex items-center px-3 py-2 rounded-xl text-xs font-bold text-rose-400 hover:text-white hover:bg-rose-600 transition group cursor-pointer">
+                        <i class="fa-solid fa-arrow-right-from-bracket w-5 text-rose-400 group-hover:text-white text-center mr-2"></i>
+                        <span>Keluar (Logout)</span>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Profile Trigger Button -->
+            <button type="button" 
+                    @click="userMenuOpen = !userMenuOpen"
+                    class="w-full flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-900 transition text-left group cursor-pointer">
                 <div class="flex items-center space-x-2.5 overflow-hidden">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white font-black flex items-center justify-center text-xs shrink-0 shadow-sm">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white font-black flex items-center justify-center text-xs shrink-0 shadow-sm group-hover:scale-105 transition-transform">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
-                    <div x-show="sidebarExpanded || sidebarOpen"
-                         x-transition:enter="transition-all ease-out duration-200 delay-50"
-                         x-transition:enter-start="opacity-0 -translate-x-2"
-                         x-transition:enter-end="opacity-100 translate-x-0"
-                         class="overflow-hidden whitespace-nowrap">
-                        <div class="text-xs font-bold text-white truncate">{{ Auth::user()->name }}</div>
+                    <div class="overflow-hidden">
+                        <div class="text-xs font-bold text-white truncate group-hover:text-cyan-300 transition">
+                            {{ Auth::user()->name }}
+                        </div>
                         <div class="text-[10px] text-cyan-400 uppercase font-semibold tracking-wider">
                             {{ str_replace('_', ' ', Auth::user()->profile?->customer_type ?? 'Household') }}
                         </div>
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('logout') }}"
-                      :class="{ 'hidden': !sidebarExpanded && !sidebarOpen }">
-                    @csrf
-                    <button type="submit" title="Keluar dari Akun" 
-                            class="text-slate-400 hover:text-rose-400 hover:bg-slate-800/80 p-2 rounded-xl transition duration-150">
-                        <i class="fa-solid fa-power-off text-sm"></i>
-                    </button>
-                </form>
-            </div>
+                <div class="text-slate-400 group-hover:text-white transition p-1 shrink-0">
+                    <i class="fa-solid fa-chevron-up text-xs transition-transform duration-200" :class="{'rotate-180': userMenuOpen}"></i>
+                </div>
+            </button>
         </div>
 
     </aside>
 
-    <!-- MAIN RIGHT CONTENT WRAPPER WITH SMOOTH PADDING TRANSITION -->
-    <div class="flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out"
-         :class="sidebarExpanded ? 'md:pl-64' : 'md:pl-20'">
+    <!-- MAIN RIGHT CONTENT WRAPPER (Docked beside left sidebar on desktop md:pl-64) -->
+    <div class="flex-1 flex flex-col min-w-0 md:pl-64">
 
         <!-- Top Header Bar -->
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-2xs">
             <div class="flex items-center space-x-3">
-                <!-- SMOOTH SIDEBAR TOGGLE BUTTON (Works seamlessly on both Desktop & Mobile) -->
+                <!-- Hamburger menu button for Mobile/Tablet -->
                 <button type="button" 
-                        @click="if (window.innerWidth < 768) { sidebarOpen = !sidebarOpen; } else { sidebarExpanded = !sidebarExpanded; }" 
-                        class="p-2.5 rounded-xl text-slate-600 hover:text-cyan-600 hover:bg-cyan-50 border border-slate-200 transition-all duration-200 flex items-center justify-center group shadow-2xs"
-                        title="Buka / Tutup Navigasi Sidebar">
-                    <i class="fa-solid fa-bars-staggered text-base group-hover:scale-110 transition-transform duration-200"></i>
+                        @click="sidebarOpen = true" 
+                        class="md:hidden p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-bars text-lg"></i>
                 </button>
 
                 <div>
