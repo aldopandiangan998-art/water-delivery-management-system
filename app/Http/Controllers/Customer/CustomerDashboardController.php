@@ -31,8 +31,23 @@ class CustomerDashboardController extends Controller
 
         $totalOrdersCount = Order::where('user_id', $user->id)->count();
         $completedOrdersCount = Order::where('user_id', $user->id)->where('status', 'completed')->count();
+        $activeOrdersCount = Order::where('user_id', $user->id)
+            ->whereIn('status', ['pending', 'confirmed', 'processing', 'ready_for_delivery'])
+            ->count();
 
-        return view('customer.dashboard', compact('user', 'activeOrder', 'recentOrders', 'totalOrdersCount', 'completedOrdersCount'));
+        $popularProducts = \App\Models\Product::where('is_active', true)->take(4)->get();
+        $defaultAddress = $user->addresses->firstWhere('is_default', true) ?? $user->addresses->first();
+
+        return view('customer.dashboard', compact(
+            'user',
+            'activeOrder',
+            'recentOrders',
+            'totalOrdersCount',
+            'completedOrdersCount',
+            'activeOrdersCount',
+            'popularProducts',
+            'defaultAddress'
+        ));
     }
 
     public function profile()
