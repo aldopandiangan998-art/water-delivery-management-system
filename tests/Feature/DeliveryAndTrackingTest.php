@@ -191,20 +191,20 @@ class DeliveryAndTrackingTest extends TestCase
         $this->actingAs($this->admin);
 
         $response = $this->postJson(route('admin.deliveries.update-depot'), [
-            'latitude' => -7.2950273,
-            'longitude' => 112.7537136,
+            'latitude' => -7.303488,
+            'longitude' => 112.753373,
             'address' => 'Jl. Bratang Gede VI H No. 130, Ngagelrejo, Wonokromo, Surabaya',
         ]);
 
         $response->assertOk()
             ->assertJson([
                 'success' => true,
-                'latitude' => -7.2950273,
-                'longitude' => 112.7537136,
+                'latitude' => -7.303488,
+                'longitude' => 112.753373,
             ]);
 
-        $this->assertEquals('-7.2950273', \App\Models\BusinessSetting::get('store_latitude'));
-        $this->assertEquals('112.7537136', \App\Models\BusinessSetting::get('store_longitude'));
+        $this->assertEquals('-7.303488', \App\Models\BusinessSetting::get('store_latitude'));
+        $this->assertEquals('112.753373', \App\Models\BusinessSetting::get('store_longitude'));
     }
 
     public function test_admin_can_search_geocode_endpoint(): void

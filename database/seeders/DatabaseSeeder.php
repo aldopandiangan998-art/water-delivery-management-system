@@ -39,8 +39,8 @@ class DatabaseSeeder extends Seeder
             'bank_account_number' => '1234-5678-90',
             'bank_account_name' => 'PT AQUAFLOW FRESH INDONESIA',
             'business_hours' => 'Senin - Minggu: 07:00 - 20:00 WIB',
-            'store_latitude' => '-7.2950273',
-            'store_longitude' => '112.7537136',
+            'store_latitude' => '-7.303488',
+            'store_longitude' => '112.753373',
             'min_order_amount' => '15000',
         ];
 
@@ -481,9 +481,9 @@ class DatabaseSeeder extends Seeder
             'driver_notes' => 'Sedang dalam perjalanan melintasi Jl. Bratang Gede & Ngagel',
         ]);
 
-        // Seed realistic GPS path moving from Depot Toko Nova Jaya (-7.2950273, 112.7537136) toward customer in Surabaya
+        // Seed realistic GPS path moving from Depot Toko Nova Jaya (-7.303488, 112.753373) toward customer in Surabaya
         $routePoints = [
-            ['-7.295027', '112.753714', 12],
+            ['-7.303488', '112.753373', 12],
             ['-7.292000', '112.754200', 9],
             ['-7.288000', '112.754800', 6],
             ['-7.282000', '112.755200', 3],

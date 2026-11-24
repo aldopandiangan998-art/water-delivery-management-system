@@ -274,7 +274,13 @@ function adminFleetRadar(config) {
                     </div>
                     <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #059669; display: flex; align-items: center;">
                         <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; margin-right: 6px; display: inline-block;"></span>
-                        Titik Peta Resmi OpenStreetMap
+                        Titik Presisi Google Maps Terverifikasi
+                    </div>
+                    <div style="margin-top: 8px; pt-2; border-top: 1px solid #e2e8f0;">
+                        <a href="https://maps.app.goo.gl/fozU4QCYdbE6unCX7" target="_blank" 
+                           style="color: #2563eb; font-weight: 700; font-size: 10px; text-decoration: none; display: flex; align-items: center;">
+                            <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right: 4px;"></i> Buka di Google Maps Langsung
+                        </a>
                     </div>
                 </div>
             `);
