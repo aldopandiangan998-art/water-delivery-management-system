@@ -99,13 +99,23 @@ function liveTracking(config) {
         initMap() {
             if (!window.L) return;
 
-            // Initialize Leaflet map
-            const centerLat = this.customerLat || -6.8858;
-            const centerLng = this.customerLng || 107.5976;
-            this.map = L.map('liveMap').setView([centerLat, centerLng], 15);
+            // Initialize Leaflet map (Area Kota Surabaya)
+            const centerLat = this.customerLat || -7.2655;
+            const centerLng = this.customerLng || 112.7480;
+
+            const surabayaBounds = L.latLngBounds(
+                L.latLng(-7.3800, 112.5800),
+                L.latLng(-7.1500, 112.8600)
+            );
+
+            this.map = L.map('liveMap', {
+                maxBounds: surabayaBounds,
+                maxBoundsViscosity: 0.9,
+                minZoom: 11
+            }).setView([centerLat, centerLng], 15);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors'
+                attribution: '&copy; OpenStreetMap contributors • Wilayah Kota Surabaya'
             }).addTo(this.map);
 
             // Customer Destination Marker (Blue house)

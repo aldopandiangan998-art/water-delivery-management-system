@@ -7,7 +7,7 @@
     <div class="text-center max-w-3xl mx-auto mb-10">
         <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Wilayah Layanan & Ongkos Kirim</h1>
         <p class="mt-2 text-base text-slate-600 leading-relaxed">
-            Daftar jangkauan pengiriman air minum AquaFlow di wilayah Bandung dan sekitarnya dengan tarif ongkir terjangkau.
+            Daftar jangkauan pengiriman air minum AquaFlow di seluruh wilayah Kota Surabaya dan sekitarnya dengan tarif ongkir terjangkau.
         </p>
     </div>
 

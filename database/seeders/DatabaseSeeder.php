@@ -33,14 +33,14 @@ class DatabaseSeeder extends Seeder
             'company_tagline' => 'Depot Air Minum Higienis & Antar Cepat Langsung ke Rumah Anda',
             'company_phone' => '0881-0261-46848',
             'company_whatsapp' => '62881026146848',
-            'company_address' => 'Jl. Sukajadi No. 128, Sukajadi, Kota Bandung, Jawa Barat 40162',
+            'company_address' => 'Jl. Raya Gubeng No. 45, Gubeng, Kota Surabaya, Jawa Timur 60281',
             'company_email' => 'support@aquaflowdelivery.com',
             'bank_name' => 'BCA',
             'bank_account_number' => '1234-5678-90',
             'bank_account_name' => 'PT AQUAFLOW FRESH INDONESIA',
             'business_hours' => 'Senin - Minggu: 07:00 - 20:00 WIB',
-            'store_latitude' => '-6.8858',
-            'store_longitude' => '107.5976',
+            'store_latitude' => '-7.2655',
+            'store_longitude' => '112.7480',
             'min_order_amount' => '15000',
         ];
 
@@ -48,49 +48,49 @@ class DatabaseSeeder extends Seeder
             BusinessSetting::set($key, $val, 'general');
         }
 
-        // 2. Service Areas (Bandung)
-        $areaSukajadi = ServiceArea::create([
-            'name' => 'Kecamatan Sukajadi',
-            'district' => 'Kota Bandung',
-            'postal_code' => '40162',
+        // 2. Service Areas (Kota Surabaya)
+        $areaGubeng = ServiceArea::create([
+            'name' => 'Kecamatan Gubeng',
+            'district' => 'Kota Surabaya',
+            'postal_code' => '60281',
             'delivery_fee' => 0,
             'min_order_amount' => 14000,
             'estimated_delivery_time' => '20-35 menit',
             'is_active' => true,
-            'notes' => 'Gratis ongkir untuk area Sukajadi (minimal 2 galon)',
+            'notes' => 'Gratis ongkir untuk area Gubeng (minimal 2 galon)',
         ]);
 
-        $areaGegerkalong = ServiceArea::create([
-            'name' => 'Kelurahan Gegerkalong',
-            'district' => 'Kecamatan Sukasari, Bandung',
-            'postal_code' => '40153',
+        $areaWonokromo = ServiceArea::create([
+            'name' => 'Kecamatan Wonokromo',
+            'district' => 'Kota Surabaya',
+            'postal_code' => '60241',
             'delivery_fee' => 3000,
             'min_order_amount' => 18000,
             'estimated_delivery_time' => '30-45 menit',
             'is_active' => true,
-            'notes' => 'Ongkir terjangkau untuk area Gegerkalong & Gerlong Hilir',
+            'notes' => 'Ongkir terjangkau untuk area Wonokromo, Darmo & Joyoboyo',
         ]);
 
-        $areaSarijadi = ServiceArea::create([
-            'name' => 'Kelurahan Sarijadi',
-            'district' => 'Kecamatan Sukasari, Bandung',
-            'postal_code' => '40151',
+        $areaTegalsari = ServiceArea::create([
+            'name' => 'Kecamatan Tegalsari',
+            'district' => 'Kota Surabaya',
+            'postal_code' => '60262',
+            'delivery_fee' => 2000,
+            'min_order_amount' => 16000,
+            'estimated_delivery_time' => '25-40 menit',
+            'is_active' => true,
+            'notes' => 'Area Tunjungan, Dr. Soetomo, dan sekitarnya',
+        ]);
+
+        $areaRungkut = ServiceArea::create([
+            'name' => 'Kecamatan Rungkut',
+            'district' => 'Kota Surabaya',
+            'postal_code' => '60293',
             'delivery_fee' => 4000,
             'min_order_amount' => 20000,
             'estimated_delivery_time' => '35-50 menit',
             'is_active' => true,
-            'notes' => 'Area Blok 1 sampai Blok 9 Sarijadi',
-        ]);
-
-        $areaPasteur = ServiceArea::create([
-            'name' => 'Kawasan Pasteur & Cipaganti',
-            'district' => 'Kota Bandung',
-            'postal_code' => '40161',
-            'delivery_fee' => 5000,
-            'min_order_amount' => 25000,
-            'estimated_delivery_time' => '35-50 menit',
-            'is_active' => true,
-            'notes' => 'Sekitar RS Hasan Sadikin & Dr. Djunjunan',
+            'notes' => 'Area Rungkut Industri & Rungkut Asri',
         ]);
 
         // 3. Users: Admin, Staff, Customers
@@ -132,14 +132,14 @@ class DatabaseSeeder extends Seeder
 
         $customerAddress1 = CustomerAddress::create([
             'user_id' => $customer1->id,
-            'label' => 'Rumah Sukajadi',
+            'label' => 'Rumah Gubeng',
             'recipient_name' => 'Budi Santoso',
             'recipient_phone' => '0815-5555-6666',
-            'address_line' => 'Jl. Karang Tineung No. 25 RT 03/RW 04, Sukajadi',
+            'address_line' => 'Jl. Kertajaya Indah No. 25 RT 03/RW 04, Gubeng',
             'benchmark' => 'Pagar abu-abu, seberang masjid Al-Ikhlas',
-            'service_area_id' => $areaSukajadi->id,
-            'latitude' => -6.887200,
-            'longitude' => 107.595400,
+            'service_area_id' => $areaGubeng->id,
+            'latitude' => -7.275500,
+            'longitude' => 112.755000,
             'is_default' => true,
         ]);
 
@@ -161,14 +161,14 @@ class DatabaseSeeder extends Seeder
 
         $customerAddress2 = CustomerAddress::create([
             'user_id' => $customer2->id,
-            'label' => 'Warung Berkah Gerlong',
+            'label' => 'Warung Berkah Wonokromo',
             'recipient_name' => 'Ibu Siti',
             'recipient_phone' => '0816-6666-7777',
-            'address_line' => 'Jl. Gegerkalong Hilir No. 58 RT 02/RW 01',
+            'address_line' => 'Jl. Darmo Trade Center No. 58 RT 02/RW 01, Wonokromo',
             'benchmark' => 'Spanduk Warung Berkah samping konter pulsa',
-            'service_area_id' => $areaGegerkalong->id,
-            'latitude' => -6.871500,
-            'longitude' => 107.589200,
+            'service_area_id' => $areaWonokromo->id,
+            'latitude' => -7.305000,
+            'longitude' => 112.735000,
             'is_default' => true,
         ]);
 
@@ -478,16 +478,16 @@ class DatabaseSeeder extends Seeder
             'driver_id' => $admin->id,
             'status' => 'in_transit',
             'started_at' => now()->subMinutes(12),
-            'driver_notes' => 'Sedang dalam perjalanan melintasi Jl. Sukajadi',
+            'driver_notes' => 'Sedang dalam perjalanan melintasi Jl. Raya Gubeng & Kertajaya',
         ]);
 
-        // Seed realistic GPS path moving from Depot (-6.8858, 107.5976) toward customer (-6.8872, 107.5954)
+        // Seed realistic GPS path moving from Depot (-7.2655, 112.7480) toward customer (-7.2755, 112.7550) in Surabaya
         $routePoints = [
-            ['-6.885800', '107.597600', 12],
-            ['-6.886100', '107.597200', 9],
-            ['-6.886400', '107.596700', 6],
-            ['-6.886800', '107.596000', 3],
-            ['-6.887050', '107.595600', 1],
+            ['-7.265500', '112.748000', 12],
+            ['-7.267800', '112.749500', 9],
+            ['-7.270500', '112.751200', 6],
+            ['-7.273000', '112.753200', 3],
+            ['-7.275000', '112.754500', 1],
         ];
 
         foreach ($routePoints as $pt) {

@@ -114,7 +114,7 @@
                     <ul class="space-y-2 text-sm text-slate-400">
                         <li class="flex items-start">
                             <i class="fa-solid fa-location-dot mt-1 mr-2 text-cyan-400"></i>
-                            <span>Jl. Sukajadi No. 128, Kota Bandung, Jawa Barat</span>
+                            <span>{{ \App\Models\BusinessSetting::get('company_address', 'Jl. Raya Gubeng No. 45, Kota Surabaya, Jawa Timur 60281') }}</span>
                         </li>
                         <li class="flex items-center">
                             <i class="fa-solid fa-phone mr-2 text-cyan-400"></i>

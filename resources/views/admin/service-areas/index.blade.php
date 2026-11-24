@@ -104,13 +104,13 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Nama Wilayah / Kelurahan</label>
-                    <input type="text" name="name" required placeholder="Contoh: Kelurahan Sukagalih"
+                    <input type="text" name="name" required placeholder="Contoh: Kelurahan Kertajaya"
                            class="w-full text-xs border border-slate-300 rounded-xl p-2.5">
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Kecamatan / Kota</label>
-                    <input type="text" name="district" placeholder="Contoh: Kecamatan Sukajadi, Bandung"
+                    <input type="text" name="district" placeholder="Contoh: Kecamatan Gubeng, Surabaya"
                            class="w-full text-xs border border-slate-300 rounded-xl p-2.5">
                 </div>
 

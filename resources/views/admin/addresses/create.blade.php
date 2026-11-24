@@ -119,6 +119,19 @@
                     <span class="text-[11px] text-slate-500">Klik peta atau geser pin merah untuk mengubah titik koordinat</span>
                 </div>
 
+                <!-- Quick Surabaya District Shortcuts -->
+                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span class="text-[11px] font-bold text-slate-500 mr-1 flex items-center">
+                        <i class="fa-solid fa-map-pin mr-1 text-cyan-600"></i>Area Kota Surabaya:
+                    </span>
+                    <button type="button" onclick="panToSurabaya(-7.2655, 112.7480, 'Gubeng (Surabaya Pusat)')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-cyan-50 hover:text-cyan-700 text-[11px] font-semibold transition border border-slate-200 cursor-pointer">Gubeng</button>
+                    <button type="button" onclick="panToSurabaya(-7.3050, 112.7350, 'Wonokromo (Surabaya Selatan)')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-cyan-50 hover:text-cyan-700 text-[11px] font-semibold transition border border-slate-200 cursor-pointer">Wonokromo</button>
+                    <button type="button" onclick="panToSurabaya(-7.3200, 112.7750, 'Rungkut (Surabaya Timur)')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-cyan-50 hover:text-cyan-700 text-[11px] font-semibold transition border border-slate-200 cursor-pointer">Rungkut</button>
+                    <button type="button" onclick="panToSurabaya(-7.2880, 112.7950, 'Sukolilo (Surabaya Timur)')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-cyan-50 hover:text-cyan-700 text-[11px] font-semibold transition border border-slate-200 cursor-pointer">Sukolilo</button>
+                    <button type="button" onclick="panToSurabaya(-7.2620, 112.7380, 'Tegalsari / Tunjungan')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-cyan-50 hover:text-cyan-700 text-[11px] font-semibold transition border border-slate-200 cursor-pointer">Tegalsari</button>
+                    <button type="button" onclick="panToSurabaya(-7.3050, 112.6850, 'Wiyung (Surabaya Barat)')" class="px-2 py-1 rounded-lg bg-slate-100 hover:bg-cyan-50 hover:text-cyan-700 text-[11px] font-semibold transition border border-slate-200 cursor-pointer">Wiyung</button>
+                </div>
+
                 <!-- Leaflet Map Container -->
                 <div id="addressMap" class="w-full h-72 rounded-2xl border border-slate-200 shadow-2xs z-10"></div>
 
@@ -163,26 +176,46 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
+let map, marker;
+
+function updateCoords(lat, lng) {
+    document.getElementById('latitude').value = parseFloat(lat).toFixed(7);
+    document.getElementById('longitude').value = parseFloat(lng).toFixed(7);
+}
+
+function panToSurabaya(lat, lng, name) {
+    if (!map || !marker) return;
+    map.flyTo([lat, lng], 15, { duration: 1 });
+    marker.setLatLng([lat, lng]);
+    updateCoords(lat, lng);
+    marker.bindPopup(`<b>${name}</b><br>Area Kota Surabaya`).openPopup();
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const defaultLat = {{ old('latitude', $depotLat) }};
     const defaultLng = {{ old('longitude', $depotLng) }};
 
-    const map = L.map('addressMap').setView([defaultLat, defaultLng], 15);
+    // Bounding Box Khusus Kota Surabaya
+    const surabayaBounds = L.latLngBounds(
+        L.latLng(-7.3800, 112.5800), // Barat Daya (Karang Pilang / Waru)
+        L.latLng(-7.1500, 112.8600)  // Timur Laut (Kenjeran / Tanjung Perak / Suramadu)
+    );
+
+    map = L.map('addressMap', {
+        maxBounds: surabayaBounds,
+        maxBoundsViscosity: 0.9,
+        minZoom: 11
+    }).setView([defaultLat, defaultLng], 14);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
+        attribution: '&copy; OpenStreetMap contributors • Wilayah Kota Surabaya'
     }).addTo(map);
 
-    const marker = L.marker([defaultLat, defaultLng], {
+    marker = L.marker([defaultLat, defaultLng], {
         draggable: true
     }).addTo(map);
 
-    marker.bindPopup('<b>Lokasi Pengantaran</b><br>Geser pin ke titik rumah pelanggan').openPopup();
-
-    function updateCoords(lat, lng) {
-        document.getElementById('latitude').value = parseFloat(lat).toFixed(7);
-        document.getElementById('longitude').value = parseFloat(lng).toFixed(7);
-    }
+    marker.bindPopup('<b>Lokasi Pengantaran (Kota Surabaya)</b><br>Geser pin ke titik rumah pelanggan').openPopup();
 
     marker.on('dragend', function (e) {
         const pos = e.target.getLatLng();

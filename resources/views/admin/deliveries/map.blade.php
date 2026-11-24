@@ -113,10 +113,20 @@ function adminFleetRadar(config) {
         initMap() {
             if (!window.L) return;
 
-            this.map = L.map('fleetMap').setView([this.depotLat, this.depotLng], 14);
+            // Bounding Box Khusus Kota Surabaya
+            const surabayaBounds = L.latLngBounds(
+                L.latLng(-7.3800, 112.5800), // Barat Daya Surabaya
+                L.latLng(-7.1500, 112.8600)  // Timur Laut Surabaya
+            );
+
+            this.map = L.map('fleetMap', {
+                maxBounds: surabayaBounds,
+                maxBoundsViscosity: 0.9,
+                minZoom: 11
+            }).setView([this.depotLat, this.depotLng], 13);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap'
+                attribution: '&copy; OpenStreetMap • Area Pengantaran Kota Surabaya'
             }).addTo(this.map);
 
             // Depot Marker
@@ -131,7 +141,7 @@ function adminFleetRadar(config) {
 
             L.marker([this.depotLat, this.depotLng], { icon: depotIcon })
                 .addTo(this.map)
-                .bindPopup(`<b>${this.companyName}</b><br>Depot Pengisian Air Minum`)
+                .bindPopup(`<b>${this.companyName}</b><br>Depot Pengisian Air Minum - Kota Surabaya`)
                 .openPopup();
         },
 
