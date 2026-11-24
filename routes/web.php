@@ -50,6 +50,7 @@ Route::middleware(['auth', 'role:customer,admin,super_admin'])->prefix('customer
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [CustomerDashboardController::class, 'profile'])->name('profile');
     Route::put('/profile', [CustomerDashboardController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/store-profile', [CustomerDashboardController::class, 'storeProfile'])->name('store-profile');
 
     Route::get('/orders', [CustomerOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/create', [CustomerOrderController::class, 'create'])->name('orders.create');

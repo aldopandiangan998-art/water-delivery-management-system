@@ -148,8 +148,20 @@
             <!-- Group 2: Akun & Bantuan -->
             <div class="space-y-1">
                 <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                    Akun & Bantuan
+                    Informasi & Bantuan
                 </div>
+
+                <!-- Store Profile & Map -->
+                <a href="{{ route('customer.store-profile') }}" 
+                   class="flex items-center justify-between px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.store-profile') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                    <div class="flex items-center">
+                        <i class="fa-solid fa-store w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.store-profile') ? 'text-white' : 'text-blue-400' }}"></i>
+                        <span>Profil & Lokasi Toko</span>
+                    </div>
+                    <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                        Maps
+                    </span>
+                </a>
 
                 <!-- Profile -->
                 <a href="{{ route('customer.profile') }}" 

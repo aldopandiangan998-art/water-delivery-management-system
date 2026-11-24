@@ -31,6 +31,10 @@
                class="px-5 py-2.5 rounded-2xl font-extrabold text-xs text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-md hover:shadow-lg transition flex items-center">
                 <i class="fa-solid fa-cart-plus mr-2"></i> Pesan Air Sekarang
             </a>
+            <a href="{{ route('customer.store-profile') }}" 
+               class="px-4 py-2.5 rounded-2xl font-bold text-xs text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition flex items-center shadow-2xs">
+                <i class="fa-solid fa-store mr-1.5 text-blue-600"></i> Lokasi Depot & Maps
+            </a>
             <a href="{{ route('customer.addresses.index') }}" 
                class="px-4 py-2.5 rounded-2xl font-bold text-xs text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition flex items-center">
                 <i class="fa-solid fa-location-dot mr-1.5 text-cyan-600"></i> Alamat Saya
