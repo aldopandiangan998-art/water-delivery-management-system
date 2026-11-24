@@ -1,3 +1,76 @@
+@php
+    $user = Auth::user();
+    $isSuperAdmin = $user && $user->role === 'super_admin';
+
+    // Dynamic Role Primary Color & Theme Configuration
+    $theme = [
+        'is_super_admin'     => $isSuperAdmin,
+        'role_title'         => $isSuperAdmin ? 'SUPER ADMIN' : 'ADMIN',
+        'role_icon'          => $isSuperAdmin ? 'fa-crown text-amber-400' : 'fa-shield-halved text-cyan-400',
+        
+        // Sidebar Main Background & Borders (Mengikuti Primary Color Masing-masing Role)
+        'sidebar_bg_style'   => $isSuperAdmin 
+            ? 'linear-gradient(180deg, #1d0d42 0%, #150930 45%, #0e0520 100%)' 
+            : 'linear-gradient(180deg, #0a2142 0%, #06162d 45%, #030d1c 100%)',
+        'sidebar_border'     => $isSuperAdmin ? 'border-purple-800/40' : 'border-sky-800/40',
+        'sidebar_header_style'=> $isSuperAdmin 
+            ? 'background-color: rgba(25, 11, 59, 0.95);' 
+            : 'background-color: rgba(8, 29, 58, 0.95);',
+        'sidebar_footer_style'=> $isSuperAdmin 
+            ? 'background-color: rgba(19, 7, 43, 0.95);' 
+            : 'background-color: rgba(5, 20, 41, 0.95);',
+        'sidebar_scrollbar'  => $isSuperAdmin ? 'rgba(167, 139, 250, 0.45)' : 'rgba(56, 189, 248, 0.45)',
+        'sidebar_thumb'      => $isSuperAdmin ? 'rgba(167, 139, 250, 0.35)' : 'rgba(56, 189, 248, 0.35)',
+        'sidebar_thumb_hover'=> $isSuperAdmin ? 'rgba(167, 139, 250, 0.65)' : 'rgba(56, 189, 248, 0.65)',
+        
+        // Brand & Header Badges
+        'role_badge_bg'      => $isSuperAdmin 
+            ? 'bg-violet-900/80 text-violet-200 border-violet-600/60 shadow-xs' 
+            : 'bg-blue-900/80 text-cyan-200 border-cyan-600/60 shadow-xs',
+        'brand_gradient'     => $isSuperAdmin
+            ? 'from-violet-600 via-indigo-600 to-purple-700 shadow-violet-950/70'
+            : 'from-blue-600 via-sky-500 to-cyan-500 shadow-blue-950/70',
+        'accent_text'        => $isSuperAdmin ? 'text-violet-400' : 'text-cyan-400',
+        'accent_border'      => $isSuperAdmin ? 'border-violet-500' : 'border-cyan-500',
+        
+        // Navigation Links
+        'nav_active'         => $isSuperAdmin
+            ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold shadow-md shadow-violet-950/60'
+            : 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold shadow-md shadow-blue-950/60',
+        'nav_inactive'       => $isSuperAdmin
+            ? 'text-violet-200/75 hover:text-white hover:bg-purple-900/40'
+            : 'text-sky-200/75 hover:text-white hover:bg-sky-900/40',
+        'indicator_active'   => $isSuperAdmin ? 'bg-amber-400' : 'bg-cyan-300',
+        'icon_box_active'    => 'bg-white/20 text-white shadow-xs',
+        'icon_box_inactive'  => $isSuperAdmin 
+            ? 'bg-purple-950/70 text-purple-300 group-hover:text-amber-300 group-hover:bg-purple-900/60 group-hover:border-purple-700/50' 
+            : 'bg-sky-950/70 text-sky-300 group-hover:text-cyan-300 group-hover:bg-sky-900/60 group-hover:border-sky-700/50',
+        
+        // Group Titles & Dividers
+        'group_title_text'   => $isSuperAdmin ? 'text-purple-300/90' : 'text-sky-300/90',
+        'group_divider'      => $isSuperAdmin ? 'bg-purple-800/40' : 'bg-sky-800/40',
+        
+        // Profile Bottom & Dropup Menu
+        'avatar_gradient'    => $isSuperAdmin
+            ? 'from-violet-600 via-purple-600 to-amber-500 ring-2 ring-violet-500/40'
+            : 'from-blue-600 via-sky-600 to-cyan-500 ring-2 ring-cyan-500/40',
+        'profile_role_badge' => $isSuperAdmin
+            ? 'bg-violet-500/20 text-violet-200 border-violet-500/40'
+            : 'bg-cyan-500/20 text-cyan-200 border-cyan-500/40',
+        'profile_btn_hover'  => $isSuperAdmin ? 'hover:bg-purple-900/35 hover:border-purple-800/40' : 'hover:bg-sky-900/35 hover:border-sky-800/40',
+        'dropup_bg'          => $isSuperAdmin ? 'bg-[#180936] border-purple-700/60' : 'bg-[#071933] border-sky-700/60',
+        'dropup_summary_bg'  => $isSuperAdmin ? 'bg-[#110526]/90 border-purple-800/50' : 'bg-[#040f20]/90 border-sky-800/50',
+        'dropup_item_hover'  => $isSuperAdmin ? 'hover:bg-purple-900/40' : 'hover:bg-sky-900/40',
+        
+        // Topbar Controls
+        'toggle_btn_hover'   => $isSuperAdmin
+            ? 'hover:text-violet-600 hover:bg-violet-50 hover:border-violet-200'
+            : 'hover:text-cyan-600 hover:bg-cyan-50 hover:border-cyan-200',
+    ];
+
+    $pendingOrdersBadge = \App\Models\Order::where('status', 'pending')->count();
+    $activeDeliveriesBadge = \App\Models\Delivery::whereIn('status', ['assigned', 'in_transit', 'arrived'])->count();
+@endphp
 <!DOCTYPE html>
 <html lang="id" class="h-full bg-slate-100">
 <head>
@@ -21,7 +94,7 @@
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: thin;
-            scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+            scrollbar-color: {{ $theme['sidebar_scrollbar'] }} transparent;
         }
         .custom-sidebar-scroll::-webkit-scrollbar {
             width: 6px;
@@ -30,63 +103,24 @@
             background: transparent;
         }
         .custom-sidebar-scroll::-webkit-scrollbar-thumb {
-            background-color: rgba(148, 163, 184, 0.35);
+            background-color: {{ $theme['sidebar_thumb'] }};
             border-radius: 9999px;
         }
         .custom-sidebar-scroll::-webkit-scrollbar-thumb:hover {
-            background-color: rgba(148, 163, 184, 0.65);
+            background-color: {{ $theme['sidebar_thumb_hover'] }};
         }
     </style>
 </head>
 <body class="min-h-screen bg-slate-100 text-slate-800 antialiased font-sans flex flex-col" x-data="{ sidebarOpen: (window.innerWidth >= 768) }">
 
-    @php
-        $user = Auth::user();
-        $isSuperAdmin = $user && $user->role === 'super_admin';
-
-        // Dynamic Role Primary Color & Theme Configuration
-        $theme = [
-            'is_super_admin'     => $isSuperAdmin,
-            'role_title'         => $isSuperAdmin ? 'SUPER ADMIN' : 'ADMIN',
-            'role_icon'          => $isSuperAdmin ? 'fa-crown text-amber-400' : 'fa-shield-halved text-cyan-400',
-            'role_badge_bg'      => $isSuperAdmin 
-                ? 'bg-violet-950/90 text-violet-300 border-violet-700/60 shadow-xs' 
-                : 'bg-blue-950/90 text-cyan-300 border-cyan-700/60 shadow-xs',
-            'brand_gradient'     => $isSuperAdmin
-                ? 'from-violet-600 via-indigo-600 to-purple-700 shadow-violet-900/50'
-                : 'from-blue-600 via-sky-500 to-cyan-500 shadow-blue-900/50',
-            'accent_text'        => $isSuperAdmin ? 'text-violet-400' : 'text-cyan-400',
-            'accent_border'      => $isSuperAdmin ? 'border-violet-500' : 'border-cyan-500',
-            'nav_active'         => $isSuperAdmin
-                ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold shadow-md shadow-violet-950/50'
-                : 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold shadow-md shadow-blue-950/50',
-            'nav_inactive'       => 'text-slate-400 hover:text-white hover:bg-slate-800/70',
-            'indicator_active'   => $isSuperAdmin ? 'bg-amber-400' : 'bg-cyan-300',
-            'icon_box_active'    => 'bg-white/20 text-white shadow-xs',
-            'icon_box_inactive'  => $isSuperAdmin 
-                ? 'bg-slate-900/90 text-slate-400 group-hover:text-violet-400 group-hover:bg-violet-950/40 group-hover:border-violet-800/40' 
-                : 'bg-slate-900/90 text-slate-400 group-hover:text-cyan-400 group-hover:bg-cyan-950/40 group-hover:border-cyan-800/40',
-            'avatar_gradient'    => $isSuperAdmin
-                ? 'from-violet-600 via-purple-600 to-amber-500 ring-2 ring-violet-500/40'
-                : 'from-blue-600 via-sky-600 to-cyan-500 ring-2 ring-cyan-500/40',
-            'profile_role_badge' => $isSuperAdmin
-                ? 'bg-violet-500/15 text-violet-300 border-violet-500/30'
-                : 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
-            'toggle_btn_hover'   => $isSuperAdmin
-                ? 'hover:text-violet-600 hover:bg-violet-50 hover:border-violet-200'
-                : 'hover:text-cyan-600 hover:bg-cyan-50 hover:border-cyan-200',
-        ];
-
-        $pendingOrdersBadge = \App\Models\Order::where('status', 'pending')->count();
-        $activeDeliveriesBadge = \App\Models\Delivery::whereIn('status', ['assigned', 'in_transit', 'arrived'])->count();
-    @endphp
-
     <!-- DEDICATED LEFT SIDEBAR NAVIGATION (Non-blocking & Independently Scrollable) -->
-    <aside class="fixed inset-y-0 left-0 z-40 w-64 h-screen max-h-screen bg-slate-950 text-slate-300 flex flex-col border-r border-slate-800/80 shadow-2xl transition-all duration-300 ease-in-out"
+    <aside class="fixed inset-y-0 left-0 z-40 w-64 h-screen max-h-screen text-slate-200 flex flex-col border-r {{ $theme['sidebar_border'] }} shadow-2xl transition-all duration-300 ease-in-out"
+           style="background: {{ $theme['sidebar_bg_style'] }};"
            :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
 
         <!-- Sidebar Top: Brand & Depot Status -->
-        <div class="h-16 flex items-center justify-between px-4 bg-slate-950 border-b border-slate-800/90 shrink-0">
+        <div class="h-16 flex items-center justify-between px-4 border-b {{ $theme['sidebar_border'] }} shrink-0"
+             style="{{ $theme['sidebar_header_style'] }}">
             <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 overflow-hidden group">
                 <div class="w-10 h-10 rounded-xl bg-gradient-to-tr {{ $theme['brand_gradient'] }} flex items-center justify-center text-white shadow-md shrink-0 group-hover:scale-105 transition-transform duration-200">
                     <i class="fa-solid fa-droplet text-lg"></i>
@@ -119,9 +153,9 @@
 
             <!-- Group 1: Operasional Utama -->
             <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest text-slate-500 flex items-center justify-between">
+                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} flex items-center justify-between">
                     <span>Operasional Utama</span>
-                    <span class="w-8 h-px bg-slate-800/80"></span>
+                    <span class="w-8 h-px {{ $theme['group_divider'] }}"></span>
                 </div>
 
                 <!-- Dashboard -->
@@ -212,9 +246,9 @@
 
             <!-- Group 2: Produk & Layanan Wilayah -->
             <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest text-slate-500 flex items-center justify-between">
+                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} flex items-center justify-between">
                     <span>Katalog & Logistik</span>
-                    <span class="w-8 h-px bg-slate-800/80"></span>
+                    <span class="w-8 h-px {{ $theme['group_divider'] }}"></span>
                 </div>
 
                 <!-- Products -->
@@ -246,9 +280,9 @@
 
             <!-- Group 3: Finansial & Reputasi -->
             <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest text-slate-500 flex items-center justify-between">
+                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} flex items-center justify-between">
                     <span>Keuangan & Reputasi</span>
-                    <span class="w-8 h-px bg-slate-800/80"></span>
+                    <span class="w-8 h-px {{ $theme['group_divider'] }}"></span>
                 </div>
 
                 <!-- Finance -->
@@ -280,9 +314,9 @@
 
             <!-- Group 4: Sistem & Pengguna -->
             <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest text-slate-500 flex items-center justify-between">
+                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} flex items-center justify-between">
                     <span>Sistem & Akses</span>
-                    <span class="w-8 h-px bg-slate-800/80"></span>
+                    <span class="w-8 h-px {{ $theme['group_divider'] }}"></span>
                 </div>
 
                 <!-- Users -->
@@ -307,8 +341,8 @@
 
                 <!-- View Public Web -->
                 <a href="{{ route('home') }}" target="_blank"
-                   class="group flex items-center px-3 py-2 rounded-xl text-slate-400 hover:bg-slate-800/70 hover:text-white transition-all duration-200">
-                    <div class="w-8 h-8 rounded-lg bg-slate-900/90 text-slate-400 group-hover:text-cyan-400 group-hover:bg-cyan-950/40 group-hover:border-cyan-800/40 border border-transparent flex items-center justify-center mr-2.5 transition-all duration-200">
+                   class="group flex items-center px-3 py-2 rounded-xl {{ $theme['nav_inactive'] }} transition-all duration-200">
+                    <div class="w-8 h-8 rounded-lg {{ $theme['icon_box_inactive'] }} border border-transparent flex items-center justify-center mr-2.5 transition-all duration-200">
                         <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
                     </div>
                     <span class="truncate">Buka Web Publik</span>
@@ -318,7 +352,9 @@
         </nav>
 
         <!-- Sidebar Bottom: Admin Profile & Dropup Menu with Logout -->
-        <div x-data="{ userMenuOpen: false }" class="relative p-3 bg-slate-950 border-t border-slate-800/90 shrink-0">
+        <div x-data="{ userMenuOpen: false }" 
+             class="relative p-3 border-t {{ $theme['sidebar_border'] }} shrink-0"
+             style="{{ $theme['sidebar_footer_style'] }}">
             <!-- Dropup Floating Menu -->
             <div x-show="userMenuOpen"
                  x-cloak
@@ -329,11 +365,11 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                  x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-                 class="absolute bottom-full left-2 right-2 mb-2 bg-slate-900 border border-slate-700/90 rounded-2xl shadow-2xl p-2 z-50 overflow-hidden"
+                 class="absolute bottom-full left-2 right-2 mb-2 {{ $theme['dropup_bg'] }} border rounded-2xl shadow-2xl p-2 z-50 overflow-hidden"
                  style="display: none;">
                 
                 <!-- Account Summary -->
-                <div class="px-3 py-2.5 bg-slate-950/80 rounded-xl mb-1.5 border border-slate-800">
+                <div class="px-3 py-2.5 {{ $theme['dropup_summary_bg'] }} rounded-xl mb-1.5 border">
                     <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Sedang Masuk Sebagai</p>
                     <p class="text-xs font-bold text-white truncate mt-0.5">{{ Auth::user()->name }}</p>
                     <p class="text-[10px] text-slate-400 truncate">{{ Auth::user()->email }}</p>
@@ -348,23 +384,23 @@
                 <!-- Fast Actions -->
                 <div class="space-y-0.5">
                     <a href="{{ route('admin.addresses.index') }}" 
-                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
+                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white {{ $theme['dropup_item_hover'] }} transition">
                         <i class="fa-solid fa-map-location-dot w-5 text-slate-400 text-center mr-2"></i>
                         <span>Kelola Alamat Pelanggan</span>
                     </a>
                     <a href="{{ route('admin.users.index') }}" 
-                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
+                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white {{ $theme['dropup_item_hover'] }} transition">
                         <i class="fa-solid fa-users-gear w-5 text-slate-400 text-center mr-2"></i>
                         <span>Manajemen Pengguna</span>
                     </a>
                     <a href="{{ route('home') }}" target="_blank"
-                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
+                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white {{ $theme['dropup_item_hover'] }} transition">
                         <i class="fa-solid fa-globe w-5 text-slate-400 text-center mr-2"></i>
                         <span>Buka Web Publik</span>
                     </a>
                 </div>
 
-                <div class="my-1.5 border-t border-slate-800"></div>
+                <div class="my-1.5 border-t {{ $theme['sidebar_border'] }}"></div>
 
                 <!-- Logout Action -->
                 <form method="POST" action="{{ route('logout') }}">
@@ -380,7 +416,7 @@
             <!-- Profile Trigger Button -->
             <button type="button" 
                     @click="userMenuOpen = !userMenuOpen"
-                    class="w-full flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-900 transition text-left group cursor-pointer border border-transparent hover:border-slate-800">
+                    class="w-full flex items-center justify-between p-1.5 rounded-xl {{ $theme['profile_btn_hover'] }} transition text-left group cursor-pointer border border-transparent">
                 <div class="flex items-center space-x-2.5 overflow-hidden">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-tr {{ $theme['avatar_gradient'] }} text-white font-black flex items-center justify-center text-xs shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
