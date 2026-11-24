@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: aquaflow-water-delivery
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: APP_KEY
+        value: base64:XU1qTh3kxJ5raLTDzjg5RqKnBuTnesdlMOhi2VM8oOQ=
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: DB_CONNECTION
+        value: sqlite
