@@ -28,7 +28,8 @@
                     <label for="email" class="block text-sm font-medium text-slate-700">Alamat Email</label>
                     <div class="mt-1 relative">
                         <input id="email" name="email" type="email" autocomplete="email" required
-                               value="{{ old('email', 'customer@aquaflow.com') }}"
+                               placeholder="nama@email.com"
+                               value="{{ old('email') }}"
                                class="appearance-none block w-full px-3.5 py-2.5 border border-slate-300 rounded-xl shadow-xs placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm">
                     </div>
                 </div>
@@ -37,14 +38,14 @@
                     <label for="password" class="block text-sm font-medium text-slate-700">Kata Sandi</label>
                     <div class="mt-1 relative">
                         <input id="password" name="password" type="password" autocomplete="current-password" required
-                               value="password"
+                               placeholder="••••••••"
                                class="appearance-none block w-full px-3.5 py-2.5 border border-slate-300 rounded-xl shadow-xs placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 text-sm">
                     </div>
                 </div>
 
                 <div class="flex items-center justify-between text-sm">
                     <div class="flex items-center">
-                        <input id="remember" name="remember" type="checkbox" checked
+                        <input id="remember" name="remember" type="checkbox"
                                class="h-4 w-4 text-cyan-600 focus:ring-cyan-500 border-slate-300 rounded">
                         <label for="remember" class="ml-2 block text-slate-700">Ingat saya</label>
                     </div>
@@ -57,33 +58,7 @@
                     </button>
                 </div>
             </form>
-
-            <!-- Demo Quick Login Buttons -->
-            <div class="mt-6 border-t border-slate-100 pt-6">
-                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider text-center mb-3">
-                    Akses Cepat Uji Coba Demo:
-                </p>
-                <div class="grid grid-cols-2 gap-3 text-xs">
-                    <button type="button" onclick="setDemo('customer@aquaflow.com', 'password')" 
-                            class="p-2.5 border border-slate-200 rounded-xl text-center hover:bg-cyan-50 hover:border-cyan-300 transition">
-                        <i class="fa-solid fa-user text-cyan-600 block mb-1"></i>
-                        <span class="font-medium text-slate-700">Pelanggan</span>
-                    </button>
-                    <button type="button" onclick="setDemo('admin@aquaflow.com', 'password')" 
-                            class="p-2.5 border border-slate-200 rounded-xl text-center hover:bg-indigo-50 hover:border-indigo-300 transition">
-                        <i class="fa-solid fa-gauge-high text-indigo-600 block mb-1"></i>
-                        <span class="font-medium text-slate-700">Admin</span>
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 </div>
-
-<script>
-function setDemo(email, pass) {
-    document.getElementById('email').value = email;
-    document.getElementById('password').value = pass;
-}
-</script>
 @endsection
