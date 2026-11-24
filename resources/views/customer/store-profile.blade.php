@@ -3,8 +3,23 @@
 @section('title', 'Profil & Lokasi Toko Nova Jaya')
 
 @push('styles')
+<!-- Leaflet CSS & JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
+    #storeLocationMap {
+        height: 480px !important;
+        min-height: 480px !important;
+        width: 100% !important;
+        z-index: 10;
+        border-radius: 0 0 1.5rem 1.5rem;
+    }
+    .leaflet-pane {
+        z-index: 10 !important;
+    }
+    .leaflet-bottom, .leaflet-top {
+        z-index: 20 !important;
+    }
     @keyframes depotPulse {
         0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
         70% { box-shadow: 0 0 0 14px rgba(37, 99, 235, 0); }
@@ -100,8 +115,8 @@
             </div>
 
             <!-- Leaflet Map Container -->
-            <div class="relative w-full h-[450px]">
-                <div id="storeLocationMap" class="w-full h-full z-10"></div>
+            <div class="relative w-full rounded-2xl overflow-hidden" style="height: 480px; min-height: 480px;">
+                <div id="storeLocationMap" style="height: 480px; min-height: 480px; width: 100%;"></div>
 
                 <!-- Floating Coordinates Pill on Map -->
                 <div class="absolute bottom-4 left-4 z-20 bg-white/95 backdrop-blur-xs px-3.5 py-2 rounded-2xl shadow-lg border border-slate-200 text-xs flex items-center space-x-3">
@@ -259,9 +274,7 @@
 
 </div>
 
-<!-- Leaflet Map Script -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
+<!-- Customer Store Map Component -->
 <script>
 function customerStoreMap(config) {
     return {
@@ -276,12 +289,22 @@ function customerStoreMap(config) {
 
         init() {
             this.$nextTick(() => {
-                this.initMap();
+                const initWhenReady = () => {
+                    if (window.L && typeof window.L.map === 'function') {
+                        this.initMap();
+                    } else {
+                        setTimeout(initWhenReady, 100);
+                    }
+                };
+                initWhenReady();
             });
         },
 
         initMap() {
-            if (!window.L) return;
+            if (!window.L || this.map) return;
+
+            const mapDiv = document.getElementById('storeLocationMap');
+            if (!mapDiv) return;
 
             // Bounding Box Khusus Kota Surabaya
             const surabayaBounds = L.latLngBounds(
@@ -289,15 +312,27 @@ function customerStoreMap(config) {
                 L.latLng(-7.1500, 112.8600)
             );
 
-            this.map = L.map('storeLocationMap', {
+            this.map = L.map(mapDiv, {
                 maxBounds: surabayaBounds,
                 maxBoundsViscosity: 0.9,
                 minZoom: 12
             }).setView([this.lat, this.lng], 16);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            // Layer OpenStreetMap
+            const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors • Bratang Gede, Wonokromo, Surabaya'
             }).addTo(this.map);
+
+            // Layer Google Satelit Hybrid (Free XYZ tile)
+            const googleSatLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                attribution: '&copy; Google Maps Satelit'
+            });
+
+            // Layer Control
+            L.control.layers({
+                'Peta Jalan': osmLayer,
+                'Satelit Google': googleSatLayer
+            }, null, { position: 'topright' }).addTo(this.map);
 
             // Custom Store Marker with Glow
             const storeIcon = L.divIcon({
@@ -316,7 +351,7 @@ function customerStoreMap(config) {
                         <span style="background: #dbeafe; color: #1d4ed8; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px; text-transform: uppercase;">Depot Resmi Toko</span>
                         <h4 style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 4px; margin-bottom: 2px;">${this.name}</h4>
                         <p style="font-size: 11px; color: #475569; margin: 0; line-height: 1.3;">${this.address}</p>
-                        <div style="margin-top: 8px; pt-2; border-top: 1px solid #e2e8f0;">
+                        <div style="margin-top: 8px; padding-top: 6px; border-top: 1px solid #e2e8f0;">
                             <a href="${this.gmapsUrl}" target="_blank" 
                                style="color: #2563eb; font-weight: 700; font-size: 11px; text-decoration: none; display: flex; align-items: center;">
                                 <i class="fa-solid fa-arrow-up-right-from-square" style="margin-right: 4px;"></i> Buka di Google Maps
@@ -325,6 +360,14 @@ function customerStoreMap(config) {
                     </div>
                 `)
                 .openPopup();
+
+            // Multiple invalidates to guarantee tiles are painted in any browser & screen
+            setTimeout(() => {
+                if (this.map) this.map.invalidateSize();
+            }, 150);
+            setTimeout(() => {
+                if (this.map) this.map.invalidateSize();
+            }, 500);
         },
 
         recenterMap() {

@@ -194,8 +194,8 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         <!-- Map Container (8 cols) -->
-        <div class="lg:col-span-8 bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-md relative">
-            <div id="fleetMap" class="w-full h-[620px] z-10"></div>
+        <div class="lg:col-span-8 bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-md relative" style="min-height: 620px;">
+            <div id="fleetMap" class="w-full z-10" style="height: 620px; min-height: 620px; width: 100%;"></div>
         </div>
 
         <!-- Active Deliveries Status List (4 cols) -->

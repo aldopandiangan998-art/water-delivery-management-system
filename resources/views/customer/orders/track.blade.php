@@ -2,6 +2,26 @@
 
 @section('title', 'Lacak Kurir Live - #' . $order->order_number)
 
+@push('styles')
+<!-- Leaflet CSS & JS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+    #liveMap {
+        height: 550px !important;
+        min-height: 550px !important;
+        width: 100% !important;
+        z-index: 10;
+    }
+    .leaflet-pane {
+        z-index: 10 !important;
+    }
+    .leaflet-bottom, .leaflet-top {
+        z-index: 20 !important;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" 
      x-data="liveTracking({{ Js::from([
@@ -51,8 +71,8 @@
     </div>
 
     <!-- Map Container -->
-    <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-md relative">
-        <div id="liveMap" class="w-full h-[550px] z-10"></div>
+    <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-md relative" style="height: 550px; min-height: 550px;">
+        <div id="liveMap" class="w-full z-10" style="height: 550px; min-height: 550px; width: 100%;"></div>
 
         <!-- Floating Info Overlay on Map -->
         <div class="absolute bottom-5 left-5 z-20 bg-white/95 backdrop-blur-xs p-4 rounded-2xl shadow-lg border border-slate-200 max-w-xs text-xs space-y-1.5">
@@ -91,13 +111,23 @@ function liveTracking(config) {
 
         init() {
             this.$nextTick(() => {
-                this.initMap();
-                this.startPolling();
+                const initWhenReady = () => {
+                    if (window.L && typeof window.L.map === 'function') {
+                        this.initMap();
+                        this.startPolling();
+                    } else {
+                        setTimeout(initWhenReady, 100);
+                    }
+                };
+                initWhenReady();
             });
         },
 
         initMap() {
-            if (!window.L) return;
+            if (!window.L || this.map) return;
+
+            const mapDiv = document.getElementById('liveMap');
+            if (!mapDiv) return;
 
             // Initialize Leaflet map (Area Kota Surabaya - Toko Nova Jaya Bratang Gede)
             const centerLat = this.customerLat || -7.3005;
@@ -108,15 +138,27 @@ function liveTracking(config) {
                 L.latLng(-7.1500, 112.8600)
             );
 
-            this.map = L.map('liveMap', {
+            this.map = L.map(mapDiv, {
                 maxBounds: surabayaBounds,
                 maxBoundsViscosity: 0.9,
                 minZoom: 11
             }).setView([centerLat, centerLng], 15);
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            // Layer OpenStreetMap
+            const osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors • Wilayah Kota Surabaya'
             }).addTo(this.map);
+
+            // Layer Google Satelit Hybrid (Free XYZ tile)
+            const googleSatLayer = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+                attribution: '&copy; Google Maps Satelit'
+            });
+
+            // Layer Control
+            L.control.layers({
+                'Peta Jalan': osmLayer,
+                'Satelit Google': googleSatLayer
+            }, null, { position: 'topright' }).addTo(this.map);
 
             // Customer Destination Marker (Blue house)
             const customerIcon = L.divIcon({
@@ -150,6 +192,14 @@ function liveTracking(config) {
             // Fit bounds to show both customer and driver
             const group = new L.featureGroup([this.customerMarker, this.driverMarker]);
             this.map.fitBounds(group.getBounds().pad(0.3));
+
+            // Staggered invalidateSize calls to ensure clean paint
+            setTimeout(() => {
+                if (this.map) this.map.invalidateSize();
+            }, 150);
+            setTimeout(() => {
+                if (this.map) this.map.invalidateSize();
+            }, 500);
         },
 
         startPolling() {
