@@ -67,7 +67,6 @@ class CustomerDashboardController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
             'customer_type' => ['required', 'string', 'in:household,retail_shop,office,restaurant'],
-            'current_password' => ['nullable', 'required_with:new_password', 'current_password'],
             'new_password' => ['nullable', 'min:8', 'confirmed'],
         ]);
 

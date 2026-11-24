@@ -48,11 +48,6 @@
 
                 <div class="space-y-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-600 mb-1">Kata Sandi Saat Ini</label>
-                        <input type="password" name="current_password"
-                               class="w-full text-sm border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-cyan-500">
-                    </div>
-                    <div>
                         <label class="block text-xs font-semibold text-slate-600 mb-1">Kata Sandi Baru</label>
                         <input type="password" name="new_password"
                                class="w-full text-sm border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-cyan-500">
