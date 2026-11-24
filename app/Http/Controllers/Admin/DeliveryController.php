@@ -252,8 +252,27 @@ class DeliveryController extends Controller
         $depotLng = (float) BusinessSetting::get('store_longitude', 112.753373);
         $companyName = BusinessSetting::get('company_name', 'Toko Nova Jaya - AquaFlow');
         $companyAddress = BusinessSetting::get('company_address', 'Jl. Bratang Gede VI H No. 130, Kelurahan Ngagelrejo, Kecamatan Wonokromo, Kota Surabaya, Jawa Timur 60245');
+        $googleMapsApiKey = config('services.google_maps.api_key') ?: BusinessSetting::get('google_maps_api_key', '');
 
-        return view('admin.deliveries.map', compact('activeDeliveries', 'depotLat', 'depotLng', 'companyName', 'companyAddress'));
+        return view('admin.deliveries.map', compact('activeDeliveries', 'depotLat', 'depotLng', 'companyName', 'companyAddress', 'googleMapsApiKey'));
+    }
+
+    public function saveGoogleMapsKey(Request $request)
+    {
+        $validated = $request->validate([
+            'api_key' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $key = trim((string) ($validated['api_key'] ?? ''));
+        BusinessSetting::set('google_maps_api_key', $key);
+
+        return response()->json([
+            'success' => true,
+            'message' => !empty($key) 
+                ? 'Google Maps API Key berhasil disimpan! Peta akan dimuat menggunakan layanan Google Maps.' 
+                : 'Google Maps API Key dihapus. Sistem kembali menggunakan OpenStreetMap / Leaflet (Gratis).',
+            'has_key' => !empty($key),
+        ]);
     }
 
     public function geocode(Request $request)

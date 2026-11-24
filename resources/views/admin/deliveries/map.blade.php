@@ -9,9 +9,11 @@
          depotLng: {{ $depotLng }},
          companyName: '{{ addslashes($companyName) }}',
          companyAddress: '{{ addslashes($companyAddress ?? 'Jl. Bratang Gede VI H No. 130, Kel. Ngagelrejo, Kec. Wonokromo, Surabaya') }}',
+         googleMapsApiKey: '{{ addslashes($googleMapsApiKey ?? '') }}',
          apiEndpoint: '{{ route('admin.deliveries.live-drivers') }}',
          geocodeUrl: '{{ route('admin.deliveries.geocode') }}',
          updateDepotUrl: '{{ route('admin.deliveries.update-depot') }}',
+         saveApiKeyUrl: '{{ route('admin.deliveries.save-google-maps-key') }}',
          csrfToken: '{{ csrf_token() }}'
      })">
 
@@ -70,11 +72,86 @@
                 <span x-text="isCalibrating ? 'Keluar Mode Geser' : 'Kalibrasi Titik Depot'"></span>
             </button>
 
+            <!-- Google Maps API Key Config Button -->
+            <button type="button" @click="showApiKeyModal = true"
+                    class="px-3 py-1.5 font-bold rounded-xl border transition flex items-center shadow-2xs cursor-pointer text-xs"
+                    :class="googleMapsApiKey ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200'"
+                    title="Atur Google Maps API Key">
+                <i class="fa-brands fa-google mr-1.5" :class="googleMapsApiKey ? 'text-emerald-600' : 'text-slate-500'"></i>
+                <span x-text="googleMapsApiKey ? 'Google Maps: Aktif' : 'Google Maps API'"></span>
+            </button>
+
             <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold" x-text="'Kurir: ' + activeDriversCount"></span>
             
             <button type="button" @click="fetchDrivers()" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl cursor-pointer" title="Refresh Peta">
                 <i class="fa-solid fa-arrows-rotate"></i>
             </button>
+        </div>
+    </div>
+
+    <!-- Modal Google Maps API Key Configuration -->
+    <div x-show="showApiKeyModal" x-cloak
+         class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border border-slate-200 space-y-4"
+             @click.outside="showApiKeyModal = false">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                        <i class="fa-brands fa-google text-base"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-extrabold text-sm text-slate-900">Pengaturan Google Maps API</h3>
+                        <p class="text-[11px] text-slate-400">Aktifkan peta Google Maps resmi & fitur satelit</p>
+                    </div>
+                </div>
+                <button type="button" @click="showApiKeyModal = false" class="text-slate-400 hover:text-slate-600 cursor-pointer">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="text-xs text-slate-600 space-y-2">
+                <p>
+                    Masukkan <strong>Google Maps API Key</strong> Anda dari Google Cloud Console. Sistem akan memuat Google Maps resmi (peta satelit, jalan, dan pencarian tempat Google).
+                </p>
+                <div class="p-3 bg-blue-50 rounded-2xl border border-blue-100 text-[11px] text-blue-900 space-y-1">
+                    <div class="font-bold flex items-center text-blue-700">
+                        <i class="fa-solid fa-shield-halved mr-1.5"></i> Mode Cadangan Otomatis:
+                    </div>
+                    <div>Jika API Key kosong atau kuota Google habis, sistem otomatis beralih ke <strong>OpenStreetMap (100% Gratis & Bebas Batas)</strong>.</div>
+                </div>
+            </div>
+
+            <div class="space-y-1.5 text-xs">
+                <label class="block font-bold text-slate-700">Google Maps API Key</label>
+                <input type="text" x-model="inputApiKey" placeholder="AIzaSy..."
+                       class="w-full font-mono text-xs border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-cyan-500 bg-slate-50 focus:bg-white">
+                <div class="text-[10px] text-slate-400">
+                    Belum punya API Key? Buat di <a href="https://console.cloud.google.com/google/maps-apis/credentials" target="_blank" class="text-blue-600 underline font-semibold">Google Cloud Console &rarr;</a>
+                </div>
+            </div>
+
+            <div class="pt-2 flex items-center justify-between text-xs">
+                <template x-if="googleMapsApiKey">
+                    <button type="button" @click="removeApiKey()" :disabled="isSavingKey"
+                            class="text-rose-600 hover:text-rose-800 font-bold cursor-pointer text-[11px]">
+                        <i class="fa-solid fa-trash-can mr-1"></i> Hapus Key (Gunakan Gratis)
+                    </button>
+                </template>
+                <template x-if="!googleMapsApiKey">
+                    <span></span>
+                </template>
+
+                <div class="flex items-center space-x-2">
+                    <button type="button" @click="showApiKeyModal = false" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-semibold cursor-pointer">
+                        Batal
+                    </button>
+                    <button type="button" @click="saveApiKey()" :disabled="isSavingKey"
+                            class="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-xs transition flex items-center cursor-pointer">
+                        <i x-show="isSavingKey" class="fa-solid fa-spinner animate-spin mr-1.5"></i>
+                        <span>Simpan & Terapkan</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -190,6 +267,17 @@ function adminFleetRadar(config) {
         activeDriversCount: 0,
         pollInterval: null,
 
+        // Google Maps Support
+        googleMapsApiKey: config.googleMapsApiKey || '',
+        saveApiKeyUrl: config.saveApiKeyUrl,
+        showApiKeyModal: false,
+        inputApiKey: config.googleMapsApiKey || '',
+        isSavingKey: false,
+        isUsingGoogleMaps: false,
+        gMap: null,
+        gDepotMarker: null,
+        gMarkers: {},
+
         // Maps API Search & Calibration states
         searchQuery: '',
         searchResults: [],
@@ -200,10 +288,132 @@ function adminFleetRadar(config) {
 
         init() {
             this.$nextTick(() => {
-                this.initMap();
+                if (this.googleMapsApiKey) {
+                    this.loadGoogleMaps();
+                } else {
+                    this.initMap();
+                }
                 this.fetchDrivers();
                 this.pollInterval = setInterval(() => this.fetchDrivers(), 4000);
             });
+        },
+
+        loadGoogleMaps() {
+            if (window.google && window.google.maps) {
+                this.initGoogleMap();
+                return;
+            }
+
+            window.initGoogleMapCallback = () => {
+                this.initGoogleMap();
+            };
+
+            window.gm_authFailure = () => {
+                console.warn('Google Maps auth failed, falling back to Leaflet OpenStreetMap');
+                this.toastMessage = 'Peringatan: Google Maps API Key tidak valid / billing belum aktif. Mengalihkan ke OpenStreetMap...';
+                this.isUsingGoogleMaps = false;
+                this.initMap();
+            };
+
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(this.googleMapsApiKey)}&callback=initGoogleMapCallback&libraries=places`;
+            script.async = true;
+            script.defer = true;
+            script.onerror = () => {
+                console.warn('Gagal memuat Google Maps script, fallback ke Leaflet.');
+                this.initMap();
+            };
+            document.head.appendChild(script);
+        },
+
+        initGoogleMap() {
+            if (!window.google || !window.google.maps) {
+                this.initMap();
+                return;
+            }
+
+            const mapDiv = document.getElementById('fleetMap');
+            if (!mapDiv) return;
+
+            this.isUsingGoogleMaps = true;
+            const center = { lat: this.depotLat, lng: this.depotLng };
+
+            this.gMap = new google.maps.Map(mapDiv, {
+                center: center,
+                zoom: 16,
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                mapTypeControl: true,
+                streetViewControl: true,
+                fullscreenControl: true,
+            });
+
+            this.gDepotMarker = new google.maps.Marker({
+                position: center,
+                map: this.gMap,
+                title: this.companyName,
+                draggable: false,
+                icon: {
+                    url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+                    scaledSize: new google.maps.Size(42, 42)
+                }
+            });
+
+            const depotInfoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="font-family: inherit; max-width: 240px; padding: 4px;">
+                        <span style="background: #dbeafe; color: #1d4ed8; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px; text-transform: uppercase;">Depot Penjualan Utama</span>
+                        <h4 style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 4px; margin-bottom: 2px;">${this.companyName}</h4>
+                        <p style="font-size: 11px; color: #475569; margin: 0; line-height: 1.3;">${this.companyAddress}</p>
+                        <div style="margin-top: 6px; font-size: 10px; font-family: monospace; color: #64748b;">
+                            Lat: ${this.depotLat.toFixed(7)}, Lng: ${this.depotLng.toFixed(7)}
+                        </div>
+                        <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #059669;">
+                            ✓ Google Maps Platform Resmi
+                        </div>
+                    </div>
+                `
+            });
+
+            this.gDepotMarker.addListener('click', () => {
+                depotInfoWindow.open(this.gMap, this.gDepotMarker);
+            });
+            depotInfoWindow.open(this.gMap, this.gDepotMarker);
+        },
+
+        async saveApiKey() {
+            this.isSavingKey = true;
+            try {
+                const res = await fetch(this.saveApiKeyUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': this.csrfToken
+                    },
+                    body: JSON.stringify({
+                        api_key: this.inputApiKey
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    this.googleMapsApiKey = this.inputApiKey;
+                    this.toastMessage = data.message;
+                    this.showApiKeyModal = false;
+                    setTimeout(() => { window.location.reload(); }, 1200);
+                }
+            } catch (err) {
+                console.error('Gagal menyimpan API Key:', err);
+                alert('Gagal menyimpan API Key.');
+            } finally {
+                this.isSavingKey = false;
+            }
+        },
+
+        async removeApiKey() {
+            if (!confirm('Yakin ingin menghapus API Key dan kembali menggunakan OpenStreetMap (Gratis)?')) return;
+            this.inputApiKey = '';
+            await this.saveApiKey();
         },
 
         initMap() {
@@ -287,6 +497,11 @@ function adminFleetRadar(config) {
         },
 
         recenterDepot() {
+            if (this.isUsingGoogleMaps && this.gMap) {
+                this.gMap.panTo({ lat: this.depotLat, lng: this.depotLng });
+                this.gMap.setZoom(17);
+                return;
+            }
             if (!this.map) return;
             this.map.flyTo([this.depotLat, this.depotLng], 16, { duration: 1.2 });
             if (this.depotMarker) this.depotMarker.openPopup();

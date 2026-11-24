@@ -230,4 +230,34 @@ class DeliveryAndTrackingTest extends TestCase
                 'lon' => '112.7537136',
             ]);
     }
+
+    public function test_admin_can_save_and_remove_google_maps_api_key(): void
+    {
+        $this->actingAs($this->admin);
+
+        $response = $this->postJson(route('admin.deliveries.save-google-maps-key'), [
+            'api_key' => 'AIzaSyTestGoogleKey12345',
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'has_key' => true,
+            ]);
+
+        $this->assertEquals('AIzaSyTestGoogleKey12345', \App\Models\BusinessSetting::get('google_maps_api_key'));
+
+        // Test removing key
+        $removeResponse = $this->postJson(route('admin.deliveries.save-google-maps-key'), [
+            'api_key' => '',
+        ]);
+
+        $removeResponse->assertOk()
+            ->assertJson([
+                'success' => true,
+                'has_key' => false,
+            ]);
+
+        $this->assertEquals('', \App\Models\BusinessSetting::get('google_maps_api_key'));
+    }
 }
