@@ -222,21 +222,6 @@
                         <i class="fa-solid fa-user-gear w-5 text-slate-400 text-center mr-2"></i>
                         <span>Profil & Kata Sandi</span>
                     </a>
-                    <a href="{{ route('customer.addresses.index') }}" 
-                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
-                        <i class="fa-solid fa-location-dot w-5 text-slate-400 text-center mr-2"></i>
-                        <span>Alamat Pengantaran</span>
-                    </a>
-                    <a href="{{ route('customer.orders.index') }}" 
-                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
-                        <i class="fa-solid fa-clock-rotate-left w-5 text-slate-400 text-center mr-2"></i>
-                        <span>Riwayat Pesanan</span>
-                    </a>
-                    <a href="{{ route('home') }}" target="_blank"
-                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
-                        <i class="fa-solid fa-globe w-5 text-slate-400 text-center mr-2"></i>
-                        <span>Lihat Web Utama</span>
-                    </a>
                 </div>
 
                 <div class="my-1.5 border-t border-slate-800"></div>
