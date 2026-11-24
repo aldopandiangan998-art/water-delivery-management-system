@@ -17,9 +17,14 @@
                     {{ $order->payment_badge['label'] }}
                 </span>
             </div>
-            <div class="text-xs text-slate-500 mt-1">
-                Dipesan pada {{ $order->created_at->format('d M Y, H:i') }} WIB &bull; 
-                Metode Pembayaran: <span class="font-bold uppercase text-slate-700">{{ $order->payment_method }}</span>
+            <div class="text-xs text-slate-500 mt-1 flex items-center space-x-2 flex-wrap gap-y-1">
+                <span>Dipesan pada {{ $order->created_at->format('d M Y, H:i') }} WIB</span>
+                <span>&bull;</span>
+                <span>Metode:</span>
+                <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold border {{ $order->payment_method_badge['color'] }}">
+                    <i class="fa-solid {{ $order->payment_method_badge['icon'] }} mr-1"></i>
+                    {{ $order->payment_method_badge['label'] }}
+                </span>
             </div>
         </div>
 
@@ -208,6 +213,21 @@
             <!-- 3. Payment Status Control -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
                 <h3 class="font-bold text-sm text-slate-900 uppercase tracking-wider">Status Pembayaran</h3>
+
+                @if ($order->payment_method === 'qris' && $order->payment_status !== 'paid')
+                    <form method="POST" action="{{ route('admin.orders.payment', $order) }}" class="mb-3">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="payment_status" value="paid">
+                        <input type="hidden" name="amount_paid" value="{{ $order->total_amount }}">
+                        <button type="submit" 
+                                onclick="return confirm('Konfirmasi bahwa uang QRIS sebesar Rp {{ number_format($order->total_amount, 0, ',', '.') }} telah masuk ke rekening/e-wallet Doppnnstore?')"
+                                class="w-full py-2.5 px-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white rounded-xl text-xs font-black shadow-sm flex items-center justify-center space-x-1.5 transition cursor-pointer">
+                            <i class="fa-solid fa-qrcode text-sm"></i>
+                            <span>Konfirmasi Lunas (QRIS Diterima)</span>
+                        </button>
+                    </form>
+                @endif
 
                 <form method="POST" action="{{ route('admin.orders.payment', $order) }}" class="space-y-3">
                     @csrf

@@ -112,6 +112,15 @@ class Order extends Model
         };
     }
 
+    public function getPaymentMethodBadgeAttribute(): array
+    {
+        return match ($this->payment_method) {
+            'cod' => ['label' => 'Tunai / COD', 'color' => 'bg-emerald-100 text-emerald-800 border-emerald-200', 'icon' => 'fa-hand-holding-dollar'],
+            'qris' => ['label' => 'QRIS (Doppnnstore)', 'color' => 'bg-teal-100 text-teal-800 border-teal-200', 'icon' => 'fa-qrcode'],
+            default => ['label' => strtoupper(str_replace('_', ' ', $this->payment_method)), 'color' => 'bg-slate-100 text-slate-800 border-slate-200', 'icon' => 'fa-credit-card'],
+        };
+    }
+
     public function getWhatsappUrlAttribute(): string
     {
         $adminPhone = BusinessSetting::get('company_whatsapp', '62881026146848');
@@ -133,17 +142,22 @@ class Order extends Model
 
         $notesText = $this->customer_notes ? "\n📝 Catatan: {$this->customer_notes}" : "";
         $benchmarkText = $this->delivery_benchmark ? "\n🧭 Patokan: {$this->delivery_benchmark}" : "";
-        $paymentLabel = $this->payment_method === 'cod' ? 'COD (Bayar Tunai di Tempat)' : 'Transfer Bank';
+        
+        $paymentLabel = match ($this->payment_method) {
+            'qris' => "QRIS (Scan & Pay - Doppnnstore)\n(Bukti screenshot transfer QRIS saya kirimkan di bawah ini)",
+            'cod' => "Tunai / COD (Bayar di Tempat saat galon sampai)",
+            default => strtoupper($this->payment_method),
+        };
 
-        $message = "Halo Admin AquaFlow, saya mau konfirmasi pesanan baru:\n\n"
+        $message = "Halo Admin AquaFlow (Toko Nova Jaya), saya mau konfirmasi pesanan baru:\n\n"
             . "📌 No. Pesanan: #{$this->order_number}\n"
             . "👤 Penerima: {$this->recipient_name} ({$this->recipient_phone})\n"
             . "🏠 Alamat: {$this->delivery_address_text}{$benchmarkText}{$mapLink}\n\n"
             . "📦 Rincian Pesanan:\n"
             . $itemsText
-            . "💵 Ongkir: Rp " . number_format($this->delivery_fee, 0, ',', '.') . "\n"
+            . "🚚 Ongkir: Rp " . number_format($this->delivery_fee, 0, ',', '.') . "\n"
             . "💰 Total Tagihan: Rp " . number_format($this->total_amount, 0, ',', '.') . "\n"
-            . "💳 Pembayaran: {$paymentLabel}"
+            . "💳 Metode Pembayaran: {$paymentLabel}"
             . $notesText . "\n\n"
             . "Mohon segera diproses dan diantar ya min, terima kasih!";
 

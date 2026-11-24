@@ -108,11 +108,14 @@
                                 <div class="font-black text-slate-900 text-sm">
                                     Rp {{ number_format($order->total_amount, 0, ',', '.') }}
                                 </div>
-                                <div class="flex items-center space-x-1 mt-1">
-                                    <span class="text-[10px] font-bold px-1.5 py-0.2 rounded border uppercase {{ $order->payment_badge['color'] }}">
+                                <div class="flex items-center space-x-1.5 mt-1 flex-wrap gap-y-1">
+                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase {{ $order->payment_badge['color'] }}">
                                         {{ $order->payment_badge['label'] }}
                                     </span>
-                                    <span class="text-[10px] text-slate-400 uppercase font-semibold">({{ $order->payment_method }})</span>
+                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border {{ $order->payment_method_badge['color'] }}">
+                                        <i class="fa-solid {{ $order->payment_method_badge['icon'] }} mr-0.5 text-[9px]"></i>
+                                        {{ $order->payment_method_badge['label'] }}
+                                    </span>
                                 </div>
                             </td>
 

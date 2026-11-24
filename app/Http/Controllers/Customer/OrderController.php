@@ -55,7 +55,7 @@ class OrderController extends Controller
             'items.*.product_id' => ['required', 'exists:products,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1', 'max:100'],
             'items.*.is_exchange' => ['nullable', 'boolean'],
-            'payment_method' => ['required', 'in:cod,bank_transfer'],
+            'payment_method' => ['required', 'in:cod,qris,bank_transfer'],
             'customer_notes' => ['nullable', 'string', 'max:500'],
         ]);
 

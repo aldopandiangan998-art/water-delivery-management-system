@@ -68,8 +68,12 @@
                         @endforeach
                     </div>
 
-                    <div class="text-xs font-bold text-cyan-700">
-                        Total Pembayaran: Rp {{ number_format($order->total_amount, 0, ',', '.') }} ({{ strtoupper($order->payment_method) }})
+                    <div class="flex flex-wrap items-center gap-2 text-xs">
+                        <span class="font-bold text-cyan-700">Total: Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold border {{ $order->payment_method_badge['color'] }}">
+                            <i class="fa-solid {{ $order->payment_method_badge['icon'] }} mr-1 text-[10px]"></i>
+                            {{ $order->payment_method_badge['label'] }}
+                        </span>
                     </div>
                 </div>
 

@@ -8,13 +8,17 @@
     <!-- Header bar -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
         <div>
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-2 flex-wrap gap-y-1">
                 <h1 class="text-xl font-black text-slate-900 tracking-tight">Pesanan {{ $order->order_number }}</h1>
                 <span class="text-xs font-bold px-2.5 py-0.5 rounded-full border {{ $order->status_badge['color'] }}">
                     {{ $order->status_badge['label'] }}
                 </span>
                 <span class="text-xs font-bold px-2 py-0.5 rounded-full border {{ $order->payment_badge['color'] }}">
                     {{ $order->payment_badge['label'] }}
+                </span>
+                <span class="text-xs font-bold px-2 py-0.5 rounded-full border {{ $order->payment_method_badge['color'] }}">
+                    <i class="fa-solid {{ $order->payment_method_badge['icon'] }} mr-1"></i>
+                    {{ $order->payment_method_badge['label'] }}
                 </span>
             </div>
             <p class="text-xs text-slate-500 mt-1">Dibuat pada {{ $order->created_at->format('d M Y, H:i') }} WIB</p>
@@ -33,6 +37,129 @@
             </a>
         </div>
     </div>
+
+    <!-- QRIS Payment Box (If QRIS payment method) -->
+    @if ($order->payment_method === 'qris')
+        @if ($order->payment_status === 'paid')
+            <!-- Paid QRIS Banner -->
+            <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-3xl p-5 shadow-xs flex items-center justify-between">
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm text-2xl">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h2 class="text-sm sm:text-base font-black text-slate-900">Pembayaran QRIS Telah Lunas</h2>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200">Terverifikasi</span>
+                        </div>
+                        <p class="text-xs text-slate-600 mt-0.5">
+                            Pembayaran QRIS sebesar <b class="text-emerald-700">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</b> telah diverifikasi oleh Admin. Pesanan Anda siap dikirim!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @else
+            <!-- Unpaid QRIS Box -->
+            <div class="bg-white rounded-3xl border-2 border-teal-300 shadow-md overflow-hidden" x-data="{ copied: false, modalOpen: false }">
+                <!-- Header -->
+                <div class="bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 p-4 sm:p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-white text-xl">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center space-x-2">
+                                <h2 class="text-base font-black tracking-tight">Pembayaran QRIS Toko</h2>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950 animate-pulse">Menunggu Pembayaran</span>
+                            </div>
+                            <p class="text-xs text-teal-100">Merchant: <b>Doppnnstore</b> &bull; NMID: ID1025464152988</p>
+                        </div>
+                    </div>
+                    <div class="text-left sm:text-right bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-xs border border-white/20">
+                        <div class="text-[10px] text-teal-100 uppercase tracking-wider font-semibold">Total Tagihan Pas</div>
+                        <div class="text-lg font-black text-white">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</div>
+                    </div>
+                </div>
+
+                <!-- Body: QRIS Image & Instructions -->
+                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                    <!-- Left: QR Code Display -->
+                    <div class="flex flex-col items-center justify-center bg-slate-50 p-5 rounded-2xl border border-slate-200">
+                        <div class="relative group cursor-pointer" @click="modalOpen = true">
+                            <img src="{{ asset('images/qris.jpg') }}" alt="QRIS Doppnnstore" 
+                                 class="w-64 max-w-full h-auto rounded-xl shadow-md border-2 border-white object-contain">
+                            <div class="absolute inset-0 bg-black/30 rounded-xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold space-x-1">
+                                <i class="fa-solid fa-magnifying-glass-plus text-base"></i>
+                                <span>Klik untuk Perbesar</span>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons below QR -->
+                        <div class="mt-4 flex flex-wrap gap-2 justify-center w-full">
+                            <a href="{{ asset('images/qris.jpg') }}" download="QRIS-Doppnnstore.jpg"
+                               class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-800 transition flex items-center">
+                                <i class="fa-solid fa-download mr-1.5"></i> Unduh Gambar QRIS
+                            </a>
+                            <button type="button" @click="navigator.clipboard.writeText('{{ (int)$order->total_amount }}'); copied = true; setTimeout(() => copied = false, 2500)"
+                                    class="px-3 py-1.5 rounded-xl text-xs font-bold bg-teal-100 hover:bg-teal-200 text-teal-800 transition flex items-center">
+                                <i class="fa-solid fa-copy mr-1.5" x-show="!copied"></i>
+                                <i class="fa-solid fa-check mr-1.5 text-emerald-600" x-show="copied"></i>
+                                <span x-text="copied ? 'Tersalin!' : 'Salin Nominal Rp {{ number_format($order->total_amount, 0, ',', '.') }}'"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Step by Step Instructions -->
+                    <div class="space-y-4">
+                        <h3 class="font-extrabold text-sm text-slate-900 flex items-center">
+                            <span class="w-6 h-6 rounded-full bg-teal-600 text-white flex items-center justify-center text-xs mr-2 font-bold">!</span>
+                            Cara Membayar dengan QRIS:
+                        </h3>
+
+                        <ol class="space-y-3 text-xs text-slate-700">
+                            <li class="flex items-start">
+                                <span class="font-bold text-teal-700 mr-2 shrink-0">1.</span>
+                                <span>Buka aplikasi <b>m-Banking</b> (BCA, Mandiri, BRI, BNI) atau <b>E-Wallet</b> (GoPay, OVO, Dana, ShopeePay) di HP Anda.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="font-bold text-teal-700 mr-2 shrink-0">2.</span>
+                                <span>Pilih menu <b>Scan / Bayar QRIS</b>, lalu arahkan kamera ke barcode QRIS <b>Doppnnstore</b> di samping.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="font-bold text-teal-700 mr-2 shrink-0">3.</span>
+                                <span>Masukkan nominal pas sebesar: <b class="text-teal-800 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</b>.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="font-bold text-teal-700 mr-2 shrink-0">4.</span>
+                                <span>Setelah pembayaran sukses, simpan tangkapan layar (screenshot) bukti transfer, lalu klik tombol hijau <b>Kirim ke WhatsApp Admin</b> di bawah untuk konfirmasi instan!</span>
+                            </li>
+                        </ol>
+
+                        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                            <span>Mendukung seluruh aplikasi perbankan & e-wallet nasional (GPN/QRIS).</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fullscreen Image Modal -->
+                <div x-show="modalOpen" x-cloak 
+                     @click="modalOpen = false"
+                     class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs">
+                    <div class="relative max-w-sm w-full bg-white rounded-3xl p-4 shadow-2xl" @click.stop>
+                        <button type="button" @click="modalOpen = false" 
+                                class="absolute top-3 right-3 text-slate-400 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                        <h4 class="font-bold text-sm text-slate-900 text-center mb-2">QRIS Resmi Toko (Doppnnstore)</h4>
+                        <img src="{{ asset('images/qris.jpg') }}" alt="QRIS Doppnnstore Full" class="w-full h-auto rounded-xl">
+                        <div class="mt-3 text-center text-xs font-bold text-teal-700">
+                            Nominal Pas: Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
+    @endif
 
     <!-- WhatsApp Direct Confirmation Banner -->
     <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border-2 border-emerald-300 rounded-2xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">

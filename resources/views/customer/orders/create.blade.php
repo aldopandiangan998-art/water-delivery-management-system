@@ -181,26 +181,51 @@
                     <div class="space-y-2 pt-2 border-t border-slate-100">
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Metode Pembayaran</label>
                         <div class="grid grid-cols-2 gap-2 text-xs">
-                            <label :class="paymentMethod === 'cod' ? 'border-cyan-600 bg-cyan-50 font-bold text-cyan-800 ring-1 ring-cyan-500' : 'border-slate-200 text-slate-700'"
-                                   class="p-2.5 rounded-xl border text-center cursor-pointer transition">
+                            <label :class="paymentMethod === 'cod' ? 'border-cyan-600 bg-cyan-50 font-bold text-cyan-800 ring-1 ring-cyan-500 shadow-xs' : 'border-slate-200 text-slate-700 hover:border-slate-300'"
+                                   class="p-3 rounded-xl border text-center cursor-pointer transition flex flex-col items-center justify-center">
                                 <input type="radio" name="payment_method" value="cod" x-model="paymentMethod" class="sr-only">
-                                <i class="fa-solid fa-hand-holding-dollar block text-sm mb-1"></i>
-                                Tunai / COD
+                                <i class="fa-solid fa-hand-holding-dollar block text-lg mb-1 text-emerald-600"></i>
+                                <span>Tunai / COD</span>
+                                <span class="text-[10px] text-slate-500 font-normal mt-0.5">Bayar di Tempat</span>
                             </label>
 
-                            <label :class="paymentMethod === 'bank_transfer' ? 'border-cyan-600 bg-cyan-50 font-bold text-cyan-800 ring-1 ring-cyan-500' : 'border-slate-200 text-slate-700'"
-                                   class="p-2.5 rounded-xl border text-center cursor-pointer transition">
-                                <input type="radio" name="payment_method" value="bank_transfer" x-model="paymentMethod" class="sr-only">
-                                <i class="fa-solid fa-building-columns block text-sm mb-1"></i>
-                                Transfer Bank
+                            <label :class="paymentMethod === 'qris' ? 'border-teal-600 bg-teal-50 font-bold text-teal-900 ring-1 ring-teal-500 shadow-xs' : 'border-slate-200 text-slate-700 hover:border-slate-300'"
+                                   class="p-3 rounded-xl border text-center cursor-pointer transition flex flex-col items-center justify-center">
+                                <input type="radio" name="payment_method" value="qris" x-model="paymentMethod" class="sr-only">
+                                <i class="fa-solid fa-qrcode block text-lg mb-1 text-teal-600"></i>
+                                <span>QRIS Instan</span>
+                                <span class="text-[10px] text-slate-500 font-normal mt-0.5">Semua E-Wallet / Bank</span>
                             </label>
                         </div>
 
-                        <div x-show="paymentMethod === 'bank_transfer'" class="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-600 space-y-1">
-                            <div class="font-bold text-slate-800">Rekening Resmi AquaFlow:</div>
-                            <div>Bank BCA: <span class="font-mono font-bold text-cyan-700">1234-5678-90</span></div>
-                            <div>A/N: PT AQUAFLOW FRESH INDONESIA</div>
-                            <div class="text-[10px] text-slate-400 italic">Bukti transfer dapat diperlihatkan kepada kurir saat pesanan sampai.</div>
+                        <!-- Info Box for QRIS -->
+                        <div x-show="paymentMethod === 'qris'" x-cloak class="mt-2 p-3.5 bg-gradient-to-r from-teal-50 to-cyan-50 border border-teal-200 rounded-2xl text-xs space-y-2">
+                            <div class="flex items-center space-x-2 text-teal-900 font-bold">
+                                <i class="fa-solid fa-qrcode text-base text-teal-600"></i>
+                                <span>QRIS Toko (Doppnnstore)</span>
+                            </div>
+                            <p class="text-[11px] text-slate-600 leading-relaxed">
+                                Barcode QRIS resmi Toko Nova Jaya beserta nominal pas pembayaran akan langsung ditampilkan di layar setelah Anda mengklik <b>Pesan Sekarang</b>.
+                            </p>
+                            <div class="flex items-center space-x-1.5 text-[10px] font-semibold text-teal-700">
+                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">BCA</span>
+                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">Mandiri</span>
+                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">BRI</span>
+                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">GoPay</span>
+                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">OVO</span>
+                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">Dana</span>
+                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">ShopeePay</span>
+                            </div>
+                        </div>
+
+                        <!-- Info Box for COD -->
+                        <div x-show="paymentMethod === 'cod'" x-cloak class="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-600 space-y-1">
+                            <div class="font-bold text-slate-800 flex items-center">
+                                <i class="fa-solid fa-circle-info text-cyan-600 mr-1.5"></i> Pembayaran Tunai saat Galon Tiba
+                            </div>
+                            <div class="text-[10px] text-slate-500">
+                                Mohon siapkan uang pas sebesar <b class="text-slate-800" x-text="formatRupiah(calculateTotal())"></b> saat kurir mengantar pesanan ke alamat Anda.
+                            </div>
                         </div>
                     </div>
 
