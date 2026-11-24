@@ -247,9 +247,9 @@ class DeliveryController extends Controller
             ->with(['order.address', 'driver', 'latestLocation'])
             ->get();
 
-        $depotLat = (float) BusinessSetting::get('store_latitude', -7.2655);
-        $depotLng = (float) BusinessSetting::get('store_longitude', 112.7480);
-        $companyName = BusinessSetting::get('company_name', 'Depot AquaFlow');
+        $depotLat = (float) BusinessSetting::get('store_latitude', -7.3005);
+        $depotLng = (float) BusinessSetting::get('store_longitude', 112.7525);
+        $companyName = BusinessSetting::get('company_name', 'Toko Nova Jaya - AquaFlow');
 
         return view('admin.deliveries.map', compact('activeDeliveries', 'depotLat', 'depotLng', 'companyName'));
     }

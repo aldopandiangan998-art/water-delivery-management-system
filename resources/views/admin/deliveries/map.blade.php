@@ -23,8 +23,14 @@
         </div>
 
         <div class="flex items-center space-x-2 text-xs">
+            <button type="button" @click="recenterDepot()" 
+                    class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold rounded-xl border border-blue-200 transition flex items-center shadow-2xs cursor-pointer"
+                    title="Pusatkan peta ke Toko Nova Jaya Bratang Gede">
+                <i class="fa-solid fa-store mr-1.5 text-blue-600"></i>
+                <span>Toko Nova Jaya</span>
+            </button>
             <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold" x-text="'Kurir Aktif: ' + activeDriversCount + ' orang'"></span>
-            <button @click="fetchDrivers()" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl" title="Refresh Peta">
+            <button type="button" @click="fetchDrivers()" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl cursor-pointer" title="Refresh Peta">
                 <i class="fa-solid fa-arrows-rotate"></i>
             </button>
         </div>
@@ -123,26 +129,41 @@ function adminFleetRadar(config) {
                 maxBounds: surabayaBounds,
                 maxBoundsViscosity: 0.9,
                 minZoom: 11
-            }).setView([this.depotLat, this.depotLng], 13);
+            }).setView([this.depotLat, this.depotLng], 15);
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap • Area Pengantaran Kota Surabaya'
+                attribution: '&copy; OpenStreetMap • Area Bratang Gede, Wonokromo, Kota Surabaya'
             }).addTo(this.map);
 
-            // Depot Marker
+            // Depot Marker Toko Nova Jaya
             const depotIcon = L.divIcon({
                 className: 'depot-pin',
-                html: `<div style="background-color: #2563eb; color: white; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 3px solid white;">
-                        <i class="fa-solid fa-store" style="font-size: 18px;"></i>
+                html: `<div style="background: linear-gradient(135deg, #0284c7, #2563eb); color: white; border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(37,99,235,0.45); border: 3px solid white;">
+                        <i class="fa-solid fa-store" style="font-size: 19px;"></i>
                        </div>`,
-                iconSize: [40, 40],
-                iconAnchor: [20, 20]
+                iconSize: [44, 44],
+                iconAnchor: [22, 22]
             });
 
             L.marker([this.depotLat, this.depotLng], { icon: depotIcon })
                 .addTo(this.map)
-                .bindPopup(`<b>${this.companyName}</b><br>Depot Pengisian Air Minum - Kota Surabaya`)
+                .bindPopup(`
+                    <div style="min-width: 210px; font-family: inherit;">
+                        <span style="background: #dbeafe; color: #1d4ed8; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 6px; text-transform: uppercase;">Depot Penjualan Utama</span>
+                        <h4 style="font-size: 13px; font-weight: 800; color: #0f172a; margin-top: 4px; margin-bottom: 2px;">Toko Nova Jaya</h4>
+                        <p style="font-size: 11px; color: #475569; margin: 0; line-height: 1.3;">Jl. Bratang Gede VI H No. 130, Kel. Ngagelrejo, Kec. Wonokromo, Kota Surabaya 60245</p>
+                        <div style="margin-top: 6px; font-size: 10px; font-weight: 700; color: #059669; display: flex; align-items: center;">
+                            <span style="width: 7px; height: 7px; border-radius: 50%; background: #10b981; margin-right: 6px; display: inline-block;"></span>
+                            Depot Aktif • Siap Antar Real-Time
+                        </div>
+                    </div>
+                `)
                 .openPopup();
+        },
+
+        recenterDepot() {
+            if (!this.map) return;
+            this.map.flyTo([this.depotLat, this.depotLng], 16, { duration: 1.2 });
         },
 
         async fetchDrivers() {

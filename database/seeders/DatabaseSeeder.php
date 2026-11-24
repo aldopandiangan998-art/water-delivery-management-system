@@ -29,18 +29,18 @@ class DatabaseSeeder extends Seeder
     {
         // 1. Business Settings
         $settings = [
-            'company_name' => 'AquaFlow Fresh & Pure',
+            'company_name' => 'Toko Nova Jaya - AquaFlow Fresh & Pure',
             'company_tagline' => 'Depot Air Minum Higienis & Antar Cepat Langsung ke Rumah Anda',
             'company_phone' => '0881-0261-46848',
             'company_whatsapp' => '62881026146848',
-            'company_address' => 'Jl. Raya Gubeng No. 45, Gubeng, Kota Surabaya, Jawa Timur 60281',
+            'company_address' => 'Jl. Bratang Gede VI H No. 130, Kelurahan Ngagelrejo, Kecamatan Wonokromo, Kota Surabaya, Jawa Timur 60245',
             'company_email' => 'support@aquaflowdelivery.com',
             'bank_name' => 'BCA',
             'bank_account_number' => '1234-5678-90',
             'bank_account_name' => 'PT AQUAFLOW FRESH INDONESIA',
             'business_hours' => 'Senin - Minggu: 07:00 - 20:00 WIB',
-            'store_latitude' => '-7.2655',
-            'store_longitude' => '112.7480',
+            'store_latitude' => '-7.3005',
+            'store_longitude' => '112.7525',
             'min_order_amount' => '15000',
         ];
 
@@ -478,16 +478,16 @@ class DatabaseSeeder extends Seeder
             'driver_id' => $admin->id,
             'status' => 'in_transit',
             'started_at' => now()->subMinutes(12),
-            'driver_notes' => 'Sedang dalam perjalanan melintasi Jl. Raya Gubeng & Kertajaya',
+            'driver_notes' => 'Sedang dalam perjalanan melintasi Jl. Bratang Gede & Ngagel',
         ]);
 
-        // Seed realistic GPS path moving from Depot (-7.2655, 112.7480) toward customer (-7.2755, 112.7550) in Surabaya
+        // Seed realistic GPS path moving from Depot Toko Nova Jaya (-7.3005, 112.7525) toward customer in Surabaya
         $routePoints = [
-            ['-7.265500', '112.748000', 12],
-            ['-7.267800', '112.749500', 9],
-            ['-7.270500', '112.751200', 6],
-            ['-7.273000', '112.753200', 3],
-            ['-7.275000', '112.754500', 1],
+            ['-7.300500', '112.752500', 12],
+            ['-7.298000', '112.753200', 9],
+            ['-7.295000', '112.753800', 6],
+            ['-7.288000', '112.754200', 3],
+            ['-7.275500', '112.755000', 1],
         ];
 
         foreach ($routePoints as $pt) {

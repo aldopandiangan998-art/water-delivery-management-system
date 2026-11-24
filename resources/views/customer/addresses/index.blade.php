@@ -140,16 +140,16 @@
                            class="w-full text-xs border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-cyan-500">
                 </div>
 
-                <!-- Hidden or Optional Coordinates (Default to Kota Surabaya) -->
+                <!-- Hidden or Optional Coordinates (Default to Toko Nova Jaya Bratang Gede) -->
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Latitude</label>
-                        <input type="number" step="any" name="latitude" value="-7.2655"
+                        <input type="number" step="any" name="latitude" value="-7.3005"
                                class="w-full text-xs border border-slate-200 rounded-xl p-2 bg-slate-50 text-slate-600">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-500 mb-1">Longitude</label>
-                        <input type="number" step="any" name="longitude" value="112.7480"
+                        <input type="number" step="any" name="longitude" value="112.7525"
                                class="w-full text-xs border border-slate-200 rounded-xl p-2 bg-slate-50 text-slate-600">
                     </div>
                 </div>

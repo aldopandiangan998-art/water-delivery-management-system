@@ -99,9 +99,9 @@ function liveTracking(config) {
         initMap() {
             if (!window.L) return;
 
-            // Initialize Leaflet map (Area Kota Surabaya)
-            const centerLat = this.customerLat || -7.2655;
-            const centerLng = this.customerLng || 112.7480;
+            // Initialize Leaflet map (Area Kota Surabaya - Toko Nova Jaya Bratang Gede)
+            const centerLat = this.customerLat || -7.3005;
+            const centerLng = this.customerLng || 112.7525;
 
             const surabayaBounds = L.latLngBounds(
                 L.latLng(-7.3800, 112.5800),
