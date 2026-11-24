@@ -185,4 +185,49 @@ class DeliveryAndTrackingTest extends TestCase
             'delivery_id' => $this->delivery->id,
         ]);
     }
+
+    public function test_admin_can_update_depot_location(): void
+    {
+        $this->actingAs($this->admin);
+
+        $response = $this->postJson(route('admin.deliveries.update-depot'), [
+            'latitude' => -7.2950273,
+            'longitude' => 112.7537136,
+            'address' => 'Jl. Bratang Gede VI H No. 130, Ngagelrejo, Wonokromo, Surabaya',
+        ]);
+
+        $response->assertOk()
+            ->assertJson([
+                'success' => true,
+                'latitude' => -7.2950273,
+                'longitude' => 112.7537136,
+            ]);
+
+        $this->assertEquals('-7.2950273', \App\Models\BusinessSetting::get('store_latitude'));
+        $this->assertEquals('112.7537136', \App\Models\BusinessSetting::get('store_longitude'));
+    }
+
+    public function test_admin_can_search_geocode_endpoint(): void
+    {
+        $this->actingAs($this->admin);
+
+        \Illuminate\Support\Facades\Http::fake([
+            'nominatim.openstreetmap.org/*' => \Illuminate\Support\Facades\Http::response([
+                [
+                    'place_id' => 12345,
+                    'lat' => '-7.2950273',
+                    'lon' => '112.7537136',
+                    'display_name' => 'Jalan Bratang Gede VI, Ngagelrejo, Wonokromo, Surabaya',
+                ]
+            ], 200),
+        ]);
+
+        $response = $this->getJson(route('admin.deliveries.geocode', ['q' => 'Bratang Gede']));
+
+        $response->assertOk()
+            ->assertJsonFragment([
+                'lat' => '-7.2950273',
+                'lon' => '112.7537136',
+            ]);
+    }
 }

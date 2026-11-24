@@ -52,8 +52,8 @@ class AddressController extends Controller
         $serviceAreas = ServiceArea::where('is_active', true)->orderBy('name')->get();
         $selectedUserId = $request->query('user_id');
 
-        $depotLat = (float) BusinessSetting::get('store_latitude', -7.3005);
-        $depotLng = (float) BusinessSetting::get('store_longitude', 112.7525);
+        $depotLat = (float) BusinessSetting::get('store_latitude', -7.2950273);
+        $depotLng = (float) BusinessSetting::get('store_longitude', 112.7537136);
 
         return view('admin.addresses.create', compact('customers', 'serviceAreas', 'selectedUserId', 'depotLat', 'depotLng'));
     }
@@ -110,8 +110,8 @@ class AddressController extends Controller
         $customers = User::where('role', 'customer')->orderBy('name')->get();
         $serviceAreas = ServiceArea::where('is_active', true)->orderBy('name')->get();
 
-        $depotLat = (float) BusinessSetting::get('store_latitude', -7.3005);
-        $depotLng = (float) BusinessSetting::get('store_longitude', 112.7525);
+        $depotLat = (float) BusinessSetting::get('store_latitude', -7.2950273);
+        $depotLng = (float) BusinessSetting::get('store_longitude', 112.7537136);
 
         return view('admin.addresses.edit', compact('address', 'customers', 'serviceAreas', 'depotLat', 'depotLng'));
     }

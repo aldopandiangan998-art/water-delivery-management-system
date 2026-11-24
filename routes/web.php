@@ -83,6 +83,8 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
 
     Route::get('/deliveries', [AdminDeliveryController::class, 'index'])->name('deliveries.index');
     Route::get('/deliveries/map', [AdminDeliveryController::class, 'map'])->name('deliveries.map');
+    Route::get('/deliveries/geocode', [AdminDeliveryController::class, 'geocode'])->name('deliveries.geocode');
+    Route::post('/deliveries/update-depot', [AdminDeliveryController::class, 'updateDepotLocation'])->name('deliveries.update-depot');
     Route::get('/deliveries/{delivery}', [AdminDeliveryController::class, 'show'])->name('deliveries.show');
     Route::post('/deliveries/{delivery}/start', [AdminDeliveryController::class, 'start'])->name('deliveries.start');
     Route::post('/deliveries/{delivery}/arrive', [AdminDeliveryController::class, 'arrive'])->name('deliveries.arrive');

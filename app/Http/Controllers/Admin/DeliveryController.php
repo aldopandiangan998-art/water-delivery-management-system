@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 
 class DeliveryController extends Controller
 {
@@ -247,11 +248,62 @@ class DeliveryController extends Controller
             ->with(['order.address', 'driver', 'latestLocation'])
             ->get();
 
-        $depotLat = (float) BusinessSetting::get('store_latitude', -7.3005);
-        $depotLng = (float) BusinessSetting::get('store_longitude', 112.7525);
+        $depotLat = (float) BusinessSetting::get('store_latitude', -7.2950273);
+        $depotLng = (float) BusinessSetting::get('store_longitude', 112.7537136);
         $companyName = BusinessSetting::get('company_name', 'Toko Nova Jaya - AquaFlow');
+        $companyAddress = BusinessSetting::get('company_address', 'Jl. Bratang Gede VI H No. 130, Kelurahan Ngagelrejo, Kecamatan Wonokromo, Kota Surabaya, Jawa Timur 60245');
 
-        return view('admin.deliveries.map', compact('activeDeliveries', 'depotLat', 'depotLng', 'companyName'));
+        return view('admin.deliveries.map', compact('activeDeliveries', 'depotLat', 'depotLng', 'companyName', 'companyAddress'));
+    }
+
+    public function geocode(Request $request)
+    {
+        $query = trim((string) $request->query('q', ''));
+        if (empty($query)) {
+            return response()->json([]);
+        }
+
+        try {
+            $searchQuery = str_contains(strtolower($query), 'surabaya') ? $query : ($query . ' Surabaya');
+            $response = Http::withHeaders([
+                'User-Agent' => 'AquaFlow-WaterDeliveryApp/1.0 (admin@aquaflow.local)'
+            ])->timeout(6)->get('https://nominatim.openstreetmap.org/search', [
+                'format' => 'json',
+                'q' => $searchQuery,
+                'limit' => 6,
+                'addressdetails' => 1,
+            ]);
+
+            return response()->json($response->json());
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Gagal mengambil data dari Maps API',
+                'details' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function updateDepotLocation(Request $request)
+    {
+        $validated = $request->validate([
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
+            'address' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        BusinessSetting::set('store_latitude', (string) $validated['latitude']);
+        BusinessSetting::set('store_longitude', (string) $validated['longitude']);
+        if (!empty($validated['address'])) {
+            BusinessSetting::set('company_address', $validated['address']);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Titik lokasi Toko Nova Jaya berhasil diperbarui secara permanen!',
+            'latitude' => (float) $validated['latitude'],
+            'longitude' => (float) $validated['longitude'],
+            'address' => $validated['address'] ?? null,
+        ]);
     }
 
     public function apiLiveDrivers()
