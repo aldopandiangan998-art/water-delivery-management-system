@@ -163,12 +163,6 @@
                     </span>
                 </a>
 
-                <!-- WhatsApp CS Support -->
-                <a href="https://wa.me/{{ $cleanWhatsapp }}?text=Halo%20Admin%20AquaFlow,%20saya%20pelanggan%20mau%20tanya%20pesanan" target="_blank"
-                   class="flex items-center px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-emerald-400 transition duration-150">
-                    <i class="fa-brands fa-whatsapp w-5 mr-3 text-center text-sm text-emerald-400"></i>
-                    <span>Hubungi CS Depot</span>
-                </a>
 
             </div>
 
