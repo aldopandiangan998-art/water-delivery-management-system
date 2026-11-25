@@ -2,6 +2,13 @@
 
 @section('title', 'Lacak Pengantaran Live - #' . $order->order_number)
 
+@section('breadcrumbs')
+    <x-breadcrumbs :items="[
+        ['title' => __('Riwayat Pesanan'), 'url' => route('customer.orders.index')],
+        ['title' => __('Lacak Kurir #') . $order->order_number]
+    ]" />
+@endsection
+
 @push('styles')
 <!-- Leaflet CSS & JS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />

@@ -5,16 +5,28 @@
 @php
     $currentRoute = request()->route() ? request()->route()->getName() : '';
     $user = auth()->user();
-    $roleName = ($user && $user->role === 'super_admin') ? __('Super Admin') : __('Admin');
+    
+    // Determine if customer context or admin context
+    $isCustomer = str_starts_with($currentRoute, 'customer.') || ($user && $user->role === 'customer');
 
-    // Default breadcrumb items list starting from Admin Dashboard root
-    $computedItems = [
-        [
-            'title' => $roleName,
-            'url' => route('admin.dashboard'),
-            'icon' => ($user && $user->role === 'super_admin') ? 'fa-solid fa-shield-virus' : 'fa-solid fa-shield-halved',
-        ]
-    ];
+    if ($isCustomer) {
+        $computedItems = [
+            [
+                'title' => __('Beranda Member'),
+                'url' => route('customer.dashboard'),
+                'icon' => 'fa-solid fa-house',
+            ]
+        ];
+    } else {
+        $roleName = ($user && $user->role === 'super_admin') ? __('Super Admin') : __('Admin');
+        $computedItems = [
+            [
+                'title' => $roleName,
+                'url' => route('admin.dashboard'),
+                'icon' => ($user && $user->role === 'super_admin') ? 'fa-solid fa-shield-virus' : 'fa-solid fa-shield-halved',
+            ]
+        ];
+    }
 
     // If explicit items were passed as props, use them
     if (!empty($items)) {
@@ -24,6 +36,7 @@
     } else {
         // Auto-detect based on current route
         switch ($currentRoute) {
+            // ADMIN ROUTES
             case 'admin.dashboard':
                 $computedItems[] = ['title' => __('Dashboard')];
                 break;
@@ -100,11 +113,46 @@
                 $computedItems[] = ['title' => __('Buku Alamat Pelanggan')];
                 break;
 
+            // CUSTOMER ROUTES
+            case 'customer.dashboard':
+                $computedItems[] = ['title' => __('Dashboard')];
+                break;
+
+            case 'customer.orders.index':
+                $computedItems[] = ['title' => __('Riwayat Pesanan Saya')];
+                break;
+
+            case 'customer.orders.create':
+                $computedItems[] = ['title' => __('Riwayat Pesanan'), 'url' => route('customer.orders.index')];
+                $computedItems[] = ['title' => __('Pesan Air Sekarang')];
+                break;
+
+            case 'customer.orders.show':
+                $computedItems[] = ['title' => __('Riwayat Pesanan'), 'url' => route('customer.orders.index')];
+                $computedItems[] = ['title' => __('Rincian Pesanan')];
+                break;
+
+            case 'customer.orders.track':
+                $computedItems[] = ['title' => __('Riwayat Pesanan'), 'url' => route('customer.orders.index')];
+                $computedItems[] = ['title' => __('Lacak Pengantaran Live')];
+                break;
+
+            case 'customer.addresses.index':
+                $computedItems[] = ['title' => __('Buku Alamat Pengantaran')];
+                break;
+
+            case 'customer.profile':
+                $computedItems[] = ['title' => __('Pengaturan Profil & Akun')];
+                break;
+
+            case 'customer.store-profile':
+                $computedItems[] = ['title' => __('Profil & Lokasi Toko')];
+                break;
+
             default:
                 // General fallback parser based on URI segments
                 $segments = request()->segments();
-                // Remove first 'admin' segment since it's already in root
-                if (!empty($segments) && $segments[0] === 'admin') {
+                if (!empty($segments) && in_array($segments[0], ['admin', 'customer'])) {
                     array_shift($segments);
                 }
                 foreach ($segments as $index => $seg) {
