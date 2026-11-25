@@ -9,6 +9,23 @@
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Single Source of Truth for Configurable Primary Color (AquaFlow Ocean Cyan) */
+    --color-primary: #0891b2;
+    --color-primary-hover: #0e7490;
+    --color-primary-focus: #155e75;
+    --color-primary-light: #ecfeff;
+    --color-primary-content: #ffffff;
+
+    --color-secondary: #0284c7;
+    --color-accent: #06b6d4;
+
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.5rem;
+    --radius-3xl: 2rem;
 }
 
 /* ==========================================================================
