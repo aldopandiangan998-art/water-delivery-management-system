@@ -98,14 +98,11 @@
                         </div>
                         <div>
                             <div class="flex items-center space-x-2">
-                                <h2 class="text-base font-black tracking-tight">Pembayaran QRIS Realtime Otomatis</h2>
+                                <h2 class="text-base font-black tracking-tight">QRIS DANA Bisnis (Doppnnstore)</h2>
                                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400 text-slate-950 animate-pulse">Auto-Detect Realtime</span>
                             </div>
                             <p class="text-xs text-teal-100">
-                                @if ($order->tripay_reference)
-                                    Ref Gateway: <b>{{ $order->tripay_reference }}</b> &bull;
-                                @endif
-                                Merchant: <b>Toko Nova Jaya (Doppnnstore)</b>
+                                Merchant: <b>Doppnnstore</b> &bull; NMID: <b>ID1025464152988</b>
                             </p>
                         </div>
                     </div>
@@ -119,7 +116,7 @@
                 <div class="bg-emerald-50 border-b border-emerald-200 px-5 py-2.5 flex items-center justify-between text-xs text-emerald-900 font-medium space-x-2">
                     <div class="flex items-center space-x-2">
                         <i class="fa-solid fa-bolt text-emerald-600 text-sm shrink-0"></i>
-                        <span><b>Deteksi Otomatis Aktif:</b> Cukup scan barcode dengan m-Banking / E-Wallet Anda. Begitu pembayaran selesai, sistem otomatis mengubah pesanan menjadi <b>LUNAS</b> tanpa perlu admin klik manual.</span>
+                        <span><b>Deteksi Otomatis Aktif:</b> Cukup scan barcode dengan m-Banking / E-Wallet Anda. Begitu pembayaran masuk ke DANA Bisnis toko, sistem otomatis mengubah pesanan menjadi <b>LUNAS</b> tanpa pelanggan dan admin perlu klik apa pun.</span>
                     </div>
                 </div>
 
@@ -128,7 +125,7 @@
                     <!-- Left: QR Code Display -->
                     <div class="flex flex-col items-center justify-center bg-slate-50 p-5 rounded-2xl border border-slate-200">
                         <div class="relative group cursor-pointer" @click="modalOpen = true">
-                            <img src="{{ $order->qris_qr_url ?: asset('images/qris.jpg') }}" alt="QRIS Doppnnstore" 
+                            <img src="{{ \App\Services\TripayService::isConfigured() && $order->qris_qr_url ? $order->qris_qr_url : asset('images/qris.jpg') }}" alt="QRIS Doppnnstore" 
                                  class="w-64 max-w-full h-auto rounded-xl shadow-md border-2 border-white object-contain bg-white p-2">
                             <div class="absolute inset-0 bg-black/30 rounded-xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold space-x-1">
                                 <i class="fa-solid fa-magnifying-glass-plus text-base"></i>

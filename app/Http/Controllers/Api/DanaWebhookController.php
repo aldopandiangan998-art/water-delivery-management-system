@@ -160,7 +160,9 @@ class DanaWebhookController extends Controller
         }
 
         // Parse from notification text or body
-        $text = $request->input('text')
+        $text = $request->input('notification_text')
+            ?: $request->input('notification_title')
+            ?: $request->input('text')
             ?: $request->input('message')
             ?: $request->input('title')
             ?: $request->input('body')
