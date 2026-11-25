@@ -57,112 +57,175 @@
         $cleanWhatsapp = preg_replace('/[^0-9]/', '', $companyWhatsapp);
     @endphp
 
+    <!-- Mobile Backdrop Overlay -->
+    <div x-show="sidebarOpen" 
+         @click="sidebarOpen = false" 
+         x-cloak
+         class="md:hidden fixed inset-0 z-30 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300">
+    </div>
+
     <!-- DEDICATED LEFT SIDEBAR NAVIGATION FOR CUSTOMER (Non-blocking & Independently Scrollable) -->
-    <aside class="fixed inset-y-0 left-0 z-40 w-64 h-screen max-h-screen bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 shadow-2xl transition-all duration-300 ease-in-out"
-           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+    <aside class="fixed inset-y-0 left-0 z-40 h-screen max-h-screen bg-slate-900 text-slate-300 flex flex-col border-r border-slate-800 shadow-2xl transition-all duration-300 ease-in-out"
+           :class="sidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full md:translate-x-0 md:w-16'">
 
         <!-- Sidebar Top: Brand & Member Status -->
-        <div class="h-16 flex items-center justify-between px-5 bg-slate-950 border-b border-slate-800 shrink-0">
-            <a href="{{ route('customer.dashboard') }}" class="flex items-center space-x-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-md">
-                    <i class="fa-solid fa-droplet text-lg"></i>
+        <div class="h-16 flex items-center border-b border-slate-800 shrink-0 px-3 transition-all duration-300 bg-slate-950"
+             :class="sidebarOpen ? 'justify-between' : 'justify-center'">
+            <a href="{{ route('customer.dashboard') }}" 
+               x-show="sidebarOpen"
+               class="flex items-center space-x-2.5 overflow-hidden group">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-md shrink-0 group-hover:scale-105 transition-transform duration-200">
+                    <i class="fa-solid fa-droplet text-base"></i>
                 </div>
-                <div>
-                    <div class="text-base font-black text-white tracking-tight flex items-center">
+                <div class="overflow-hidden">
+                    <div class="text-sm font-black text-white tracking-tight flex items-center whitespace-nowrap">
                         <span>Aqua<span class="text-cyan-400">Flow</span></span>
-                        <span class="ml-2 px-1.5 py-0.2 rounded text-[9px] font-black uppercase tracking-wider bg-cyan-950 text-cyan-300 border border-cyan-800">
+                        <span class="ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider bg-cyan-950 text-cyan-300 border border-cyan-800">
                             Member
                         </span>
                     </div>
-                    <span class="text-[10px] flex items-center font-semibold text-emerald-400 mt-0.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5"></span>
-                        {{ __('Pelanggan Terverifikasi') }}
+                    <span class="text-[9px] flex items-center font-semibold text-emerald-400 mt-0.5 truncate whitespace-nowrap">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1 shrink-0"></span>
+                        {{ __('Pelanggan') }}
                     </span>
                 </div>
             </a>
 
-            <!-- Mobile Close Button -->
-            <button type="button" @click="sidebarOpen = false" class="md:hidden text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition" title="{{ __('Tutup Navigasi') }}">
-                <i class="fa-solid fa-xmark text-lg"></i>
+            <!-- Toggle Button (Inside sidebar navigation) -->
+            <button type="button" @click="sidebarOpen = !sidebarOpen" 
+                    class="text-slate-300 hover:text-white p-2 rounded-xl hover:bg-slate-800 transition cursor-pointer flex items-center justify-center shrink-0" 
+                    :title="sidebarOpen ? '{{ __('Tutup / Perkecil Navigasi') }}' : '{{ __('Buka / Perlebar Navigasi') }}'">
+                <i class="fa-solid fa-bars-staggered text-base"></i>
             </button>
         </div>
 
 
         <!-- Sidebar Navigation Menu Links (Independently Scrollable) -->
-        <nav class="flex-1 min-h-0 px-3 py-4 space-y-6 overflow-y-auto overscroll-contain custom-sidebar-scroll text-xs font-semibold">
+        <nav class="flex-1 min-h-0 py-4 space-y-5 overflow-y-auto overscroll-contain custom-sidebar-scroll text-xs font-semibold transition-all duration-300"
+             :class="sidebarOpen ? 'px-3' : 'px-2'">
 
             <!-- Group 1: Layanan Pesanan -->
             <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                    {{ __('Layanan Pesanan') }}
+                <div class="pb-1 flex items-center" :class="sidebarOpen ? 'px-3 justify-between' : 'justify-center'">
+                    <span x-show="sidebarOpen" class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 whitespace-nowrap">{{ __('Layanan Pesanan') }}</span>
+                    <span class="h-px bg-slate-800" :class="sidebarOpen ? 'w-8' : 'w-6 my-1'"></span>
                 </div>
 
                 <!-- Dashboard -->
+                @php $isActive = request()->routeIs('customer.dashboard'); @endphp
                 <a href="{{ route('customer.dashboard') }}" 
-                   class="flex items-center px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.dashboard') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <i class="fa-solid fa-house w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.dashboard') ? 'text-white' : 'text-cyan-400' }}"></i>
-                    <span>{{ __('Dashboard Saya') }}</span>
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Dashboard Saya') }}">
+                    @if ($isActive)
+                        <span class="absolute left-0 top-2 bottom-2 w-1 bg-white rounded-r-full"></span>
+                    @endif
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? 'bg-white/10 text-white' : 'text-cyan-400 group-hover:text-cyan-300 group-hover:bg-cyan-500/10' }}"
+                         :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
+                        <i class="fa-solid fa-house text-sm"></i>
+                    </div>
+                    <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Dashboard Saya') }}</span>
                 </a>
 
                 <!-- Order Water -->
+                @php $isActive = request()->routeIs('customer.orders.create'); @endphp
                 <a href="{{ route('customer.orders.create') }}" 
-                   class="flex items-center justify-between px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.orders.create') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <div class="flex items-center">
-                        <i class="fa-solid fa-cart-plus w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.orders.create') ? 'text-white' : 'text-blue-400' }}"></i>
-                        <span>{{ __('Pesan Air Galon') }}</span>
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Pesan Air Galon') }}">
+                    @if ($isActive)
+                        <span class="absolute left-0 top-2 bottom-2 w-1 bg-white rounded-r-full"></span>
+                    @endif
+                    <div class="flex items-center min-w-0">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? 'bg-white/10 text-white' : 'text-blue-400 group-hover:text-blue-300 group-hover:bg-blue-500/10' }}"
+                             :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
+                            <i class="fa-solid fa-cart-plus text-sm"></i>
+                        </div>
+                        <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Pesan Air Galon') }}</span>
                     </div>
-                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-cyan-500 text-white shadow-2xs">
+                    <span x-show="sidebarOpen" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-cyan-500 text-white shadow-2xs whitespace-nowrap">
                         {{ __('Pesan Cepat') }}
                     </span>
                 </a>
 
                 <!-- Orders History & Tracking -->
+                @php $isActive = request()->routeIs('customer.orders.index') || request()->routeIs('customer.orders.show') || request()->routeIs('customer.orders.track'); @endphp
                 <a href="{{ route('customer.orders.index') }}" 
-                   class="flex items-center justify-between px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.orders.index') || request()->routeIs('customer.orders.show') || request()->routeIs('customer.orders.track') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <div class="flex items-center">
-                        <i class="fa-solid fa-box-archive w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.orders.index') || request()->routeIs('customer.orders.show') || request()->routeIs('customer.orders.track') ? 'text-white' : 'text-emerald-400' }}"></i>
-                        <span>{{ __('Pesanan Saya') }}</span>
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Pesanan Saya') }}">
+                    @if ($isActive)
+                        <span class="absolute left-0 top-2 bottom-2 w-1 bg-white rounded-r-full"></span>
+                    @endif
+                    <div class="flex items-center min-w-0">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 relative {{ $isActive ? 'bg-white/10 text-white' : 'text-emerald-400 group-hover:text-emerald-300 group-hover:bg-emerald-500/10' }}"
+                             :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
+                            <i class="fa-solid fa-box-archive text-sm"></i>
+                            @if ($activeCustomerOrdersCount > 0)
+                                <span x-show="!sidebarOpen" class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse border border-slate-900"></span>
+                            @endif
+                        </div>
+                        <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Pesanan Saya') }}</span>
                     </div>
                     @if ($activeCustomerOrdersCount > 0)
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 animate-pulse">
+                        <span x-show="sidebarOpen" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 animate-pulse whitespace-nowrap">
                             {{ $activeCustomerOrdersCount }} {{ __('Aktif') }}
                         </span>
                     @endif
                 </a>
 
                 <!-- Address Book -->
+                @php $isActive = request()->routeIs('customer.addresses.*'); @endphp
                 <a href="{{ route('customer.addresses.index') }}" 
-                   class="flex items-center px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.addresses.*') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <i class="fa-solid fa-location-dot w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.addresses.*') ? 'text-white' : 'text-purple-400' }}"></i>
-                    <span>{{ __('Alamat Pengantaran') }}</span>
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Alamat Pengantaran') }}">
+                    @if ($isActive)
+                        <span class="absolute left-0 top-2 bottom-2 w-1 bg-white rounded-r-full"></span>
+                    @endif
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? 'bg-white/10 text-white' : 'text-purple-400 group-hover:text-purple-300 group-hover:bg-purple-500/10' }}"
+                         :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
+                        <i class="fa-solid fa-location-dot text-sm"></i>
+                    </div>
+                    <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Alamat Pengantaran') }}</span>
                 </a>
             </div>
 
             <!-- Group 2: Akun & Bantuan -->
             <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                    {{ __('Informasi & Bantuan') }}
+                <div class="pb-1 flex items-center" :class="sidebarOpen ? 'px-3 justify-between' : 'justify-center'">
+                    <span x-show="sidebarOpen" class="text-[10px] font-extrabold uppercase tracking-widest text-slate-400 whitespace-nowrap">{{ __('Informasi & Toko') }}</span>
+                    <span class="h-px bg-slate-800" :class="sidebarOpen ? 'w-8' : 'w-6 my-1'"></span>
                 </div>
 
                 <!-- Store Profile & Map -->
+                @php $isActive = request()->routeIs('customer.store-profile'); @endphp
                 <a href="{{ route('customer.store-profile') }}" 
-                   class="flex items-center justify-between px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.store-profile') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <div class="flex items-center">
-                        <i class="fa-solid fa-store w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.store-profile') ? 'text-white' : 'text-blue-400' }}"></i>
-                        <span>{{ __('Profil & Lokasi Toko') }}</span>
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Profil & Lokasi Toko') }}">
+                    @if ($isActive)
+                        <span class="absolute left-0 top-2 bottom-2 w-1 bg-white rounded-r-full"></span>
+                    @endif
+                    <div class="flex items-center min-w-0">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? 'bg-white/10 text-white' : 'text-blue-400 group-hover:text-blue-300 group-hover:bg-blue-500/10' }}"
+                             :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
+                            <i class="fa-solid fa-store text-sm"></i>
+                        </div>
+                        <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Profil & Lokasi Toko') }}</span>
                     </div>
-                    <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                    <span x-show="sidebarOpen" class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30 whitespace-nowrap">
                         Maps
                     </span>
                 </a>
-
-
             </div>
 
         </nav>
 
         <!-- Sidebar Bottom: Customer Profile & Dropup Menu with Logout -->
-        <div x-data="{ userMenuOpen: false }" class="relative p-3 bg-slate-950 border-t border-slate-800 shrink-0">
+        <div x-data="{ userMenuOpen: false }" 
+             class="relative bg-slate-950 border-t border-slate-800 shrink-0 transition-all duration-300"
+             :class="sidebarOpen ? 'p-3' : 'p-2 flex justify-center'">
             <!-- Dropup Floating Menu -->
             <div x-show="userMenuOpen"
                  x-cloak
@@ -173,7 +236,8 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                  x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-                 class="absolute bottom-full left-2 right-2 mb-2 bg-slate-900 border border-slate-700/90 rounded-2xl shadow-2xl p-2 z-50 overflow-hidden"
+                 class="absolute bottom-full mb-2 bg-slate-900 border border-slate-700/90 rounded-2xl shadow-2xl p-2 z-50 overflow-hidden"
+                 :class="sidebarOpen ? 'left-2 right-2' : 'left-2 w-60'"
                  style="display: none;">
                 
                 <!-- Account Summary -->
@@ -214,22 +278,24 @@
             <!-- Profile Trigger Button -->
             <button type="button" 
                     @click="userMenuOpen = !userMenuOpen"
-                    class="w-full flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-900 transition text-left group cursor-pointer">
-                <div class="flex items-center space-x-2.5 overflow-hidden">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white font-black flex items-center justify-center text-xs shrink-0 shadow-sm group-hover:scale-105 transition-transform">
+                    class="flex items-center p-1.5 rounded-xl hover:bg-slate-900 transition text-left group cursor-pointer border border-transparent"
+                    :class="sidebarOpen ? 'w-full justify-between' : 'justify-center'"
+                    title="{{ Auth::user()->name }}">
+                <div class="flex items-center overflow-hidden" :class="sidebarOpen ? 'space-x-2.5' : ''">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-600 to-blue-600 text-white font-black flex items-center justify-center text-xs shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
-                    <div class="overflow-hidden">
+                    <div class="overflow-hidden" x-show="sidebarOpen">
                         <div class="text-xs font-bold text-white truncate group-hover:text-cyan-300 transition">
                             {{ Auth::user()->name }}
                         </div>
-                        <div class="text-[10px] text-cyan-400 uppercase font-semibold tracking-wider">
+                        <div class="text-[10px] text-cyan-400 uppercase font-semibold tracking-wider truncate">
                             {{ str_replace('_', ' ', Auth::user()->profile?->customer_type ?? 'Household') }}
                         </div>
                     </div>
                 </div>
 
-                <div class="text-slate-400 group-hover:text-white transition p-1 shrink-0">
+                <div x-show="sidebarOpen" class="text-slate-400 group-hover:text-white transition p-1 shrink-0">
                     <i class="fa-solid fa-chevron-up text-xs transition-transform duration-200" :class="{'rotate-180': userMenuOpen}"></i>
                 </div>
             </button>
@@ -239,16 +305,16 @@
 
     <!-- MAIN RIGHT CONTENT WRAPPER (Smooth Responsive Transition, Non-blocking) -->
     <div class="flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out"
-         :class="sidebarOpen ? 'md:pl-64' : 'md:pl-0'">
+         :class="sidebarOpen ? 'md:pl-64' : 'md:pl-16'">
 
         <!-- Top Header Bar -->
         <header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-2xs">
             <div class="flex items-center space-x-3">
-                <!-- Sidebar Toggle Button (Non-blocking, Works on Desktop & Mobile) -->
+                <!-- Mobile only toggle button if screen is small so mobile users can easily open -->
                 <button type="button" 
                         @click="sidebarOpen = !sidebarOpen" 
-                        class="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 flex items-center justify-center cursor-pointer shadow-2xs"
-                        title="{{ __('Buka / Tutup Navigasi Sidebar') }}">
+                        class="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition cursor-pointer"
+                        title="{{ __('Buka / Tutup Navigasi') }}">
                     <i class="fa-solid fa-bars-staggered text-base"></i>
                 </button>
 

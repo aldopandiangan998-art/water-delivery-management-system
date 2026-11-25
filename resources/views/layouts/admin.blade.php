@@ -155,7 +155,8 @@
                 @php $isActive = request()->routeIs('admin.dashboard'); @endphp
                 <a href="{{ route('admin.dashboard') }}" 
                    class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Ringkasan Bisnis') }}">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
@@ -170,7 +171,8 @@
                 @php $isActive = request()->routeIs('admin.orders.*'); @endphp
                 <a href="{{ route('admin.orders.index') }}" 
                    class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'">
+                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Kelola Pesanan') }}">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
@@ -195,7 +197,8 @@
                 @php $isActive = request()->routeIs('admin.deliveries.index') || request()->routeIs('admin.deliveries.show'); @endphp
                 <a href="{{ route('admin.deliveries.index') }}" 
                    class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'">
+                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Tugas Pengantaran') }}">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
@@ -220,7 +223,8 @@
                 @php $isActive = request()->routeIs('admin.deliveries.map'); @endphp
                 <a href="{{ route('admin.deliveries.map') }}" 
                    class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'">
+                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Peta Radar Real-Time') }}">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
@@ -242,7 +246,8 @@
                 @php $isActive = request()->routeIs('admin.addresses.*'); @endphp
                 <a href="{{ route('admin.addresses.index') }}" 
                    class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Alamat Pelanggan') }}">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
@@ -265,7 +270,8 @@
                 @php $isActive = request()->routeIs('admin.products.*'); @endphp
                 <a href="{{ route('admin.products.index') }}" 
                    class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Produk & Stok Galon') }}">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
@@ -280,7 +286,8 @@
                 @php $isActive = request()->routeIs('admin.service-areas.*'); @endphp
                 <a href="{{ route('admin.service-areas.index') }}" 
                    class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Wilayah & Ongkir') }}">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
@@ -303,7 +310,8 @@
                 @php $isActive = request()->routeIs('admin.finance.*'); @endphp
                 <a href="{{ route('admin.finance.index') }}" 
                    class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Keuangan & Beban') }}">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
@@ -318,7 +326,8 @@
                 @php $isActive = request()->routeIs('admin.reviews.*'); @endphp
                 <a href="{{ route('admin.reviews.index') }}" 
                    class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Ulasan Pelanggan') }}">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
@@ -341,7 +350,8 @@
                 @php $isActive = request()->routeIs('admin.users.*'); @endphp
                 <a href="{{ route('admin.users.index') }}" 
                    class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Manajemen Pengguna') }}">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
@@ -355,7 +365,8 @@
                 <!-- View Public Web -->
                 <a href="{{ route('home') }}" target="_blank"
                    class="group flex items-center rounded-xl {{ $theme['nav_inactive'] }} transition-all duration-200"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'"
+                   title="{{ __('Buka Web Publik') }}">
                     <div class="w-8 h-8 rounded-lg {{ $theme['icon_box_inactive'] }} border border-transparent flex items-center justify-center transition-all duration-200 shrink-0"
                          :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                         <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
@@ -444,6 +455,13 @@
         <!-- Top Header Bar -->
         <header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-2xs">
             <div class="flex items-center space-x-3">
+                <button type="button" 
+                        @click="sidebarOpen = !sidebarOpen" 
+                        class="md:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition cursor-pointer"
+                        title="{{ __('Buka / Tutup Navigasi') }}">
+                    <i class="fa-solid fa-bars-staggered text-base"></i>
+                </button>
+
                 <h1 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center">
                     @yield('page_title', __('Admin Panel'))
                 </h1>
