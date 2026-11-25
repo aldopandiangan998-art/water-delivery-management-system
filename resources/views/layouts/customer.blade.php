@@ -44,7 +44,6 @@
         $activeCustomerOrdersCount = \App\Models\Order::where('user_id', Auth::id())
             ->whereIn('status', ['pending', 'confirmed', 'processing', 'ready_for_delivery'])
             ->count();
-        $gallonDeposit = Auth::user()->profile?->gallon_deposit_balance ?? 0;
         $companyWhatsapp = \App\Models\BusinessSetting::get('company_whatsapp', '62881026146848');
         $cleanWhatsapp = preg_replace('/[^0-9]/', '', $companyWhatsapp);
     @endphp
@@ -79,21 +78,6 @@
             </button>
         </div>
 
-        <!-- Sidebar Customer Saldo Gallon Card -->
-        <div class="p-3 bg-slate-950/40 border-b border-slate-800/80">
-            <div class="p-3 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-850 border border-slate-700/60 shadow-xs">
-                <div class="flex items-center justify-between">
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Titipan Galon Anda</span>
-                    <i class="fa-solid fa-bottle-water text-cyan-400 text-sm"></i>
-                </div>
-                <div class="text-xl font-black text-white mt-1">
-                    {{ $gallonDeposit }} <span class="text-xs font-normal text-slate-400">galon kosong</span>
-                </div>
-                <div class="text-[10px] text-cyan-300 mt-0.5">
-                    Siap ditukar otomatis saat pesan
-                </div>
-            </div>
-        </div>
 
         <!-- Sidebar Navigation Menu Links (Independently Scrollable) -->
         <nav class="flex-1 min-h-0 px-3 py-4 space-y-6 overflow-y-auto overscroll-contain custom-sidebar-scroll text-xs font-semibold">
