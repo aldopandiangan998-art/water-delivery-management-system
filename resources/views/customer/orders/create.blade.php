@@ -33,7 +33,7 @@
     <form method="POST" action="{{ route('customer.orders.store') }}" @submit="handleSubmit">
         @csrf
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <!-- Left col: Address & Products Selection -->
             <div class="lg:col-span-8 space-y-6">
 
@@ -139,13 +139,16 @@
                 </div>
             </div>
 
-            <!-- Right col: Order Summary & Checkout -->
-            <div class="lg:col-span-4 space-y-6">
-                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm sticky top-24 space-y-5">
-                    <h2 class="font-black text-lg text-slate-900 border-b border-slate-100 pb-3">Ringkasan Pesanan</h2>
+            <!-- Right col: Order Summary & Checkout (Sticky Follows Scroll) -->
+            <div class="lg:col-span-4 lg:sticky lg:top-20 z-10">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-md space-y-5 max-h-[calc(100vh-6rem)] overflow-y-auto custom-sidebar-scroll">
+                    <h2 class="font-black text-lg text-slate-900 border-b border-slate-100 pb-3 flex items-center justify-between">
+                        <span>Ringkasan Pesanan</span>
+                        <span class="text-xs font-bold text-cyan-600 bg-cyan-50 px-2 py-0.5 rounded-full border border-cyan-100">Live</span>
+                    </h2>
 
                     <!-- Items breakdown in summary -->
-                    <div class="space-y-2 text-xs">
+                    <div class="space-y-2 text-xs max-h-48 overflow-y-auto custom-sidebar-scroll pr-1">
                         <template x-for="item in cartItems" :key="item.product_id">
                             <div class="flex justify-between items-center py-1 border-b border-slate-50">
                                 <div class="overflow-hidden pr-2">
