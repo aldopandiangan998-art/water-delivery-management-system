@@ -186,64 +186,85 @@
                         </div>
                     </div>
 
-                    <!-- Right: Step by Step Instructions & Confirmation Form -->
+                    <!-- Right: Step by Step Instructions & Auto-Detect Pulse -->
                     <div class="space-y-4">
                         <h3 class="font-extrabold text-sm text-slate-900 flex items-center">
-                            <span class="w-6 h-6 rounded-full bg-teal-600 text-white flex items-center justify-center text-xs mr-2 font-bold">!</span>
-                            Cara Bayar & Konfirmasi:
+                            <span class="w-6 h-6 rounded-full bg-teal-600 text-white flex items-center justify-center text-xs mr-2 font-bold">1</span>
+                            Cara Pembayaran Cepat:
                         </h3>
 
                         <ol class="space-y-2.5 text-xs text-slate-700">
                             <li class="flex items-start">
                                 <span class="font-bold text-teal-700 mr-2 shrink-0">1.</span>
-                                <span>Buka <b>m-Banking</b> (BCA, Mandiri, BRI, BNI) atau <b>E-Wallet</b> (GoPay, OVO, Dana, ShopeePay).</span>
+                                <span>Buka aplikasi <b>m-Banking</b> (BCA, Mandiri, BRI, BNI) atau <b>E-Wallet</b> (GoPay, DANA, OVO, ShopeePay).</span>
                             </li>
                             <li class="flex items-start">
                                 <span class="font-bold text-teal-700 mr-2 shrink-0">2.</span>
-                                <span>Pilih menu <b>Scan / Bayar QRIS</b>, lalu arahkan ke barcode <b>Doppnnstore</b>.</span>
+                                <span>Pilih menu <b>Scan / Bayar QRIS</b>, lalu arahkan kamera ke barcode di samping.</span>
                             </li>
                             <li class="flex items-start">
                                 <span class="font-bold text-teal-700 mr-2 shrink-0">3.</span>
-                                <span>Ketik nominal pas: <b class="text-teal-800 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</b>.</span>
+                                <span>Periksa nama toko <b>Toko Nova Jaya / Doppnnstore</b> dan nominal tagihan pas: <b class="text-teal-800 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</b>.</span>
                             </li>
                             <li class="flex items-start">
                                 <span class="font-bold text-teal-700 mr-2 shrink-0">4.</span>
-                                <span>Setelah transfer berhasil, isi form konfirmasi di bawah ini agar pesanan langsung masuk ke WhatsApp Admin.</span>
+                                <span>Selesaikan pembayaran dengan memasukkan PIN aplikasi Anda.</span>
                             </li>
                         </ol>
 
-                        <!-- FORM KONFIRMASI PEMBAYARAN QRIS -->
-                        <div class="pt-3 border-t border-slate-200">
-                            <form method="POST" action="{{ route('customer.orders.confirm-payment', $order) }}" enctype="multipart/form-data" class="space-y-3 bg-teal-50/60 p-4 rounded-2xl border border-teal-200">
-                                @csrf
-                                <div>
-                                    <label class="block text-xs font-bold text-teal-950 mb-1">
-                                        Upload Bukti Transfer / Screenshot <span class="text-slate-400 font-normal">(Opsional)</span>
-                                    </label>
-                                    <input type="file" name="proof_image" accept="image/*"
-                                           @change="const file = $event.target.files[0]; if (file) { previewUrl = URL.createObjectURL(file) }"
-                                           class="w-full text-xs text-slate-600 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-600 file:text-white hover:file:bg-teal-700 cursor-pointer">
-                                    <template x-if="previewUrl">
-                                        <div class="mt-2">
-                                            <img :src="previewUrl" alt="Preview Bukti" class="h-24 w-auto rounded-lg border border-teal-300 shadow-2xs">
-                                        </div>
-                                    </template>
-                                </div>
+                        <!-- Live Detection Status Box -->
+                        <div class="p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200 text-center space-y-2">
+                            <div class="inline-flex items-center space-x-2 text-emerald-800 font-black text-xs">
+                                <span class="relative flex h-2.5 w-2.5">
+                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                </span>
+                                <span>Sistem Siap Mendeteksi Pembayaran Otomatis</span>
+                            </div>
+                            <p class="text-[11px] text-slate-600 leading-relaxed">
+                                Begitu Anda berhasil membayar di aplikasi bank/e-wallet Anda, sistem gateway akan otomatis memvalidasi dan halaman ini akan <b>langsung berubah hijau menjadi Lunas</b> tanpa Anda perlu klik apa pun.
+                            </p>
+                        </div>
 
-                                <div>
-                                    <label class="block text-xs font-bold text-teal-950 mb-1">
-                                        Nama Pengirim / Catatan <span class="text-slate-400 font-normal">(Contoh: BCA a.n Budi / GoPay)</span>
-                                    </label>
-                                    <input type="text" name="notes" placeholder="Nama rekening atau bank/e-wallet Anda..."
-                                           class="w-full text-xs border border-teal-300 rounded-xl p-2.5 bg-white focus:ring-2 focus:ring-teal-500">
-                                </div>
+                        <!-- Manual Upload Fallback (Optional) -->
+                        <div x-data="{ manualOpen: false }" class="pt-2 border-t border-slate-200">
+                            <button type="button" @click="manualOpen = !manualOpen"
+                                    class="text-[11px] text-slate-500 hover:text-teal-700 font-bold flex items-center justify-between w-full py-1">
+                                <span>Ingin upload bukti transfer manual? (Opsional)</span>
+                                <i class="fa-solid text-[10px]" :class="manualOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+                            </button>
 
-                                <button type="submit" 
-                                        class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2">
-                                    <i class="fa-solid fa-circle-check text-base"></i>
-                                    <span>Saya Sudah Bayar (Konfirmasi & Teruskan ke WA Admin)</span>
-                                </button>
-                            </form>
+                            <div x-show="manualOpen" x-cloak class="mt-2 pt-2">
+                                <form method="POST" action="{{ route('customer.orders.confirm-payment', $order) }}" enctype="multipart/form-data" class="space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+                                    @csrf
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-800 mb-1">
+                                            Upload Screenshot Bukti Transfer
+                                        </label>
+                                        <input type="file" name="proof_image" accept="image/*"
+                                               @change="const file = $event.target.files[0]; if (file) { previewUrl = URL.createObjectURL(file) }"
+                                               class="w-full text-xs text-slate-600 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-600 file:text-white hover:file:bg-teal-700 cursor-pointer">
+                                        <template x-if="previewUrl">
+                                            <div class="mt-2">
+                                                <img :src="previewUrl" alt="Preview Bukti" class="h-20 w-auto rounded-lg border border-teal-300 shadow-2xs">
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-800 mb-1">
+                                            Nama Pengirim / Akun
+                                        </label>
+                                        <input type="text" name="notes" placeholder="Contoh: BCA a.n Budi"
+                                               class="w-full text-xs border border-slate-300 rounded-xl p-2.5 bg-white focus:ring-2 focus:ring-teal-500">
+                                    </div>
+
+                                    <button type="submit" 
+                                            class="w-full py-2.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs shadow-xs transition">
+                                        Kirim Bukti Pembayaran
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
