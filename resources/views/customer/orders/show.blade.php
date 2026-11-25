@@ -149,41 +149,6 @@
                                 <span x-text="copied ? 'Tersalin!' : 'Salin Nominal Rp {{ number_format($order->total_amount, 0, ',', '.') }}'"></span>
                             </button>
                         </div>
-
-                        <!-- Testing Simulator Button -->
-                        <div class="mt-4 w-full pt-3 border-t border-slate-200 text-center">
-                            <button type="button"
-                                    x-data="{ simulating: false }"
-                                    :disabled="simulating"
-                                    @click="
-                                        simulating = true;
-                                        fetch('{{ route('api.webhooks.tripay.simulate', $order) }}', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                            }
-                                        })
-                                        .then(res => res.json())
-                                        .then(data => {
-                                            if (data.success) {
-                                                window.location.reload();
-                                            } else {
-                                                alert(data.message || 'Gagal simulasi');
-                                                simulating = false;
-                                            }
-                                        })
-                                        .catch(() => {
-                                            alert('Terjadi kesalahan koneksi.');
-                                            simulating = false;
-                                        });
-                                    "
-                                    class="w-full py-2 px-3 rounded-xl text-[11px] font-black bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-xs transition flex items-center justify-center space-x-1.5 cursor-pointer">
-                                <i class="fa-solid fa-flask" :class="simulating ? 'animate-spin' : ''"></i>
-                                <span x-text="simulating ? 'Memvalidasi Pembayaran...' : '⚡ Uji Coba: Simulasi Pembayaran QRIS Lunas (Testing)'"></span>
-                            </button>
-                            <p class="text-[10px] text-slate-400 mt-1">Gunakan tombol ini saat ingin menguji alur otomatis tanpa transfer uang asli.</p>
-                        </div>
                     </div>
 
                     <!-- Right: Step by Step Instructions & Auto-Detect Pulse -->
