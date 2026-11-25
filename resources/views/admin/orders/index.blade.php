@@ -1,85 +1,103 @@
 @extends('layouts.admin')
 
-@section('page_title', 'Kelola Pesanan Air Minum')
+@section('page_title', __('Kelola Pesanan Air Minum'))
 
 @section('content')
 <div class="space-y-6">
 
     <!-- Header & Filter Bar -->
-    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+    <x-card class="p-5 sm:p-6 space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-                <h1 class="text-xl font-black text-slate-900 tracking-tight">Daftar Seluruh Pesanan</h1>
-                <p class="text-xs text-slate-500">Kelola konfirmasi, pengantaran, dan pembayaran pesanan pelanggan.</p>
+                <h1 class="text-xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Daftar Seluruh Pesanan') }}</h1>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Kelola konfirmasi, pengantaran, dan status pembayaran pesanan pelanggan.') }}</p>
             </div>
             <div class="flex items-center space-x-2 text-xs">
-                <a href="{{ route('admin.deliveries.map') }}" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition flex items-center shadow-xs">
-                    <i class="fa-solid fa-map-location-dot mr-1.5"></i> Buka Peta Pengantaran
-                </a>
+                <x-button :href="route('admin.deliveries.map')" variant="secondary" size="sm" icon="fa-solid fa-map-location-dot">
+                    {{ __('Buka Peta Pengantaran') }}
+                </x-button>
             </div>
         </div>
 
         <!-- Filter Form -->
-        <form method="GET" action="{{ route('admin.orders.index') }}" class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs pt-2 border-t border-slate-100">
+        <form method="GET" action="{{ route('admin.orders.index') }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs pt-3 border-t border-slate-100 dark:border-slate-800">
             <div>
-                <label class="block text-slate-600 font-bold mb-1">Cari No. Order / Pelanggan</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="ORD-2026... atau Nama" 
-                       class="w-full border border-slate-300 rounded-xl p-2.5">
+                <x-input 
+                    :label="__('Cari No. Order / Pelanggan')" 
+                    name="search" 
+                    icon="fa-solid fa-magnifying-glass"
+                    placeholder="ORD-2026... atau Nama" 
+                    :value="request('search')" 
+                />
             </div>
 
             <div>
-                <label class="block text-slate-600 font-bold mb-1">Status Pesanan</label>
-                <select name="status" class="w-full border border-slate-300 rounded-xl p-2.5 bg-white">
-                    <option value="">Semua Status</option>
-                    <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
-                    <option value="confirmed" {{ request('status') === 'confirmed' ? 'selected' : '' }}>Terkonfirmasi</option>
-                    <option value="processing" {{ request('status') === 'processing' ? 'selected' : '' }}>Diproses</option>
-                    <option value="ready_for_delivery" {{ request('status') === 'ready_for_delivery' ? 'selected' : '' }}>Siap / Sedang Dikirim</option>
-                    <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Selesai</option>
-                    <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
-                </select>
+                @php
+                    $statusOptions = [
+                        '' => __('Semua Status'),
+                        'pending' => __('Menunggu Konfirmasi'),
+                        'confirmed' => __('Terkonfirmasi'),
+                        'processing' => __('Diproses'),
+                        'ready_for_delivery' => __('Siap / Sedang Dikirim'),
+                        'completed' => __('Selesai'),
+                        'cancelled' => __('Dibatalkan'),
+                    ];
+                @endphp
+                <x-select 
+                    :label="__('Status Pesanan')" 
+                    name="status" 
+                    :options="$statusOptions" 
+                    :selected="request('status')" 
+                />
             </div>
 
             <div>
-                <label class="block text-slate-600 font-bold mb-1">Status Pembayaran</label>
-                <select name="payment_status" class="w-full border border-slate-300 rounded-xl p-2.5 bg-white">
-                    <option value="">Semua Pembayaran</option>
-                    <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>Belum Lunas</option>
-                    <option value="paid" {{ request('payment_status') === 'paid' ? 'selected' : '' }}>Lunas</option>
-                </select>
+                @php
+                    $paymentOptions = [
+                        '' => __('Semua Pembayaran'),
+                        'unpaid' => __('Belum Lunas'),
+                        'paid' => __('Lunas'),
+                    ];
+                @endphp
+                <x-select 
+                    :label="__('Status Pembayaran')" 
+                    name="payment_status" 
+                    :options="$paymentOptions" 
+                    :selected="request('payment_status')" 
+                />
             </div>
 
-            <div class="flex items-end space-x-2">
-                <button type="submit" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition">
-                    Filter Data
-                </button>
-                <a href="{{ route('admin.orders.index') }}" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition">
-                    Reset
-                </a>
+            <div class="flex items-end space-x-2 pt-1">
+                <x-button type="submit" variant="primary" class="w-full" icon="fa-solid fa-filter">
+                    {{ __('Filter Data') }}
+                </x-button>
+                <x-button :href="route('admin.orders.index')" variant="secondary" class="shrink-0" title="{{ __('Reset Filter') }}">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </x-button>
             </div>
         </form>
-    </div>
+    </x-card>
 
     <!-- Orders Table -->
-    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+    <x-card class="p-0 overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-200 text-left text-xs">
-                <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
+            <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-800 text-left text-xs">
+                <thead class="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
                     <tr>
-                        <th class="px-5 py-3.5">No. Pesanan & Waktu</th>
-                        <th class="px-5 py-3.5">Penerima & Alamat</th>
-                        <th class="px-5 py-3.5">Rincian Barang</th>
-                        <th class="px-5 py-3.5">Total & Bayar</th>
-                        <th class="px-5 py-3.5">Status Pesanan</th>
-                        <th class="px-5 py-3.5">Pengantaran</th>
-                        <th class="px-5 py-3.5 text-right">Aksi</th>
+                        <th class="px-5 py-3.5">{{ __('No. Pesanan & Waktu') }}</th>
+                        <th class="px-5 py-3.5">{{ __('Penerima & Alamat') }}</th>
+                        <th class="px-5 py-3.5">{{ __('Rincian Barang') }}</th>
+                        <th class="px-5 py-3.5">{{ __('Total & Bayar') }}</th>
+                        <th class="px-5 py-3.5">{{ __('Status Pesanan') }}</th>
+                        <th class="px-5 py-3.5">{{ __('Pengantaran') }}</th>
+                        <th class="px-5 py-3.5 text-right">{{ __('Aksi') }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-100 text-slate-700">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
                     @forelse ($orders as $order)
-                        <tr class="hover:bg-slate-50/80 transition">
-                            <td class="px-5 py-3.5 font-bold text-slate-900 whitespace-nowrap">
-                                <a href="{{ route('admin.orders.show', $order) }}" class="hover:text-cyan-600 font-mono text-sm">
+                        <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
+                            <td class="px-5 py-3.5 font-bold text-slate-900 dark:text-white whitespace-nowrap">
+                                <a href="{{ route('admin.orders.show', $order) }}" class="hover:text-cyan-600 dark:hover:text-cyan-400 font-mono text-sm transition">
                                     {{ $order->order_number }}
                                 </a>
                                 <div class="text-[10px] text-slate-400 font-normal mt-0.5">
@@ -88,63 +106,66 @@
                             </td>
 
                             <td class="px-5 py-3.5">
-                                <div class="font-bold text-slate-800">{{ $order->recipient_name }}</div>
-                                <div class="text-[11px] text-slate-500 truncate max-w-[200px]">{{ $order->delivery_address_text }}</div>
-                                <div class="text-[10px] text-emerald-600 font-semibold">{{ $order->recipient_phone }}</div>
+                                <div class="font-bold text-slate-800 dark:text-slate-200">{{ $order->recipient_name }}</div>
+                                <div class="text-[11px] text-slate-500 dark:text-slate-400 truncate max-w-[200px]">{{ $order->delivery_address_text }}</div>
+                                <div class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold">{{ $order->recipient_phone }}</div>
                             </td>
 
                             <td class="px-5 py-3.5">
                                 @foreach ($order->items as $it)
-                                    <div class="text-slate-800 font-medium">
+                                    <div class="text-slate-800 dark:text-slate-200 font-medium">
                                         {{ $it->quantity }}x {{ $it->product_name }}
                                         @if ($it->is_exchange)
-                                            <span class="text-blue-600 text-[10px] font-semibold">(Tukar Galon)</span>
+                                            <span class="text-blue-600 dark:text-blue-400 text-[10px] font-semibold">({{ __('Tukar Galon') }})</span>
                                         @endif
                                     </div>
                                 @endforeach
                             </td>
 
                             <td class="px-5 py-3.5 whitespace-nowrap">
-                                <div class="font-black text-slate-900 text-sm">
+                                <div class="font-black text-slate-900 dark:text-white text-sm">
                                     Rp {{ number_format($order->total_amount, 0, ',', '.') }}
                                 </div>
                                 <div class="flex items-center space-x-1.5 mt-1 flex-wrap gap-y-1">
-                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border uppercase {{ $order->payment_badge['color'] }}">
-                                        {{ $order->payment_badge['label'] }}
-                                    </span>
-                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded border {{ $order->payment_method_badge['color'] }}">
+                                    <x-badge variant="neutral" size="sm" class="{{ $order->payment_badge['color'] }}">
+                                        {{ __($order->payment_badge['label']) }}
+                                    </x-badge>
+                                    <x-badge variant="neutral" size="sm" class="{{ $order->payment_method_badge['color'] }}">
                                         <i class="fa-solid {{ $order->payment_method_badge['icon'] }} mr-0.5 text-[9px]"></i>
-                                        {{ $order->payment_method_badge['label'] }}
-                                    </span>
+                                        {{ __($order->payment_method_badge['label']) }}
+                                    </x-badge>
                                 </div>
                             </td>
 
                             <td class="px-5 py-3.5 whitespace-nowrap">
-                                <span class="px-2.5 py-1 rounded-full font-bold text-[11px] border {{ $order->status_badge['color'] }}">
-                                    {{ $order->status_badge['label'] }}
-                                </span>
+                                <x-badge variant="neutral" class="{{ $order->status_badge['color'] }}">
+                                    {{ __($order->status_badge['label']) }}
+                                </x-badge>
                             </td>
 
                             <td class="px-5 py-3.5 whitespace-nowrap">
                                 @if ($order->delivery)
-                                    <div class="font-semibold text-slate-800">{{ $order->delivery->delivery_number }}</div>
-                                    <div class="text-[10px] text-slate-500 capitalize">{{ $order->delivery->status_badge['label'] ?? $order->delivery->status }}</div>
+                                    <div class="font-semibold text-slate-800 dark:text-slate-200">{{ $order->delivery->delivery_number }}</div>
+                                    <div class="text-[10px] text-slate-500 dark:text-slate-400 capitalize">{{ __($order->delivery->status_badge['label'] ?? $order->delivery->status) }}</div>
                                 @else
-                                    <span class="text-xs text-slate-400 italic">Belum dibuat</span>
+                                    <span class="text-xs text-slate-400 italic">{{ __('Belum dibuat') }}</span>
                                 @endif
                             </td>
 
                             <td class="px-5 py-3.5 text-right whitespace-nowrap">
-                                <a href="{{ route('admin.orders.show', $order) }}" 
-                                   class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
-                                    Kelola &rarr;
-                                </a>
+                                <x-button :href="route('admin.orders.show', $order)" variant="secondary" size="sm" iconRight="fa-solid fa-arrow-right">
+                                    {{ __('Kelola') }}
+                                </x-button>
                             </td>
                         </tr>
                     @empty
                         <tr>
                             <td colspan="7" class="px-5 py-12 text-center text-slate-400">
-                                Tidak ada data pesanan yang ditemukan.
+                                <x-empty-state 
+                                    icon="fa-regular fa-clipboard" 
+                                    :title="__('Tidak Ada Data Pesanan')" 
+                                    :description="__('Tidak ditemukan pesanan dengan kriteria filter saat ini.')"
+                                />
                             </td>
                         </tr>
                     @endforelse
@@ -152,10 +173,10 @@
             </table>
         </div>
 
-        <div class="p-4 border-t border-slate-100">
+        <div class="p-4 border-t border-slate-100 dark:border-slate-800">
             {{ $orders->links() }}
         </div>
-    </div>
+    </x-card>
 
 </div>
 @endsection
