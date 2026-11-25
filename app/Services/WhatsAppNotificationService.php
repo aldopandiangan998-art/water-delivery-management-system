@@ -72,7 +72,7 @@ class WhatsAppNotificationService
 
         try {
             $endpoint = config('services.fonnte.endpoint', 'https://api.fonnte.com/send');
-            $response = Http::withHeaders([
+            $response = Http::withoutVerifying()->withHeaders([
                 'Authorization' => $token,
             ])->timeout(10)->post($endpoint, [
                 'target' => $cleanPhone,

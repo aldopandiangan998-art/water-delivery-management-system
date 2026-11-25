@@ -92,7 +92,7 @@ class IntegrationController extends Controller
         }
 
         try {
-            $response = \Illuminate\Support\Facades\Http::withHeaders([
+            $response = \Illuminate\Support\Facades\Http::withoutVerifying()->withHeaders([
                 'Authorization' => $token,
             ])->asForm()->timeout(15)->post('https://api.fonnte.com/qr', [
                 'type' => 'qr',
