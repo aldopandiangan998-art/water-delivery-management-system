@@ -6,17 +6,15 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
     <!-- Welcome & Member Profile Banner -->
-    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <x-card class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="flex items-center space-x-4">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-600 via-cyan-500 to-blue-600 text-white flex items-center justify-center font-black text-xl shadow-md shrink-0">
-                {{ strtoupper(substr($user->name, 0, 1)) }}
-            </div>
+            <x-avatar :name="$user->name" size="lg" class="shadow-md" />
             <div>
                 <div class="flex items-center space-x-2">
                     <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Halo') }}, {{ $user->name }}!</h1>
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">
+                    <x-badge variant="info">
                         {{ str_replace('_', ' ', $user->profile?->customer_type ?? 'Household') }}
-                    </span>
+                    </x-badge>
                 </div>
                 <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
                     <span><i class="fa-solid fa-phone text-slate-400 mr-1"></i> {{ $user->phone ?? __('Belum ada no HP') }}</span>
@@ -27,20 +25,17 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
-            <a href="{{ route('customer.orders.create') }}" 
-               class="px-5 py-2.5 rounded-2xl font-extrabold text-xs text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-md hover:shadow-lg transition flex items-center">
-                <i class="fa-solid fa-cart-plus mr-2"></i> {{ __('Pesan Air Sekarang') }}
-            </a>
-            <a href="{{ route('customer.store-profile') }}" 
-               class="px-4 py-2.5 rounded-2xl font-bold text-xs text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 border border-blue-200 dark:border-blue-800 transition flex items-center shadow-2xs">
-                <i class="fa-solid fa-store mr-1.5 text-blue-600 dark:text-blue-400"></i> {{ __('Lokasi Depot & Maps') }}
-            </a>
-            <a href="{{ route('customer.addresses.index') }}" 
-               class="px-4 py-2.5 rounded-2xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition flex items-center">
-                <i class="fa-solid fa-location-dot mr-1.5 text-cyan-600 dark:text-cyan-400"></i> {{ __('Alamat Saya') }}
-            </a>
+            <x-button :href="route('customer.orders.create')" variant="primary" icon="fa-solid fa-cart-plus">
+                {{ __('Pesan Air Sekarang') }}
+            </x-button>
+            <x-button :href="route('customer.store-profile')" variant="secondary" icon="fa-solid fa-store">
+                {{ __('Lokasi Depot & Maps') }}
+            </x-button>
+            <x-button :href="route('customer.addresses.index')" variant="secondary" icon="fa-solid fa-location-dot">
+                {{ __('Alamat Saya') }}
+            </x-button>
         </div>
-    </div>
+    </x-card>
 
     <!-- Active Delivery Real-Time Card (If order is active) -->
     @if ($activeOrder)
@@ -72,13 +67,6 @@
                         </a>
                     @endif
 
-                    @if (in_array($activeOrder->status, ['pending', 'confirmed']))
-                        <a href="{{ $activeOrder->whatsapp_url }}" target="_blank" 
-                           class="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-sm transition">
-                            <i class="fa-brands fa-whatsapp text-sm mr-1.5"></i> {{ __('Konfirmasi ke WA') }}
-                        </a>
-                    @endif
-
                     <a href="{{ route('customer.orders.show', $activeOrder) }}" 
                        class="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs backdrop-blur-xs transition">
                         {{ __('Detail') }}
@@ -91,239 +79,228 @@
     <!-- Key Metrics Cards -->
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Metric 1: Saldo Galon -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-2">
+        <x-card class="p-5 space-y-2 hover:shadow-md transition">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Saldo Galon</span>
-                <div class="w-8 h-8 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center text-sm">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{{ __('Saldo Galon') }}</span>
+                <div class="w-8 h-8 rounded-xl bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 flex items-center justify-center text-sm">
                     <i class="fa-solid fa-bottle-water"></i>
                 </div>
             </div>
-            <div class="text-2xl font-black text-slate-900">
-                {{ $user->profile?->gallon_deposit_balance ?? 0 }} <span class="text-xs font-normal text-slate-400">galon</span>
+            <div class="text-2xl font-black text-slate-900 dark:text-white">
+                {{ $user->profile?->gallon_deposit_balance ?? 0 }} <span class="text-xs font-normal text-slate-400">{{ __('galon') }}</span>
             </div>
-            <p class="text-[11px] text-slate-500 leading-tight">
-                Galon kosong Anda di depot yang siap ditukar.
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
+                {{ __('Galon kosong Anda di depot yang siap ditukar.') }}
             </p>
-        </div>
+        </x-card>
 
         <!-- Metric 2: Pesanan Berjalan -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-2">
+        <x-card class="p-5 space-y-2 hover:shadow-md transition">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Pesanan Aktif</span>
-                <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-sm">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{{ __('Pesanan Aktif') }}</span>
+                <div class="w-8 h-8 rounded-xl bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 flex items-center justify-center text-sm">
                     <i class="fa-solid fa-truck-fast"></i>
                 </div>
             </div>
-            <div class="text-2xl font-black text-slate-900">
-                {{ $activeOrdersCount }} <span class="text-xs font-normal text-slate-400">pesanan</span>
+            <div class="text-2xl font-black text-slate-900 dark:text-white">
+                {{ $activeOrdersCount }} <span class="text-xs font-normal text-slate-400">{{ __('pesanan') }}</span>
             </div>
-            <p class="text-[11px] text-slate-500 leading-tight">
-                Sedang diproses / dalam perjalanan.
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
+                {{ __('Sedang diproses / dalam perjalanan.') }}
             </p>
-        </div>
+        </x-card>
 
         <!-- Metric 3: Total Pesanan Selesai -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-2">
+        <x-card class="p-5 space-y-2 hover:shadow-md transition">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Pesanan Selesai</span>
-                <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{{ __('Pesanan Selesai') }}</span>
+                <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center text-sm">
                     <i class="fa-solid fa-check-double"></i>
                 </div>
             </div>
-            <div class="text-2xl font-black text-slate-900">
-                {{ $completedOrdersCount }} <span class="text-xs font-normal text-slate-400">pesanan</span>
+            <div class="text-2xl font-black text-slate-900 dark:text-white">
+                {{ $completedOrdersCount }} <span class="text-xs font-normal text-slate-400">{{ __('pesanan') }}</span>
             </div>
-            <p class="text-[11px] text-slate-500 leading-tight">
-                Total transaksi air minum yang sukses diterima.
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight">
+                {{ __('Total transaksi air minum yang sukses diterima.') }}
             </p>
-        </div>
+        </x-card>
 
         <!-- Metric 4: Alamat Tersimpan -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-2">
+        <x-card class="p-5 space-y-2 hover:shadow-md transition">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Buku Alamat</span>
-                <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-sm">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{{ __('Buku Alamat') }}</span>
+                <div class="w-8 h-8 rounded-xl bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 flex items-center justify-center text-sm">
                     <i class="fa-solid fa-location-dot"></i>
                 </div>
             </div>
-            <div class="text-2xl font-black text-slate-900">
-                {{ $user->addresses->count() }} <span class="text-xs font-normal text-slate-400">lokasi</span>
+            <div class="text-2xl font-black text-slate-900 dark:text-white">
+                {{ $user->addresses->count() }} <span class="text-xs font-normal text-slate-400">{{ __('lokasi') }}</span>
             </div>
-            <p class="text-[11px] text-slate-500 leading-tight truncate">
-                Utama: <strong class="text-slate-700">{{ $defaultAddress?->label ?? 'Belum ada' }}</strong>
+            <p class="text-[11px] text-slate-500 dark:text-slate-400 leading-tight truncate">
+                {{ __('Utama') }}: <strong class="text-slate-700 dark:text-slate-300">{{ $defaultAddress?->label ?? __('Belum ada') }}</strong>
             </p>
-        </div>
+        </x-card>
     </div>
 
     <!-- Quick Order / Popular Catalog Section -->
-    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+    <x-card class="p-6 space-y-4">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-base font-extrabold text-slate-900">Pesan Cepat Produk Pilihan</h2>
-                <p class="text-xs text-slate-500">Pilih air minum higienis favorit Anda untuk langsung masuk ke keranjang pemesanan.</p>
+                <h2 class="text-base font-black text-slate-900 dark:text-white tracking-tight">{{ __('Pesan Cepat Produk Pilihan') }}</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Pilih air minum higienis favorit Anda untuk langsung masuk ke keranjang pemesanan.') }}</p>
             </div>
-            <a href="{{ route('customer.orders.create') }}" class="text-xs font-bold text-cyan-600 hover:text-cyan-700 flex items-center">
-                Lihat Semua &rarr;
-            </a>
+            <x-button :href="route('customer.orders.create')" variant="ghost" size="sm" iconRight="fa-solid fa-arrow-right">
+                {{ __('Lihat Semua') }}
+            </x-button>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             @foreach ($popularProducts as $prod)
-                <div class="bg-slate-50 hover:bg-slate-100/70 p-4 rounded-2xl border border-slate-100 flex flex-col justify-between transition group">
+                <div class="bg-slate-50 dark:bg-slate-950/60 hover:bg-slate-100 dark:hover:bg-slate-800/80 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col justify-between transition group">
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-600">
-                                {{ $prod->category?->name ?? 'Produk Air' }}
+                            <span class="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
+                                {{ $prod->category?->name ?? __('Produk Air') }}
                             </span>
                             @if ($prod->is_returnable_gallon)
-                                <span class="text-[10px] font-bold text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded-md">
-                                    Tukar Galon
-                                </span>
+                                <x-badge variant="info" size="sm">
+                                    {{ __('Tukar Galon') }}
+                                </x-badge>
                             @endif
                         </div>
 
-                        <h3 class="font-extrabold text-sm text-slate-900 group-hover:text-cyan-700 transition">
+                        <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition">
                             {{ $prod->name }}
                         </h3>
 
-                        <div class="text-xs text-slate-500">
-                            Rp <span class="text-base font-black text-slate-900">{{ number_format($prod->price, 0, ',', '.') }}</span> / {{ $prod->unit }}
+                        <div class="text-xs text-slate-500 dark:text-slate-400">
+                            Rp <span class="text-base font-black text-slate-900 dark:text-white">{{ number_format($prod->price, 0, ',', '.') }}</span> / {{ $prod->unit }}
                         </div>
                     </div>
 
-                    <div class="pt-3 mt-3 border-t border-slate-200/60">
-                        <a href="{{ route('customer.orders.create') }}" 
-                           class="w-full py-2 px-3 rounded-xl bg-white hover:bg-cyan-600 hover:text-white border border-slate-200 text-xs font-bold text-slate-700 transition flex items-center justify-center shadow-2xs">
-                            <i class="fa-solid fa-plus mr-1.5 text-xs"></i> Pesan Produk Ini
-                        </a>
+                    <div class="pt-3 mt-3 border-t border-slate-200/60 dark:border-slate-800">
+                        <x-button :href="route('customer.orders.create')" variant="secondary" size="sm" class="w-full" icon="fa-solid fa-plus">
+                            {{ __('Pesan Produk Ini') }}
+                        </x-button>
                     </div>
                 </div>
             @endforeach
         </div>
-    </div>
+    </x-card>
 
     <!-- Recent Orders & Default Address Section -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Left: Recent Orders List (2 Cols) -->
-        <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-xs">
-            <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <x-card class="lg:col-span-2 p-0 overflow-hidden">
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                 <div>
-                    <h2 class="font-extrabold text-slate-900 text-base">Riwayat Pesanan Terakhir</h2>
-                    <p class="text-xs text-slate-400">Pantau transaksi dan status serah terima air galon Anda.</p>
+                    <h2 class="font-black text-slate-900 dark:text-white text-base tracking-tight">{{ __('Riwayat Pesanan Terakhir') }}</h2>
+                    <p class="text-xs text-slate-400">{{ __('Pantau transaksi dan status serah terima air galon Anda.') }}</p>
                 </div>
-                <a href="{{ route('customer.orders.index') }}" class="text-xs font-bold text-cyan-600 hover:text-cyan-700">
-                    Lihat Semua &rarr;
-                </a>
+                <x-button :href="route('customer.orders.index')" variant="ghost" size="sm" iconRight="fa-solid fa-arrow-right">
+                    {{ __('Lihat Semua') }}
+                </x-button>
             </div>
 
-            <div class="divide-y divide-slate-100">
+            <div class="divide-y divide-slate-100 dark:divide-slate-800">
                 @forelse ($recentOrders as $ord)
-                    <div class="p-5 hover:bg-slate-50/60 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="p-5 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="space-y-1">
                             <div class="flex items-center space-x-2">
-                                <span class="font-black text-sm text-slate-900">#{{ $ord->order_number }}</span>
-                                <span class="text-[10px] font-bold px-2.5 py-0.5 rounded-full border {{ $ord->status_badge['color'] }}">
-                                    {{ $ord->status_badge['label'] }}
-                                </span>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full border {{ $ord->payment_badge['color'] }}">
-                                    {{ $ord->payment_badge['label'] }}
-                                </span>
+                                <span class="font-black text-sm text-slate-900 dark:text-white">#{{ $ord->order_number }}</span>
+                                <x-badge variant="neutral" class="{{ $ord->status_badge['color'] }}">
+                                    {{ __($ord->status_badge['label']) }}
+                                </x-badge>
+                                <x-badge variant="neutral" class="{{ $ord->payment_badge['color'] }}">
+                                    {{ __($ord->payment_badge['label']) }}
+                                </x-badge>
                             </div>
 
-                            <div class="text-xs text-slate-500">
+                            <div class="text-xs text-slate-500 dark:text-slate-400">
                                 {{ $ord->created_at->format('d M Y, H:i') }} WIB &bull;
                                 {{ $ord->items->pluck('product_name')->join(', ') }}
                             </div>
 
-                            <div class="text-xs font-bold text-cyan-700">
-                                Total: Rp {{ number_format($ord->total_amount, 0, ',', '.') }} ({{ strtoupper($ord->payment_method) }})
+                            <div class="text-xs font-bold text-cyan-600 dark:text-cyan-400">
+                                {{ __('Total') }}: Rp {{ number_format($ord->total_amount, 0, ',', '.') }} ({{ strtoupper($ord->payment_method) }})
                             </div>
                         </div>
 
                         <div class="flex items-center space-x-2">
                             @if ($ord->delivery && in_array($ord->delivery->status, ['assigned', 'in_transit', 'arrived']))
-                                <a href="{{ route('customer.orders.track', $ord) }}" 
-                                   class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition flex items-center shadow-xs">
-                                    <i class="fa-solid fa-location-crosshairs mr-1"></i> Lacak
-                                </a>
+                                <x-button :href="route('customer.orders.track', $ord)" variant="success" size="sm" icon="fa-solid fa-location-crosshairs">
+                                    {{ __('Lacak') }}
+                                </x-button>
                             @endif
 
-                            @if (in_array($ord->status, ['pending', 'confirmed']))
-                                <a href="{{ $ord->whatsapp_url }}" target="_blank"
-                                   class="px-3 py-1.5 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition flex items-center">
-                                    <i class="fa-brands fa-whatsapp mr-1 text-emerald-600"></i> WA
-                                </a>
-                            @endif
-
-                            <a href="{{ route('customer.orders.show', $ord) }}" 
-                               class="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition">
-                                Detail
-                            </a>
+                            <x-button :href="route('customer.orders.show', $ord)" variant="secondary" size="sm">
+                                {{ __('Detail') }}
+                            </x-button>
                         </div>
                     </div>
                 @empty
                     <div class="p-10 text-center text-slate-400 text-xs">
-                        <i class="fa-solid fa-receipt text-3xl mb-2 text-slate-300 block"></i>
-                        Belum ada pesanan. <a href="{{ route('customer.orders.create') }}" class="text-cyan-600 font-bold underline ml-1">Pesan galon air sekarang!</a>
+                        <i class="fa-solid fa-receipt text-3xl mb-2 text-slate-300 dark:text-slate-600 block"></i>
+                        {{ __('Belum ada pesanan.') }} <a href="{{ route('customer.orders.create') }}" class="text-cyan-600 dark:text-cyan-400 font-bold underline ml-1">{{ __('Pesan galon air sekarang!') }}</a>
                     </div>
                 @endforelse
             </div>
-        </div>
+        </x-card>
 
         <!-- Right: Default Address Card (1 Col) -->
-        <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-xs space-y-4 flex flex-col justify-between">
+        <x-card class="p-5 space-y-4 flex flex-col justify-between">
             <div class="space-y-3">
-                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                    <h2 class="font-extrabold text-slate-900 text-sm flex items-center">
-                        <i class="fa-solid fa-location-dot text-cyan-600 mr-2"></i> Alamat Pengantaran Utama
+                <div class="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                    <h2 class="font-black text-slate-900 dark:text-white text-sm flex items-center">
+                        <i class="fa-solid fa-location-dot text-cyan-600 dark:text-cyan-400 mr-2"></i> {{ __('Alamat Pengantaran Utama') }}
                     </h2>
                     @if ($defaultAddress)
-                        <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-50 text-cyan-700 border border-cyan-200">
+                        <x-badge variant="info" size="sm">
                             {{ $defaultAddress->label }}
-                        </span>
+                        </x-badge>
                     @endif
                 </div>
 
                 @if ($defaultAddress)
                     <div class="space-y-2 text-xs">
                         <div>
-                            <span class="text-slate-400 block">Penerima:</span>
-                            <span class="font-bold text-slate-800 text-sm">{{ $defaultAddress->recipient_name }}</span>
-                            <span class="text-slate-500 block">({{ $defaultAddress->recipient_phone }})</span>
+                            <span class="text-slate-400 dark:text-slate-500 block">{{ __('Penerima') }}:</span>
+                            <span class="font-bold text-slate-800 dark:text-slate-200 text-sm">{{ $defaultAddress->recipient_name }}</span>
+                            <span class="text-slate-500 dark:text-slate-400 block">({{ $defaultAddress->recipient_phone }})</span>
                         </div>
 
                         <div>
-                            <span class="text-slate-400 block">Alamat Jalan:</span>
-                            <p class="text-slate-700 font-medium leading-relaxed mt-0.5">{{ $defaultAddress->address_line }}</p>
+                            <span class="text-slate-400 dark:text-slate-500 block">{{ __('Alamat Jalan') }}:</span>
+                            <p class="text-slate-700 dark:text-slate-300 font-medium leading-relaxed mt-0.5">{{ $defaultAddress->address_line }}</p>
                         </div>
 
                         @if ($defaultAddress->benchmark)
-                            <div class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-amber-900 text-[11px]">
-                                <span class="font-bold">Patokan:</span> {{ $defaultAddress->benchmark }}
+                            <div class="p-2.5 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-[11px]">
+                                <span class="font-bold">{{ __('Patokan') }}:</span> {{ $defaultAddress->benchmark }}
                             </div>
                         @endif
 
                         @if ($defaultAddress->serviceArea)
-                            <div class="text-[11px] text-cyan-700 font-bold">
-                                Area: {{ $defaultAddress->serviceArea->name }} (Ongkir: Rp {{ number_format($defaultAddress->serviceArea->delivery_fee, 0, ',', '.') }})
+                            <div class="text-[11px] text-cyan-600 dark:text-cyan-400 font-bold">
+                                {{ __('Area') }}: {{ $defaultAddress->serviceArea->name }} ({{ __('Ongkir') }}: Rp {{ number_format($defaultAddress->serviceArea->delivery_fee, 0, ',', '.') }})
                             </div>
                         @endif
                     </div>
                 @else
                     <div class="py-8 text-center text-slate-400 text-xs space-y-2">
-                        <i class="fa-solid fa-map-location-dot text-3xl text-slate-300 block"></i>
-                        <p>Anda belum menyimpan alamat pengantaran.</p>
+                        <i class="fa-solid fa-map-location-dot text-3xl text-slate-300 dark:text-slate-600 block"></i>
+                        <p>{{ __('Anda belum menyimpan alamat pengantaran.') }}</p>
                     </div>
                 @endif
             </div>
 
-            <div class="pt-3 border-t border-slate-100">
-                <a href="{{ route('customer.addresses.index') }}" 
-                   class="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center justify-center">
-                    <i class="fa-solid fa-gear mr-1.5"></i> Kelola Seluruh Alamat Saya
-                </a>
+            <div class="pt-3 border-t border-slate-100 dark:border-slate-800">
+                <x-button :href="route('customer.addresses.index')" variant="secondary" size="sm" class="w-full" icon="fa-solid fa-gear">
+                    {{ __('Kelola Seluruh Alamat Saya') }}
+                </x-button>
             </div>
-        </div>
+        </x-card>
     </div>
 
 </div>
