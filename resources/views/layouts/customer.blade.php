@@ -170,12 +170,6 @@
                     <span>Hubungi CS Depot</span>
                 </a>
 
-                <!-- Visit Public Web -->
-                <a href="{{ route('home') }}" target="_blank"
-                   class="flex items-center px-3 py-2.5 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition duration-150">
-                    <i class="fa-solid fa-globe w-5 mr-3 text-center text-sm text-slate-400"></i>
-                    <span>Lihat Web Utama</span>
-                </a>
             </div>
 
         </nav>
