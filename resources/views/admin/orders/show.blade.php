@@ -210,7 +210,61 @@
                 </form>
             </div>
 
-            <!-- 3. Payment Status Control -->
+            <!-- 3. QRIS Payment Proof Card for Admin -->
+            @if ($order->payment_method === 'qris')
+                <div class="bg-white p-5 rounded-2xl border-2 {{ $order->is_qris_confirmed ? 'border-teal-300 bg-teal-50/20' : 'border-slate-200' }} shadow-xs space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-sm text-slate-900 uppercase tracking-wider flex items-center">
+                            <i class="fa-solid fa-qrcode text-teal-600 mr-2"></i> Bukti QRIS Pelanggan
+                        </h3>
+                        @if ($order->payment_status === 'paid')
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                Sudah Lunas
+                            </span>
+                        @elseif ($order->is_qris_confirmed)
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 animate-pulse">
+                                Perlu Cek Mutasi
+                            </span>
+                        @else
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">
+                                Belum Konfirmasi
+                            </span>
+                        @endif
+                    </div>
+
+                    @if ($order->is_qris_confirmed)
+                        <div class="text-xs space-y-2">
+                            @if ($order->latest_payment_proof)
+                                <div class="border border-slate-200 rounded-xl overflow-hidden shadow-2xs group relative">
+                                    <a href="/storage/{{ $order->latest_payment_proof }}" target="_blank">
+                                        <img src="/storage/{{ $order->latest_payment_proof }}" alt="Bukti Transfer QRIS" class="w-full h-48 object-contain bg-slate-900">
+                                        <div class="p-2 text-center text-xs font-bold text-teal-700 bg-teal-50 border-t border-teal-100">
+                                            <i class="fa-solid fa-up-right-from-square mr-1"></i> Buka Gambar Bukti Ukuran Penuh
+                                        </div>
+                                    </a>
+                                </div>
+                            @else
+                                <div class="p-3 bg-teal-50 border border-teal-200 rounded-xl text-teal-900 text-xs">
+                                    <i class="fa-solid fa-check-double mr-1 text-teal-600"></i> Pelanggan menekan tombol <b>"Saya Sudah Bayar"</b> via web.
+                                </div>
+                            @endif
+
+                            @if ($order->payments->first() && $order->payments->first()->notes)
+                                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-xs">
+                                    <span class="font-bold text-slate-500 block text-[10px] uppercase">Catatan / Akun Pengirim:</span>
+                                    {{ $order->payments->first()->notes }}
+                                </div>
+                            @endif
+                        </div>
+                    @else
+                        <p class="text-xs text-slate-500">
+                            Pelanggan belum mengonfirmasi pembayaran di portal web. Pesanan belum diteruskan untuk pengantaran.
+                        </p>
+                    @endif
+                </div>
+            @endif
+
+            <!-- 4. Payment Status Control -->
             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-3">
                 <h3 class="font-bold text-sm text-slate-900 uppercase tracking-wider">Status Pembayaran</h3>
 

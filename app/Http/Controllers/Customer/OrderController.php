@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class OrderController extends Controller
 {
@@ -174,8 +175,58 @@ class OrderController extends Controller
                 'changed_by' => Auth::id(),
             ]);
 
-            return redirect()->route('customer.orders.show', $order)->with('success', "Pesanan #{$order->order_number} berhasil dibuat! Silakan klik tombol hijau di bawah untuk mengirimkan konfirmasi pesanan ke WhatsApp Admin agar segera diproses.");
+            if ($order->payment_method === 'cod') {
+                return redirect()->route('customer.orders.show', $order)
+                    ->with('auto_open_whatsapp', true)
+                    ->with('success', "Pesanan #{$order->order_number} berhasil dibuat! Mengarahkan ke WhatsApp Admin untuk konfirmasi pengantaran (COD)...");
+            }
+
+            return redirect()->route('customer.orders.show', $order)
+                ->with('info', "Pesanan #{$order->order_number} berhasil dibuat! Silakan selesaikan pembayaran QRIS di bawah dan klik 'Saya Sudah Bayar' agar pesanan diteruskan ke WhatsApp Admin.");
         });
+    }
+
+    public function confirmPayment(Request $request, Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'proof_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,heic', 'max:5120'],
+            'notes' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $proofPath = null;
+        if ($request->hasFile('proof_image')) {
+            $file = $request->file('proof_image');
+            $filename = 'proof-' . $order->order_number . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $proofPath = $file->storeAs('payment_proofs', $filename, 'public');
+        }
+
+        Payment::updateOrCreate(
+            ['order_id' => $order->id],
+            [
+                'payment_number' => 'PAY-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
+                'payment_method' => $order->payment_method ?? 'qris',
+                'amount' => $order->total_amount,
+                'status' => 'unpaid',
+                'proof_image' => $proofPath ?? $order->payments->first()?->proof_image,
+                'notes' => $validated['notes'] ?? 'Dikonfirmasi oleh pelanggan via web.',
+            ]
+        );
+
+        OrderStatusHistory::create([
+            'order_id' => $order->id,
+            'status' => $order->status,
+            'notes' => 'Pelanggan telah mengonfirmasi pembayaran QRIS dan mengirimkan data transfer.',
+            'changed_by' => Auth::id(),
+        ]);
+
+        return redirect()->route('customer.orders.show', $order)
+            ->with('auto_open_whatsapp', true)
+            ->with('payment_confirmed', true)
+            ->with('success', "Pembayaran QRIS berhasil dikonfirmasi! Notifikasi pesanan sekarang siap diteruskan ke WhatsApp Admin.");
     }
 
     public function show(Order $order)

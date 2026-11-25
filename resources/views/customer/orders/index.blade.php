@@ -79,10 +79,17 @@
 
                 <div class="flex flex-wrap items-center gap-2">
                     @if (in_array($order->status, ['pending', 'confirmed']))
-                        <a href="{{ $order->whatsapp_url }}" target="_blank"
-                           class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition flex items-center">
-                            <i class="fa-brands fa-whatsapp mr-1 text-sm text-emerald-600"></i> Kirim WA
-                        </a>
+                        @if ($order->payment_method === 'cod' || $order->is_qris_confirmed || $order->payment_status === 'paid')
+                            <a href="{{ $order->whatsapp_url }}" target="_blank"
+                               class="px-3 py-2 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition flex items-center">
+                                <i class="fa-brands fa-whatsapp mr-1 text-sm text-emerald-600"></i> Kirim WA
+                            </a>
+                        @else
+                            <a href="{{ route('customer.orders.show', $order) }}"
+                               class="px-3 py-2 rounded-xl text-xs font-bold bg-teal-50 text-teal-800 hover:bg-teal-100 border border-teal-200 transition flex items-center">
+                                <i class="fa-solid fa-qrcode mr-1 text-sm text-teal-600"></i> Bayar QRIS
+                            </a>
+                        @endif
                     @endif
 
                     @if ($order->delivery && in_array($order->delivery->status, ['assigned', 'in_transit', 'arrived']))

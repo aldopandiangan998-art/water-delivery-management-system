@@ -10,7 +10,9 @@ use App\Models\ServiceArea;
 use App\Models\StockMovement;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class OrderWorkflowTest extends TestCase
@@ -241,5 +243,77 @@ class OrderWorkflowTest extends TestCase
         $this->assertStringContainsString(rawurlencode('Budi Santoso'), $url);
         $this->assertStringContainsString(rawurlencode('Air RO Murni Galon'), $url);
         $this->assertStringContainsString(rawurlencode('17.000'), $url);
+        $this->assertStringContainsString(rawurlencode('COD'), $url);
+    }
+
+    public function test_customer_can_place_qris_order_and_confirm_payment_with_proof(): void
+    {
+        Storage::fake('public');
+        $this->actingAs($this->customer);
+
+        // 1. Place QRIS order
+        $response = $this->post(route('customer.orders.store'), [
+            'customer_address_id' => $this->address->id,
+            'items' => [
+                [
+                    'product_id' => $this->product->id,
+                    'quantity' => 1,
+                    'is_exchange' => 1,
+                ]
+            ],
+            'payment_method' => 'qris',
+        ]);
+
+        $order = Order::where('user_id', $this->customer->id)->latest()->first();
+        $this->assertNotNull($order);
+        $this->assertEquals('qris', $order->payment_method);
+        $this->assertEquals('unpaid', $order->payment_status);
+        $this->assertFalse($order->is_qris_confirmed);
+
+        $response->assertRedirect(route('customer.orders.show', $order));
+        $response->assertSessionHas('info');
+
+        // 2. Customer confirms payment with uploaded proof
+        $file = UploadedFile::fake()->image('struk_qris.jpg');
+        $confirmResponse = $this->post(route('customer.orders.confirm-payment', $order), [
+            'proof_image' => $file,
+            'notes' => 'Transfer via BCA a.n Budi',
+        ]);
+
+        $confirmResponse->assertRedirect(route('customer.orders.show', $order));
+        $confirmResponse->assertSessionHas('auto_open_whatsapp', true);
+        $confirmResponse->assertSessionHas('payment_confirmed', true);
+
+        // Verify order now considered confirmed
+        $freshOrder = $order->fresh(['payments']);
+        $this->assertTrue($freshOrder->is_qris_confirmed);
+        $this->assertNotNull($freshOrder->latest_payment_proof);
+        Storage::disk('public')->assertExists($freshOrder->latest_payment_proof);
+
+        // WhatsApp URL should reflect QRIS payment done
+        $waUrl = $freshOrder->whatsapp_url;
+        $this->assertStringContainsString(rawurlencode('QRIS (Scan & Pay - Doppnnstore) [SUDAH DIBAYAR]'), $waUrl);
+    }
+
+    public function test_cod_order_sets_auto_open_whatsapp_session(): void
+    {
+        $this->actingAs($this->customer);
+
+        $response = $this->post(route('customer.orders.store'), [
+            'customer_address_id' => $this->address->id,
+            'items' => [
+                [
+                    'product_id' => $this->product->id,
+                    'quantity' => 1,
+                    'is_exchange' => 1,
+                ]
+            ],
+            'payment_method' => 'cod',
+        ]);
+
+        $order = Order::where('user_id', $this->customer->id)->latest()->first();
+        $response->assertRedirect(route('customer.orders.show', $order));
+        $response->assertSessionHas('auto_open_whatsapp', true);
+        $response->assertSessionHas('success');
     }
 }

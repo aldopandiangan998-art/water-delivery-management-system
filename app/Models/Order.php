@@ -121,6 +121,30 @@ class Order extends Model
         };
     }
 
+    public function getIsQrisConfirmedAttribute(): bool
+    {
+        if ($this->payment_method !== 'qris') {
+            return false;
+        }
+
+        if ($this->payment_status === 'paid') {
+            return true;
+        }
+
+        return $this->relationLoaded('payments') 
+            ? $this->payments->isNotEmpty() 
+            : $this->payments()->exists();
+    }
+
+    public function getLatestPaymentProofAttribute(): ?string
+    {
+        $payment = $this->relationLoaded('payments')
+            ? $this->payments->whereNotNull('proof_image')->last()
+            : $this->payments()->whereNotNull('proof_image')->latest()->first();
+
+        return $payment?->proof_image;
+    }
+
     public function getWhatsappUrlAttribute(): string
     {
         $adminPhone = BusinessSetting::get('company_whatsapp', '62881026146848');
@@ -143,13 +167,17 @@ class Order extends Model
         $notesText = $this->customer_notes ? "\n📝 Catatan: {$this->customer_notes}" : "";
         $benchmarkText = $this->delivery_benchmark ? "\n🧭 Patokan: {$this->delivery_benchmark}" : "";
         
-        $paymentLabel = match ($this->payment_method) {
-            'qris' => "QRIS (Scan & Pay - Doppnnstore)\n(Bukti screenshot transfer QRIS saya kirimkan di bawah ini)",
-            'cod' => "Tunai / COD (Bayar di Tempat saat galon sampai)",
-            default => strtoupper($this->payment_method),
-        };
+        if ($this->payment_method === 'qris') {
+            $header = "Halo Admin AquaFlow (Toko Nova Jaya), saya telah membayar pesanan via QRIS (Doppnnstore):";
+            $paymentLabel = "QRIS (Scan & Pay - Doppnnstore) [SUDAH DIBAYAR]";
+            $closing = "✅ Bukti pembayaran QRIS sudah saya konfirmasi di web dan saya lampirkan di chat ini.\nMohon segera diproses dan diantar ya min! Terima kasih.";
+        } else {
+            $header = "Halo Admin AquaFlow (Toko Nova Jaya), ada pesanan baru [BAYAR DI TEMPAT / COD]:";
+            $paymentLabel = "Tunai / COD (Bayar di Tempat saat barang sampai)";
+            $closing = "Mohon segera diproses dan diantar ya min. Terima kasih!";
+        }
 
-        $message = "Halo Admin AquaFlow (Toko Nova Jaya), saya mau konfirmasi pesanan baru:\n\n"
+        $message = "{$header}\n\n"
             . "📌 No. Pesanan: #{$this->order_number}\n"
             . "👤 Penerima: {$this->recipient_name} ({$this->recipient_phone})\n"
             . "🏠 Alamat: {$this->delivery_address_text}{$benchmarkText}{$mapLink}\n\n"
@@ -159,7 +187,7 @@ class Order extends Model
             . "💰 Total Tagihan: Rp " . number_format($this->total_amount, 0, ',', '.') . "\n"
             . "💳 Metode Pembayaran: {$paymentLabel}"
             . $notesText . "\n\n"
-            . "Mohon segera diproses dan diantar ya min, terima kasih!";
+            . $closing;
 
         return "https://wa.me/{$cleanPhone}?text=" . rawurlencode($message);
     }

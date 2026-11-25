@@ -56,6 +56,7 @@ Route::middleware(['auth', 'role:customer,admin,super_admin'])->prefix('customer
     Route::get('/orders/create', [CustomerOrderController::class, 'create'])->name('orders.create');
     Route::post('/orders', [CustomerOrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{order}/confirm-payment', [CustomerOrderController::class, 'confirmPayment'])->name('orders.confirm-payment');
     Route::post('/orders/{order}/cancel', [CustomerOrderController::class, 'cancel'])->name('orders.cancel');
     Route::get('/orders/{order}/track', [CustomerOrderController::class, 'track'])->name('orders.track');
     Route::get('/api/orders/{order}/location', [CustomerOrderController::class, 'apiLocation'])->name('orders.api-location');

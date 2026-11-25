@@ -116,6 +116,11 @@
                                         <i class="fa-solid {{ $order->payment_method_badge['icon'] }} mr-0.5 text-[9px]"></i>
                                         {{ $order->payment_method_badge['label'] }}
                                     </span>
+                                    @if ($order->payment_method === 'qris' && $order->is_qris_confirmed && $order->payment_status !== 'paid')
+                                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 animate-pulse">
+                                            <i class="fa-solid fa-receipt mr-0.5"></i> Bukti QRIS Masuk
+                                        </span>
+                                    @endif
                                 </div>
                             </td>
 
