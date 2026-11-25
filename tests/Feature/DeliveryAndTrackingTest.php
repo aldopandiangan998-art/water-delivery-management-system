@@ -76,7 +76,6 @@ class DeliveryAndTrackingTest extends TestCase
         $this->delivery = Delivery::create([
             'delivery_number' => 'DEL-TEST-001',
             'order_id' => $this->order->id,
-            'driver_id' => $this->admin->id,
             'status' => 'assigned',
         ]);
     }
@@ -110,7 +109,6 @@ class DeliveryAndTrackingTest extends TestCase
 
         $this->assertDatabaseHas('delivery_locations', [
             'delivery_id' => $this->delivery->id,
-            'driver_id' => $this->admin->id,
             'latitude' => -6.8860,
             'longitude' => 107.5970,
         ]);
@@ -123,7 +121,6 @@ class DeliveryAndTrackingTest extends TestCase
 
         DeliveryLocation::create([
             'delivery_id' => $this->delivery->id,
-            'driver_id' => $this->admin->id,
             'latitude' => -6.8865,
             'longitude' => 107.5965,
             'accuracy' => 5.0,
@@ -135,7 +132,7 @@ class DeliveryAndTrackingTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson([
             'delivery_status' => 'in_transit',
-            'driver_name' => 'Admin Test',
+            'driver_name' => 'Petugas Depot',
             'driver_lat' => -6.8865,
             'driver_lng' => 107.5965,
             'is_stale' => false,
@@ -164,7 +161,6 @@ class DeliveryAndTrackingTest extends TestCase
             'photo' => $file,
             'empty_gallons_returned' => 2,
             'payment_received' => 14000,
-            'driver_notes' => 'Diserahkan langsung ke Pak Budi',
         ]);
 
         $response->assertRedirect(route('admin.deliveries.index'));

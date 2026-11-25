@@ -19,11 +19,6 @@ class EnsureUserHasRole
             return redirect()->route('login')->withErrors(['email' => 'Akun Anda telah dinonaktifkan. Silakan hubungi administrator.']);
         }
 
-        // Super Admin has access everywhere
-        if ($request->user()->isSuperAdmin()) {
-            return $next($request);
-        }
-
         // Admin has access to admin routes
         if ($request->user()->isAdmin() && in_array('admin', $roles)) {
             return $next($request);

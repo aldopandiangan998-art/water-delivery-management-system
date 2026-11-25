@@ -12,7 +12,6 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Review;
 use App\Models\StockMovement;
-use App\Services\WhatsAppNotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +23,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $query = Order::where('user_id', Auth::id())
-            ->with(['items.product', 'delivery.driver', 'review'])
+            ->with(['items.product', 'delivery', 'review'])
             ->latest();
 
         if ($request->filled('status')) {
@@ -57,7 +56,7 @@ class OrderController extends Controller
             'items.*.product_id' => ['required', 'exists:products,id'],
             'items.*.quantity' => ['required', 'integer', 'min:1', 'max:100'],
             'items.*.is_exchange' => ['nullable', 'boolean'],
-            'payment_method' => ['required', 'in:cod,qris,bank_transfer'],
+            'payment_method' => ['required', 'in:cod'],
             'customer_notes' => ['nullable', 'string', 'max:500'],
         ]);
 
@@ -109,13 +108,7 @@ class OrderController extends Controller
                 $deliveryFee = (float) $address->serviceArea->delivery_fee;
             }
 
-            // Calculate QRIS convenience fee (0.7%) if method is QRIS
-            $serviceFee = 0;
-            if ($validated['payment_method'] === 'qris') {
-                $serviceFee = \App\Services\TripayService::calculateServiceFee($subtotal + $deliveryFee);
-            }
-
-            $totalAmount = $subtotal + $deliveryFee + $serviceFee;
+            $totalAmount = $subtotal + $deliveryFee;
 
             // Generate unique order number
             $orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
@@ -135,7 +128,6 @@ class OrderController extends Controller
                 'payment_method' => $validated['payment_method'],
                 'subtotal' => $subtotal,
                 'delivery_fee' => $deliveryFee,
-                'service_fee' => $serviceFee,
                 'discount' => 0,
                 'total_amount' => $totalAmount,
                 'empty_gallons_returned' => $totalEmptyReturnable,
@@ -183,34 +175,9 @@ class OrderController extends Controller
                 'changed_by' => Auth::id(),
             ]);
 
-            if ($order->payment_method === 'cod') {
-                try {
-                    app(WhatsAppNotificationService::class)->sendOrderNotification($order);
-                } catch (\Throwable $e) {
-                    \Illuminate\Support\Facades\Log::error('Gagal mengirim auto WA COD: ' . $e->getMessage());
-                }
-
-                return redirect()->route('customer.orders.show', $order)
-                    ->with('auto_open_whatsapp', true)
-                    ->with('success', "Pesanan #{$order->order_number} berhasil dibuat! Mengarahkan ke WhatsApp Admin untuk konfirmasi pengantaran (COD)...");
-            }
-
-            // QRIS Payment Method: Create Tripay dynamic QRIS
-            try {
-                app(\App\Services\TripayService::class)->createQrisTransaction($order);
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Gagal generate Tripay QRIS: ' . $e->getMessage());
-            }
-
-            try {
-                app(WhatsAppNotificationService::class)->sendOrderNotification($order);
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Gagal mengirim auto WA QRIS: ' . $e->getMessage());
-            }
-
             return redirect()->route('customer.orders.show', $order)
-                ->with('info', "Pesanan #{$order->order_number} berhasil dibuat! Silakan scan QRIS di bawah untuk pembayaran otomatis.")
-                ->with('success', "Pesanan #{$order->order_number} berhasil dibuat! Silakan scan QRIS di bawah untuk pembayaran otomatis.");
+                ->with('auto_open_whatsapp', true)
+                ->with('success', "Pesanan #{$order->order_number} berhasil dibuat! Mengarahkan ke WhatsApp Admin untuk konfirmasi pengantaran (COD)...");
         });
     }
 
@@ -236,7 +203,7 @@ class OrderController extends Controller
             ['order_id' => $order->id],
             [
                 'payment_number' => 'PAY-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
-                'payment_method' => $order->payment_method ?? 'qris',
+                'payment_method' => $order->payment_method ?? 'cod',
                 'amount' => $order->total_amount,
                 'status' => 'unpaid',
                 'proof_image' => $proofPath ?? $order->payments->first()?->proof_image,
@@ -247,20 +214,14 @@ class OrderController extends Controller
         OrderStatusHistory::create([
             'order_id' => $order->id,
             'status' => $order->status,
-            'notes' => 'Pelanggan telah mengonfirmasi pembayaran QRIS dan mengirimkan data transfer.',
+            'notes' => 'Pelanggan telah mengonfirmasi pembayaran.',
             'changed_by' => Auth::id(),
         ]);
-
-        try {
-            app(WhatsAppNotificationService::class)->sendOrderNotification($order);
-        } catch (\Throwable $e) {
-            \Illuminate\Support\Facades\Log::error('Gagal mengirim auto WA QRIS confirmation: ' . $e->getMessage());
-        }
 
         return redirect()->route('customer.orders.show', $order)
             ->with('auto_open_whatsapp', true)
             ->with('payment_confirmed', true)
-            ->with('success', "Pembayaran QRIS berhasil dikonfirmasi! Notifikasi pesanan sekarang siap diteruskan ke WhatsApp Admin.");
+            ->with('success', "Konfirmasi pembayaran berhasil disimpan!");
     }
 
     public function show(Order $order)
@@ -269,20 +230,9 @@ class OrderController extends Controller
             abort(403);
         }
 
-        // Auto-generate Tripay QRIS if not yet generated
-        if ($order->payment_method === 'qris' && $order->payment_status === 'unpaid' && empty($order->qris_qr_url)) {
-            try {
-                app(\App\Services\TripayService::class)->createQrisTransaction($order);
-                $order->refresh();
-            } catch (\Throwable $e) {
-                \Illuminate\Support\Facades\Log::error('Tripay QR auto-refresh error: ' . $e->getMessage());
-            }
-        }
-
         $order->load([
             'items.product',
             'statusHistories.changer',
-            'delivery.driver',
             'delivery.photos',
             'delivery.statusHistories',
             'payments.receiver',
@@ -298,10 +248,10 @@ class OrderController extends Controller
             abort(403);
         }
 
-        $order->load(['delivery.driver', 'delivery.latestLocation', 'address']);
+        $order->load(['delivery.latestLocation', 'address']);
 
         if (! $order->delivery) {
-            return redirect()->route('customer.orders.show', $order)->with('info', 'Driver belum ditugaskan untuk pengantaran ini.');
+            return redirect()->route('customer.orders.show', $order)->with('info', 'Pengantaran belum dijadwalkan untuk pesanan ini.');
         }
 
         return view('customer.orders.track', compact('order'));
@@ -326,8 +276,8 @@ class OrderController extends Controller
 
         return response()->json([
             'delivery_status' => $delivery->status,
-            'driver_name' => $delivery->driver?->name ?? 'Driver AquaFlow',
-            'driver_phone' => $delivery->driver?->phone,
+            'driver_name' => 'Petugas Depot',
+            'driver_phone' => null,
             'customer_lat' => (float) $order->delivery_latitude,
             'customer_lng' => (float) $order->delivery_longitude,
             'driver_lat' => $latest ? (float) $latest->latitude : null,
@@ -429,7 +379,7 @@ class OrderController extends Controller
      */
     public function statusCheck(Order $order)
     {
-        if ($order->user_id !== Auth::id() && ! in_array(Auth::user()?->role, ['admin', 'super_admin'])) {
+        if ($order->user_id !== Auth::id() && Auth::user()?->role !== 'admin') {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -439,7 +389,6 @@ class OrderController extends Controller
             'status' => $order->status,
             'payment_status' => $order->payment_status,
             'is_paid' => $order->payment_status === 'paid',
-            'is_qris_confirmed' => $order->is_qris_confirmed,
         ]);
     }
 }

@@ -25,15 +25,8 @@ class Order extends Model
         'status',
         'payment_status',
         'payment_method',
-        'tripay_reference',
-        'tripay_merchant_ref',
-        'qris_qr_url',
-        'qris_raw_qr_string',
-        'qris_checkout_url',
-        'qris_expired_at',
         'subtotal',
         'delivery_fee',
-        'service_fee',
         'discount',
         'total_amount',
         'empty_gallons_returned',
@@ -51,11 +44,9 @@ class Order extends Model
             'delivery_longitude' => 'decimal:7',
             'subtotal' => 'decimal:2',
             'delivery_fee' => 'decimal:2',
-            'service_fee' => 'decimal:2',
             'discount' => 'decimal:2',
             'total_amount' => 'decimal:2',
             'empty_gallons_returned' => 'integer',
-            'qris_expired_at' => 'datetime',
             'cancelled_at' => 'datetime',
             'completed_at' => 'datetime',
         ];
@@ -125,24 +116,8 @@ class Order extends Model
     {
         return match ($this->payment_method) {
             'cod' => ['label' => 'Tunai / COD', 'color' => 'bg-emerald-100 text-emerald-800 border-emerald-200', 'icon' => 'fa-hand-holding-dollar'],
-            'qris' => ['label' => 'QRIS (Doppnnstore)', 'color' => 'bg-teal-100 text-teal-800 border-teal-200', 'icon' => 'fa-qrcode'],
             default => ['label' => strtoupper(str_replace('_', ' ', $this->payment_method)), 'color' => 'bg-slate-100 text-slate-800 border-slate-200', 'icon' => 'fa-credit-card'],
         };
-    }
-
-    public function getIsQrisConfirmedAttribute(): bool
-    {
-        if ($this->payment_method !== 'qris') {
-            return false;
-        }
-
-        if ($this->payment_status === 'paid') {
-            return true;
-        }
-
-        return $this->relationLoaded('payments') 
-            ? $this->payments->isNotEmpty() 
-            : $this->payments()->exists();
     }
 
     public function getLatestPaymentProofAttribute(): ?string
@@ -176,15 +151,9 @@ class Order extends Model
         $notesText = $this->customer_notes ? "\n📝 Catatan: {$this->customer_notes}" : "";
         $benchmarkText = $this->delivery_benchmark ? "\n🧭 Patokan: {$this->delivery_benchmark}" : "";
         
-        if ($this->payment_method === 'qris') {
-            $header = "Halo Admin AquaFlow (Toko Nova Jaya), saya telah membayar pesanan via QRIS (Doppnnstore):";
-            $paymentLabel = "QRIS (Scan & Pay - Doppnnstore) [SUDAH DIBAYAR]";
-            $closing = "✅ Bukti pembayaran QRIS sudah saya konfirmasi di web dan saya lampirkan di chat ini.\nMohon segera diproses dan diantar ya min! Terima kasih.";
-        } else {
-            $header = "Halo Admin AquaFlow (Toko Nova Jaya), ada pesanan baru [BAYAR DI TEMPAT / COD]:";
-            $paymentLabel = "Tunai / COD (Bayar di Tempat saat barang sampai)";
-            $closing = "Mohon segera diproses dan diantar ya min. Terima kasih!";
-        }
+        $header = "Halo Admin AquaFlow (Toko Nova Jaya), ada pesanan baru [BAYAR DI TEMPAT / COD]:";
+        $paymentLabel = "Tunai / COD (Bayar di Tempat saat barang sampai)";
+        $closing = "Mohon segera diproses dan diantar ya min. Terima kasih!";
 
         $message = "{$header}\n\n"
             . "📌 No. Pesanan: #{$this->order_number}\n"

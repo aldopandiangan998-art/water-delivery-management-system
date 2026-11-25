@@ -24,7 +24,6 @@
                 <thead class="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider">
                     <tr>
                         <th class="px-5 py-3.5">No. Pengantaran</th>
-                        <th class="px-5 py-3.5">Petugas</th>
                         <th class="px-5 py-3.5">Tujuan & Penerima</th>
                         <th class="px-5 py-3.5">Status Pengantaran</th>
                         <th class="px-5 py-3.5">Waktu Mulai / Selesai</th>
@@ -38,11 +37,6 @@
                             <td class="px-5 py-3.5 font-bold font-mono text-slate-900">
                                 {{ $del->delivery_number }}
                                 <div class="text-[10px] text-slate-400 font-normal">Order #{{ $del->order->order_number }}</div>
-                            </td>
-
-                            <td class="px-5 py-3.5">
-                                <div class="font-bold text-slate-900">{{ $del->driver?->name ?? 'Belum Ditugaskan' }}</div>
-                                <div class="text-[10px] text-slate-400">{{ $del->driver?->phone ?? '-' }}</div>
                             </td>
 
                             <td class="px-5 py-3.5">
@@ -86,7 +80,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="px-5 py-12 text-center text-slate-400">
+                            <td colspan="6" class="px-5 py-12 text-center text-slate-400">
                                 Belum ada data pengantaran.
                             </td>
                         </tr>

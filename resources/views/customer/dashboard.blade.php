@@ -1,27 +1,27 @@
 @extends('layouts.customer')
 
-@section('title', 'Dashboard Member')
+@section('title', __('Dashboard Member'))
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
     <!-- Welcome & Member Profile Banner -->
-    <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div class="flex items-center space-x-4">
             <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-600 via-cyan-500 to-blue-600 text-white flex items-center justify-center font-black text-xl shadow-md shrink-0">
                 {{ strtoupper(substr($user->name, 0, 1)) }}
             </div>
             <div>
                 <div class="flex items-center space-x-2">
-                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">Halo, {{ $user->name }}!</h1>
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-50 text-cyan-700 border border-cyan-200">
+                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Halo') }}, {{ $user->name }}!</h1>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-cyan-50 dark:bg-cyan-950/50 text-cyan-700 dark:text-cyan-300 border border-cyan-200 dark:border-cyan-800">
                         {{ str_replace('_', ' ', $user->profile?->customer_type ?? 'Household') }}
                     </span>
                 </div>
-                <p class="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
-                    <span><i class="fa-solid fa-phone text-slate-400 mr-1"></i> {{ $user->phone ?? 'Belum ada no HP' }}</span>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span><i class="fa-solid fa-phone text-slate-400 mr-1"></i> {{ $user->phone ?? __('Belum ada no HP') }}</span>
                     <span>&bull;</span>
-                    <span><i class="fa-solid fa-calendar-check text-slate-400 mr-1"></i> Terdaftar sejak {{ $user->created_at->format('M Y') }}</span>
+                    <span><i class="fa-solid fa-calendar-check text-slate-400 mr-1"></i> {{ __('Terdaftar sejak') }} {{ $user->created_at->format('M Y') }}</span>
                 </p>
             </div>
         </div>
@@ -29,15 +29,15 @@
         <div class="flex flex-wrap items-center gap-2.5">
             <a href="{{ route('customer.orders.create') }}" 
                class="px-5 py-2.5 rounded-2xl font-extrabold text-xs text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-md hover:shadow-lg transition flex items-center">
-                <i class="fa-solid fa-cart-plus mr-2"></i> Pesan Air Sekarang
+                <i class="fa-solid fa-cart-plus mr-2"></i> {{ __('Pesan Air Sekarang') }}
             </a>
             <a href="{{ route('customer.store-profile') }}" 
-               class="px-4 py-2.5 rounded-2xl font-bold text-xs text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 transition flex items-center shadow-2xs">
-                <i class="fa-solid fa-store mr-1.5 text-blue-600"></i> Lokasi Depot & Maps
+               class="px-4 py-2.5 rounded-2xl font-bold text-xs text-blue-800 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/40 border border-blue-200 dark:border-blue-800 transition flex items-center shadow-2xs">
+                <i class="fa-solid fa-store mr-1.5 text-blue-600 dark:text-blue-400"></i> {{ __('Lokasi Depot & Maps') }}
             </a>
             <a href="{{ route('customer.addresses.index') }}" 
-               class="px-4 py-2.5 rounded-2xl font-bold text-xs text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition flex items-center">
-                <i class="fa-solid fa-location-dot mr-1.5 text-cyan-600"></i> Alamat Saya
+               class="px-4 py-2.5 rounded-2xl font-bold text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition flex items-center">
+                <i class="fa-solid fa-location-dot mr-1.5 text-cyan-600 dark:text-cyan-400"></i> {{ __('Alamat Saya') }}
             </a>
         </div>
     </div>
@@ -49,20 +49,17 @@
                 <div class="space-y-2">
                     <div class="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-white text-xs font-bold backdrop-blur-xs">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 mr-2 animate-ping"></span>
-                        Pesanan Sedang Diproses: {{ $activeOrder->order_number }}
+                        {{ __('Pesanan Sedang Diproses') }}: {{ $activeOrder->order_number }}
                     </div>
                     <h3 class="text-xl font-extrabold tracking-tight">
-                        Status: {{ $activeOrder->status_badge['label'] }}
+                        {{ __('Status') }}: {{ __($activeOrder->status_badge['label']) }}
                     </h3>
                     <p class="text-cyan-100 text-xs sm:text-sm max-w-xl">
-                        Tujuan pengantaran: <span class="font-medium text-white">{{ $activeOrder->delivery_address_text }}</span>
+                        {{ __('Tujuan pengantaran') }}: <span class="font-medium text-white">{{ $activeOrder->delivery_address_text }}</span>
                     </p>
-                    @if ($activeOrder->delivery && $activeOrder->delivery->driver)
+                    @if ($activeOrder->delivery)
                         <div class="text-xs text-white/90 pt-1 flex items-center">
-                            <i class="fa-solid fa-motorcycle mr-1.5 text-emerald-300"></i> Petugas Antar: <span class="font-bold ml-1">{{ $activeOrder->delivery->driver->name }}</span>
-                            @if ($activeOrder->delivery->driver->phone)
-                                &bull; <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $activeOrder->delivery->driver->phone) }}" target="_blank" class="ml-1 underline hover:text-emerald-300 font-bold">Chat WhatsApp</a>
-                            @endif
+                            <i class="fa-solid fa-truck-fast mr-1.5 text-emerald-300"></i> {{ __('Status Pengantaran') }}: <span class="font-bold ml-1">{{ __($activeOrder->delivery->status_badge['label'] ?? $activeOrder->delivery->status) }}</span>
                         </div>
                     @endif
                 </div>
@@ -71,20 +68,20 @@
                     @if ($activeOrder->delivery && in_array($activeOrder->delivery->status, ['assigned', 'in_transit', 'arrived']))
                         <a href="{{ route('customer.orders.track', $activeOrder) }}" 
                            class="inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs shadow-md transition transform hover:scale-105">
-                            <i class="fa-solid fa-map-location-dot mr-2"></i> Lacak Pengantar di Peta
+                            <i class="fa-solid fa-map-location-dot mr-2"></i> {{ __('Lacak Pengantaran di Peta') }}
                         </a>
                     @endif
 
                     @if (in_array($activeOrder->status, ['pending', 'confirmed']))
                         <a href="{{ $activeOrder->whatsapp_url }}" target="_blank" 
                            class="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-sm transition">
-                            <i class="fa-brands fa-whatsapp text-sm mr-1.5"></i> Konfirmasi ke WA
+                            <i class="fa-brands fa-whatsapp text-sm mr-1.5"></i> {{ __('Konfirmasi ke WA') }}
                         </a>
                     @endif
 
                     <a href="{{ route('customer.orders.show', $activeOrder) }}" 
                        class="inline-flex items-center justify-center px-5 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs backdrop-blur-xs transition">
-                        Detail Pesanan
+                        {{ __('Detail') }}
                     </a>
                 </div>
             </div>

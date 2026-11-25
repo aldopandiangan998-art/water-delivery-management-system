@@ -23,20 +23,15 @@ class DeliveryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Delivery::with(['order.items', 'order.address', 'driver', 'latestLocation'])->latest();
+        $query = Delivery::with(['order.items', 'order.address', 'latestLocation'])->latest();
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        if ($request->filled('driver_id')) {
-            $query->where('driver_id', $request->driver_id);
-        }
-
         $deliveries = $query->paginate(15)->withQueryString();
-        $drivers = User::whereIn('role', ['admin', 'super_admin'])->where('is_active', true)->get();
 
-        return view('admin.deliveries.index', compact('deliveries', 'drivers'));
+        return view('admin.deliveries.index', compact('deliveries'));
     }
 
     public function show(Delivery $delivery)
@@ -48,7 +43,6 @@ class DeliveryController extends Controller
             'statusHistories.changer',
             'latestLocation',
             'photos',
-            'driver',
         ]);
 
         return view('admin.deliveries.show', compact('delivery'));
@@ -118,7 +112,6 @@ class DeliveryController extends Controller
             'photo' => ['nullable', 'image', 'max:5120'], // 5MB
             'empty_gallons_returned' => ['nullable', 'integer', 'min:0'],
             'payment_received' => ['nullable', 'numeric', 'min:0'],
-            'driver_notes' => ['nullable', 'string', 'max:500'],
         ]);
 
         DB::transaction(function () use ($request, $delivery, $validated) {
@@ -139,7 +132,6 @@ class DeliveryController extends Controller
             $delivery->update([
                 'status' => 'delivered',
                 'completed_at' => now(),
-                'driver_notes' => $validated['driver_notes'] ?? null,
             ]);
 
             DeliveryStatusHistory::create([
@@ -226,7 +218,6 @@ class DeliveryController extends Controller
 
         $loc = DeliveryLocation::create([
             'delivery_id' => $delivery->id,
-            'driver_id' => Auth::id(),
             'latitude' => $validated['latitude'],
             'longitude' => $validated['longitude'],
             'accuracy' => $validated['accuracy'] ?? null,
@@ -245,7 +236,7 @@ class DeliveryController extends Controller
     public function map()
     {
         $activeDeliveries = Delivery::whereIn('status', ['assigned', 'in_transit', 'arrived'])
-            ->with(['order.address', 'driver', 'latestLocation'])
+            ->with(['order.address', 'latestLocation'])
             ->get();
 
         $depotLat = (float) BusinessSetting::get('store_latitude', -7.303488);
@@ -328,7 +319,7 @@ class DeliveryController extends Controller
     public function apiLiveDrivers()
     {
         $activeDeliveries = Delivery::whereIn('status', ['assigned', 'in_transit', 'arrived'])
-            ->with(['order', 'driver', 'latestLocation'])
+            ->with(['order', 'latestLocation'])
             ->get();
 
         $data = $activeDeliveries->map(function ($del) {
@@ -343,8 +334,8 @@ class DeliveryController extends Controller
                 'delivery_number' => $del->delivery_number,
                 'status' => $del->status,
                 'status_label' => $del->status_badge['label'],
-                'driver_name' => $del->driver?->name ?? 'Admin / Petugas Pengantar',
-                'driver_phone' => $del->driver?->phone,
+                'driver_name' => 'Petugas Depot',
+                'driver_phone' => BusinessSetting::get('company_phone'),
                 'driver_lat' => $latest ? (float) $latest->latitude : null,
                 'driver_lng' => $latest ? (float) $latest->longitude : null,
                 'driver_speed' => $latest?->speed,

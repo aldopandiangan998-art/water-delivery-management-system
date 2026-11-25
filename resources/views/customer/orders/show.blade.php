@@ -38,256 +38,32 @@
         </div>
     </div>
 
-    <!-- QRIS Payment Box (If QRIS payment method) -->
-    @if ($order->payment_method === 'qris')
-        @if ($order->payment_status === 'paid')
-            <!-- Paid QRIS Banner -->
-            <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-3xl p-5 shadow-xs flex items-center justify-between">
-                <div class="flex items-center space-x-3.5">
-                    <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm text-2xl">
-                        <i class="fa-solid fa-circle-check"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center space-x-2">
-                            <h2 class="text-sm sm:text-base font-black text-slate-900">Pembayaran QRIS Telah Lunas</h2>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200">Terverifikasi</span>
-                        </div>
-                        <p class="text-xs text-slate-600 mt-0.5">
-                            Pembayaran QRIS sebesar <b class="text-emerald-700">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</b> telah diverifikasi lunas oleh Admin. Pesanan Anda siap dikirim!
-                        </p>
-                    </div>
-                </div>
+
+
+    <!-- WhatsApp Confirmation Banner -->
+    <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border-2 border-emerald-300 rounded-3xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-start space-x-3.5">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm text-2xl">
+                <i class="fa-brands fa-whatsapp"></i>
             </div>
-        @elseif ($order->is_qris_confirmed)
-            <!-- QRIS Confirmed - Waiting for Admin Verification -->
-            <div class="bg-gradient-to-r from-teal-50 via-cyan-50 to-emerald-50 border-2 border-teal-300 rounded-3xl p-5 shadow-xs space-y-3">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-start space-x-3.5">
-                        <div class="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-sm text-2xl">
-                            <i class="fa-solid fa-receipt"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center space-x-2">
-                                <h2 class="text-sm sm:text-base font-black text-slate-900">Pembayaran QRIS Berhasil Dikonfirmasi!</h2>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 animate-pulse">Menunggu Cek Toko</span>
-                            </div>
-                            <p class="text-xs text-slate-600 mt-1">
-                                Anda telah mengonfirmasi pembayaran sebesar <b class="text-teal-700">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</b>. Pesanan Anda saat ini diteruskan ke WhatsApp Admin untuk disiapkan & diantar.
-                            </p>
-                        </div>
-                    </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h2 class="text-sm sm:text-base font-black text-slate-900">Pesanan Tunai Siap Diproses</h2>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Bayar di Tempat</span>
                 </div>
-
-                @if ($order->latest_payment_proof)
-                    <div class="pt-3 border-t border-teal-100 flex items-center space-x-3 text-xs text-slate-600">
-                        <span class="font-bold text-slate-700">Bukti Transfer:</span>
-                        <a href="/storage/{{ $order->latest_payment_proof }}" target="_blank" class="text-teal-700 font-bold hover:underline flex items-center">
-                            <i class="fa-solid fa-image mr-1"></i> Lihat Foto Bukti Pembayaran
-                        </a>
-                    </div>
-                @endif
+                <p class="text-xs text-slate-600 mt-1 leading-relaxed">
+                    Pesanan Anda telah tercatat! Klik tombol di samping untuk meneruskan rincian pesanan ke WhatsApp Admin agar kurir segera menyiapkan pesanan dan jalan ke alamat Anda.
+                </p>
             </div>
-        @else
-            <!-- Unpaid & Not Confirmed QRIS Box -->
-            <div class="bg-white rounded-3xl border-2 border-teal-300 shadow-md overflow-hidden" x-data="{ copied: false, modalOpen: false, previewUrl: null }">
-                <!-- Header -->
-                <div class="bg-gradient-to-r from-teal-600 via-cyan-600 to-blue-600 p-4 sm:p-5 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-white text-xl">
-                            <i class="fa-solid fa-qrcode"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center space-x-2">
-                                <h2 class="text-base font-black tracking-tight">QRIS DANA Bisnis (Doppnnstore)</h2>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400 text-slate-950 animate-pulse">Auto-Detect Realtime</span>
-                            </div>
-                            <p class="text-xs text-teal-100">
-                                Merchant: <b>Doppnnstore</b> &bull; NMID: <b>ID1025464152988</b>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="text-left sm:text-right bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-xs border border-white/20">
-                        <div class="text-[10px] text-teal-100 uppercase tracking-wider font-semibold">Total Tagihan Pas</div>
-                        <div class="text-lg font-black text-white">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</div>
-                    </div>
-                </div>
-
-                <!-- Info banner: Otomatis Terverifikasi via Gateway -->
-                <div class="bg-emerald-50 border-b border-emerald-200 px-5 py-2.5 flex items-center justify-between text-xs text-emerald-900 font-medium space-x-2">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-bolt text-emerald-600 text-sm shrink-0"></i>
-                        <span><b>Deteksi Otomatis Aktif:</b> Cukup scan barcode dengan m-Banking / E-Wallet Anda. Begitu pembayaran masuk ke DANA Bisnis toko, sistem otomatis mengubah pesanan menjadi <b>LUNAS</b> tanpa pelanggan dan admin perlu klik apa pun.</span>
-                    </div>
-                </div>
-
-                <!-- Body: QRIS Image & Instructions -->
-                <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                    <!-- Left: QR Code Display -->
-                    <div class="flex flex-col items-center justify-center bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                        <div class="relative group cursor-pointer" @click="modalOpen = true">
-                            <img src="{{ \App\Services\TripayService::isConfigured() && $order->qris_qr_url ? $order->qris_qr_url : asset('images/qris.jpg') }}" alt="QRIS Doppnnstore" 
-                                 class="w-64 max-w-full h-auto rounded-xl shadow-md border-2 border-white object-contain bg-white p-2">
-                            <div class="absolute inset-0 bg-black/30 rounded-xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold space-x-1">
-                                <i class="fa-solid fa-magnifying-glass-plus text-base"></i>
-                                <span>Klik untuk Perbesar</span>
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons below QR -->
-                        <div class="mt-4 flex flex-wrap gap-2 justify-center w-full">
-                            <a href="{{ $order->qris_qr_url ?: asset('images/qris.jpg') }}" download="QRIS-{{ $order->order_number }}.png"
-                               class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-800 transition flex items-center">
-                                <i class="fa-solid fa-download mr-1.5"></i> Unduh Gambar QRIS
-                            </a>
-                            <button type="button" @click="navigator.clipboard.writeText('{{ (int)$order->total_amount }}'); copied = true; setTimeout(() => copied = false, 2500)"
-                                    class="px-3 py-1.5 rounded-xl text-xs font-bold bg-teal-100 hover:bg-teal-200 text-teal-800 transition flex items-center">
-                                <i class="fa-solid fa-copy mr-1.5" x-show="!copied"></i>
-                                <i class="fa-solid fa-check mr-1.5 text-emerald-600" x-show="copied"></i>
-                                <span x-text="copied ? 'Tersalin!' : 'Salin Nominal Rp {{ number_format($order->total_amount, 0, ',', '.') }}'"></span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Right: Step by Step Instructions & Auto-Detect Pulse -->
-                    <div class="space-y-4">
-                        <h3 class="font-extrabold text-sm text-slate-900 flex items-center">
-                            <span class="w-6 h-6 rounded-full bg-teal-600 text-white flex items-center justify-center text-xs mr-2 font-bold">1</span>
-                            Cara Pembayaran Cepat:
-                        </h3>
-
-                        <ol class="space-y-2.5 text-xs text-slate-700">
-                            <li class="flex items-start">
-                                <span class="font-bold text-teal-700 mr-2 shrink-0">1.</span>
-                                <span>Buka aplikasi <b>m-Banking</b> (BCA, Mandiri, BRI, BNI) atau <b>E-Wallet</b> (GoPay, DANA, OVO, ShopeePay).</span>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="font-bold text-teal-700 mr-2 shrink-0">2.</span>
-                                <span>Pilih menu <b>Scan / Bayar QRIS</b>, lalu arahkan kamera ke barcode di samping.</span>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="font-bold text-teal-700 mr-2 shrink-0">3.</span>
-                                <span>Periksa nama toko <b>Toko Nova Jaya / Doppnnstore</b> dan nominal tagihan pas: <b class="text-teal-800 bg-teal-50 px-1.5 py-0.5 rounded border border-teal-200">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</b>.</span>
-                            </li>
-                            <li class="flex items-start">
-                                <span class="font-bold text-teal-700 mr-2 shrink-0">4.</span>
-                                <span>Selesaikan pembayaran dengan memasukkan PIN aplikasi Anda.</span>
-                            </li>
-                        </ol>
-
-                        <!-- Live Detection Status Box -->
-                        <div class="p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200 text-center space-y-2">
-                            <div class="inline-flex items-center space-x-2 text-emerald-800 font-black text-xs">
-                                <span class="relative flex h-2.5 w-2.5">
-                                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                                </span>
-                                <span>Sistem Siap Mendeteksi Pembayaran Otomatis</span>
-                            </div>
-                            <p class="text-[11px] text-slate-600 leading-relaxed">
-                                Begitu Anda berhasil membayar di aplikasi bank/e-wallet Anda, sistem gateway akan otomatis memvalidasi dan halaman ini akan <b>langsung berubah hijau menjadi Lunas</b> tanpa Anda perlu klik apa pun.
-                            </p>
-                        </div>
-
-                        <!-- Manual Upload Fallback (Optional) -->
-                        <div x-data="{ manualOpen: false }" class="pt-2 border-t border-slate-200">
-                            <button type="button" @click="manualOpen = !manualOpen"
-                                    class="text-[11px] text-slate-500 hover:text-teal-700 font-bold flex items-center justify-between w-full py-1">
-                                <span>Ingin upload bukti transfer manual? (Opsional)</span>
-                                <i class="fa-solid text-[10px]" :class="manualOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
-                            </button>
-
-                            <div x-show="manualOpen" x-cloak class="mt-2 pt-2">
-                                <form method="POST" action="{{ route('customer.orders.confirm-payment', $order) }}" enctype="multipart/form-data" class="space-y-3 bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
-                                    @csrf
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-800 mb-1">
-                                            Upload Screenshot Bukti Transfer
-                                        </label>
-                                        <input type="file" name="proof_image" accept="image/*"
-                                               @change="const file = $event.target.files[0]; if (file) { previewUrl = URL.createObjectURL(file) }"
-                                               class="w-full text-xs text-slate-600 file:mr-2.5 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-600 file:text-white hover:file:bg-teal-700 cursor-pointer">
-                                        <template x-if="previewUrl">
-                                            <div class="mt-2">
-                                                <img :src="previewUrl" alt="Preview Bukti" class="h-20 w-auto rounded-lg border border-teal-300 shadow-2xs">
-                                            </div>
-                                        </template>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-xs font-bold text-slate-800 mb-1">
-                                            Nama Pengirim / Akun
-                                        </label>
-                                        <input type="text" name="notes" placeholder="Contoh: BCA a.n Budi"
-                                               class="w-full text-xs border border-slate-300 rounded-xl p-2.5 bg-white focus:ring-2 focus:ring-teal-500">
-                                    </div>
-
-                                    <button type="submit" 
-                                            class="w-full py-2.5 px-4 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-extrabold text-xs shadow-xs transition">
-                                        Kirim Bukti Pembayaran
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Fullscreen Image Modal -->
-                <div x-show="modalOpen" x-cloak 
-                     @click="modalOpen = false"
-                     class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs">
-                    <div class="relative max-w-sm w-full bg-white rounded-3xl p-4 shadow-2xl" @click.stop>
-                        <button type="button" @click="modalOpen = false" 
-                                class="absolute top-3 right-3 text-slate-400 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-full w-8 h-8 flex items-center justify-center">
-                            <i class="fa-solid fa-xmark text-sm"></i>
-                        </button>
-                        <h4 class="font-bold text-sm text-slate-900 text-center mb-2">QRIS Resmi Toko (Doppnnstore)</h4>
-                        <img src="{{ asset('images/qris.jpg') }}" alt="QRIS Doppnnstore Full" class="w-full h-auto rounded-xl">
-                        <div class="mt-3 text-center text-xs font-bold text-teal-700">
-                            Nominal Pas: Rp {{ number_format($order->total_amount, 0, ',', '.') }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endif
-    @endif
-
-    <!-- WhatsApp Confirmation Banner:
-         - IF COD: Always show!
-         - IF QRIS: ONLY show after customer has confirmed or paid! -->
-    @if ($order->payment_method === 'cod' || $order->is_qris_confirmed || $order->payment_status === 'paid')
-        <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 border-2 border-emerald-300 rounded-3xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div class="flex items-start space-x-3.5">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm text-2xl">
-                    <i class="fa-brands fa-whatsapp"></i>
-                </div>
-                <div>
-                    <div class="flex items-center space-x-2">
-                        @if ($order->payment_method === 'cod')
-                            <h2 class="text-sm sm:text-base font-black text-slate-900">Pesanan Tunai Siap Diproses</h2>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Bayar di Tempat</span>
-                        @else
-                            <h2 class="text-sm sm:text-base font-black text-slate-900">Teruskan Pesanan ke WhatsApp Admin</h2>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-800 border border-teal-200">QRIS Terkonfirmasi</span>
-                        @endif
-                    </div>
-                    <p class="text-xs text-slate-600 mt-1 leading-relaxed">
-                        @if ($order->payment_method === 'cod')
-                            Pesanan Anda telah tercatat! Klik tombol di bawah untuk meneruskan rincian pesanan ke WhatsApp Admin agar kurir segera menyiapkan pesanan dan jalan ke alamat Anda.
-                        @else
-                            Pembayaran QRIS telah Anda konfirmasi! Klik tombol di bawah untuk membuka WhatsApp Admin dengan rincian pesanan dan bukti bayar agar kurir segera jalan.
-                        @endif
-                    </p>
-                </div>
-            </div>
-
-            <a href="{{ $order->whatsapp_url }}" target="_blank"
-               class="w-full sm:w-auto px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2 shrink-0">
-                <i class="fa-brands fa-whatsapp text-lg"></i>
-                <span>{{ $order->payment_method === 'cod' ? 'Kirim ke WhatsApp Admin' : 'Kirim Bukti ke WhatsApp Admin' }}</span>
-                <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
-            </a>
         </div>
-    @endif
+
+        <a href="{{ $order->whatsapp_url }}" target="_blank"
+           class="w-full sm:w-auto px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2 shrink-0">
+            <i class="fa-brands fa-whatsapp text-lg"></i>
+            <span>Kirim ke WhatsApp Admin</span>
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px] ml-1"></i>
+        </a>
+    </div>
 
     <!-- Delivery & Driver Status Card -->
     @if ($order->delivery)
@@ -296,24 +72,14 @@
                 <i class="fa-solid fa-truck text-cyan-600 mr-2"></i> Status Pengantaran
             </h2>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl text-xs">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl text-xs">
                 <div>
-                    <span class="text-slate-400 block">Kurir Pengantar:</span>
-                    <span class="font-bold text-slate-800 text-sm">{{ $order->delivery->driver?->name ?? 'Belum Ditugaskan' }}</span>
+                    <span class="text-slate-400 block">No. Pengantaran:</span>
+                    <span class="font-bold text-slate-800 text-sm font-mono">{{ $order->delivery->delivery_number }}</span>
                 </div>
                 <div>
                     <span class="text-slate-400 block">Status Pengiriman:</span>
                     <span class="font-bold text-slate-800 text-sm">{{ $order->delivery->status_badge['label'] }}</span>
-                </div>
-                <div>
-                    <span class="text-slate-400 block">Kontak Kurir:</span>
-                    @if ($order->delivery->driver?->phone)
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $order->delivery->driver->phone) }}" target="_blank" class="font-bold text-emerald-600 hover:underline flex items-center mt-0.5">
-                            <i class="fa-brands fa-whatsapp mr-1"></i> {{ $order->delivery->driver->phone }}
-                        </a>
-                    @else
-                        <span class="text-slate-400">-</span>
-                    @endif
                 </div>
             </div>
 
@@ -368,12 +134,6 @@
                 <span>Ongkos Kirim:</span>
                 <span class="font-semibold text-slate-800">Rp {{ number_format($order->delivery_fee, 0, ',', '.') }}</span>
             </div>
-            @if ($order->service_fee > 0)
-                <div class="flex justify-between text-teal-700 font-semibold">
-                    <span>Biaya Layanan QRIS (0.7%):</span>
-                    <span>Rp {{ number_format($order->service_fee, 0, ',', '.') }}</span>
-                </div>
-            @endif
             <div class="flex justify-between text-base font-black text-slate-900 pt-2 border-t border-slate-100">
                 <span>Total Tagihan:</span>
                 <span class="text-cyan-700">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
@@ -476,41 +236,6 @@
         </script>
     @endif
 
-    {{-- Real-time QRIS payment status polling (only for unpaid QRIS orders) --}}
-    @if ($order->payment_method === 'qris' && $order->payment_status !== 'paid')
-        <script>
-            (function () {
-                const statusUrl = "{{ route('customer.orders.status-check', $order) }}";
-                let pollCount = 0;
-                const maxPolls = 300; // max 20 menit (300 x 4 detik)
-
-                function checkPaymentStatus() {
-                    if (pollCount >= maxPolls) return;
-                    pollCount++;
-
-                    fetch(statusUrl, {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-                    })
-                    .then(r => r.json())
-                    .then(data => {
-                        if (data.is_paid || data.payment_status === 'paid') {
-                            // Payment confirmed by DANA webhook - redirect to updated page
-                            window.location.reload();
-                        } else {
-                            setTimeout(checkPaymentStatus, 4000);
-                        }
-                    })
-                    .catch(() => {
-                        // Retry on network error silently
-                        setTimeout(checkPaymentStatus, 8000);
-                    });
-                }
-
-                // Start polling 4 seconds after page load
-                setTimeout(checkPaymentStatus, 4000);
-            })();
-        </script>
-    @endif
 
 </div>
 @endsection

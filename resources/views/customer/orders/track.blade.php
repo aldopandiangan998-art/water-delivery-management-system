@@ -1,6 +1,6 @@
 @extends('layouts.customer')
 
-@section('title', 'Lacak Kurir Live - #' . $order->order_number)
+@section('title', 'Lacak Pengantaran Live - #' . $order->order_number)
 
 @push('styles')
 <!-- Leaflet CSS & JS -->
@@ -30,8 +30,8 @@
          'customerLng' => (float) $order->delivery_longitude,
          'driverLat' => (float) ($order->delivery?->latestLocation?->latitude ?? $order->delivery_latitude + 0.003),
          'driverLng' => (float) ($order->delivery?->latestLocation?->longitude ?? $order->delivery_longitude + 0.003),
-         'driverName' => $order->delivery?->driver?->name ?? 'Kurir AquaFlow',
-         'driverPhone' => $order->delivery?->driver?->phone ?? '',
+         'driverName' => 'Petugas Depot',
+         'driverPhone' => '',
          'apiEndpoint' => route('customer.orders.api-location', $order),
      ]) }})">
 
@@ -46,18 +46,11 @@
                 </span>
             </div>
             <p class="text-xs text-slate-500 mt-1">
-                Kurir: <span class="font-bold text-slate-800" x-text="driverName"></span> &bull; 
                 Tujuan: <span class="font-medium text-slate-700">{{ $order->delivery_address_text }}</span>
             </p>
         </div>
 
         <div class="flex items-center space-x-2">
-            <template x-if="driverPhone">
-                <a :href="'https://wa.me/' + driverPhone.replace(/[^0-9]/g, '')" target="_blank"
-                   class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
-                    <i class="fa-brands fa-whatsapp text-sm mr-1.5"></i> Hubungi Kurir
-                </a>
-            </template>
             <a href="{{ route('customer.orders.show', $order) }}" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition">
                 Rincian Pesanan
             </a>
@@ -67,7 +60,7 @@
     <!-- Stale GPS Warning Banner -->
     <div x-show="isStale" x-cloak class="p-3.5 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs font-semibold flex items-center">
         <i class="fa-solid fa-triangle-exclamation text-amber-600 mr-2 text-base"></i>
-        <span>Peringatan: Sinyal GPS kurir terakhir diperbarui beberapa menit lalu (kemungkinan kurir sedang di area sinyal lemah).</span>
+        <span>Peringatan: Sinyal GPS pengantaran terakhir diperbarui beberapa menit lalu (kemungkinan sinyal sedang lemah).</span>
     </div>
 
     <!-- Map Container -->
@@ -187,7 +180,7 @@ function liveTracking(config) {
 
             this.driverMarker = L.marker([this.driverLat, this.driverLng], { icon: driverIcon })
                 .addTo(this.map)
-                .bindPopup(`<b>Kurir: ${this.driverName}</b><br>Sedang membawa galon air`);
+                .bindPopup(`<b>Armada Pengantaran</b><br>Sedang dalam perjalanan`);
 
             // Fit bounds to show both customer and driver
             const group = new L.featureGroup([this.customerMarker, this.driverMarker]);

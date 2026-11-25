@@ -23,19 +23,4 @@ class AdminDashboardTest extends TestCase
         $response->assertSee('Ringkasan Bisnis');
         $response->assertSee('ADMIN');
     }
-
-    public function test_super_admin_can_access_dashboard_with_super_admin_theme(): void
-    {
-        $superAdmin = User::factory()->create([
-            'role' => 'super_admin',
-            'is_active' => true,
-        ]);
-
-        $response = $this->actingAs($superAdmin)->get(route('admin.dashboard'));
-
-        $response->assertStatus(200);
-        $response->assertSee('Ringkasan Bisnis');
-        $response->assertSee('SUPER ADMIN');
-        $response->assertSee('Akses Penuh');
-    }
 }

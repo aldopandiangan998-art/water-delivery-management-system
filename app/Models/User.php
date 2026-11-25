@@ -35,14 +35,9 @@ class User extends Authenticatable
         ];
     }
 
-    public function isSuperAdmin(): bool
-    {
-        return $this->role === 'super_admin';
-    }
-
     public function isAdmin(): bool
     {
-        return in_array($this->role, ['super_admin', 'admin']);
+        return $this->role === 'admin';
     }
 
     public function isCustomer(): bool
@@ -76,11 +71,6 @@ class User extends Authenticatable
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
-    }
-
-    public function deliveries(): HasMany
-    {
-        return $this->hasMany(Delivery::class, 'driver_id');
     }
 
     public function reviews(): HasMany

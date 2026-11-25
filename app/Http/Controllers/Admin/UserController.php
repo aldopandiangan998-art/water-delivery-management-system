@@ -33,12 +33,12 @@ class UserController extends Controller
 
     public function updateRole(Request $request, User $user)
     {
-        if ($user->id === Auth::id() && $user->role === 'super_admin') {
+        if ($user->id === Auth::id()) {
             return back()->with('error', 'Anda tidak dapat mengubah peran akun Anda sendiri.');
         }
 
         $validated = $request->validate([
-            'role' => ['required', 'in:super_admin,admin,customer'],
+            'role' => ['required', 'in:admin,customer'],
         ]);
 
         $user->update(['role' => $validated['role']]);

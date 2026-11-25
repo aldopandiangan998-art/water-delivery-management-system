@@ -15,12 +15,10 @@ class Delivery extends Model
     protected $fillable = [
         'delivery_number',
         'order_id',
-        'driver_id',
         'status',
         'started_at',
         'arrived_at',
         'completed_at',
-        'driver_notes',
     ];
 
     protected function casts(): array
@@ -35,11 +33,6 @@ class Delivery extends Model
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);
-    }
-
-    public function driver(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'driver_id');
     }
 
     public function statusHistories(): HasMany
@@ -65,8 +58,8 @@ class Delivery extends Model
     public function getStatusBadgeAttribute(): array
     {
         return match ($this->status) {
-            'not_assigned' => ['label' => 'Belum Ditugaskan', 'color' => 'bg-gray-100 text-gray-800 border-gray-200'],
-            'assigned' => ['label' => 'Driver Ditugaskan', 'color' => 'bg-blue-100 text-blue-800 border-blue-200'],
+            'not_assigned' => ['label' => 'Menunggu Pengantaran', 'color' => 'bg-gray-100 text-gray-800 border-gray-200'],
+            'assigned' => ['label' => 'Siap Dikirim', 'color' => 'bg-blue-100 text-blue-800 border-blue-200'],
             'in_transit' => ['label' => 'Dalam Perjalanan', 'color' => 'bg-amber-100 text-amber-800 border-amber-200 animate-pulse'],
             'arrived' => ['label' => 'Tiba di Lokasi', 'color' => 'bg-indigo-100 text-indigo-800 border-indigo-200'],
             'delivered' => ['label' => 'Terkirim', 'color' => 'bg-emerald-100 text-emerald-800 border-emerald-200'],

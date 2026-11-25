@@ -56,7 +56,7 @@ style="display: none;">
          @click="closeModal()"></div>
 
     <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-        <div class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-slate-100 p-6"
+        <div class="relative transform overflow-hidden rounded-3xl bg-white dark:bg-slate-900 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-md border border-slate-100 dark:border-slate-800 p-6"
              x-show="open"
              x-transition:enter="ease-out duration-300"
              x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
@@ -70,12 +70,12 @@ style="display: none;">
                 <!-- Warning / Delete Icon -->
                 <div class="mx-auto flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-all duration-300 sm:mx-0"
                      :class="iconBgClass">
-                    <i :class="iconClass" class="text-2xl"></i>
+                     <i :class="iconClass" class="text-2xl"></i>
                 </div>
 
                 <div class="mt-3 text-center sm:mt-0 sm:text-left flex-1">
-                    <h3 class="text-base font-black text-slate-900 tracking-tight" x-text="title"></h3>
-                    <p class="mt-2 text-xs text-slate-600 leading-relaxed" x-text="message"></p>
+                    <h3 class="text-base font-black text-slate-900 dark:text-white tracking-tight" x-text="title"></h3>
+                    <p class="mt-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed" x-text="message"></p>
                 </div>
             </div>
 
@@ -83,7 +83,7 @@ style="display: none;">
             <div class="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5">
                 <button type="button" 
                         @click="closeModal()" 
-                        class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold transition cursor-pointer">
+                        class="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition cursor-pointer">
                     <span x-text="cancelText"></span>
                 </button>
                 <button type="button" 

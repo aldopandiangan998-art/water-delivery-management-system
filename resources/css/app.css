@@ -1,9 +1,289 @@
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../../resources/views/**/*.blade.php';
 
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* ==========================================================================
+   Comprehensive Dark & Light Mode Styles for Modern Slate Theme
+   Adapts all features: cards, inputs, tables, badges, maps, alerts, and navigation
+   ========================================================================== */
+
+/* 1. Base Dark Theme Settings */
+html.dark {
+    color-scheme: dark;
+}
+
+html.dark, 
+html.dark body {
+    background-color: #0b1329 !important;
+    color: #f1f5f9 !important;
+}
+
+/* 2. Containers, Cards, Sections & Sheets */
+html.dark .bg-white {
+    background-color: #111c35 !important;
+    color: #f1f5f9;
+}
+
+html.dark .bg-slate-50,
+html.dark .bg-slate-100 {
+    background-color: #0d162b !important;
+}
+
+html.dark .bg-slate-200 {
+    background-color: #1e293b !important;
+}
+
+/* 3. Gradient Adaptation for Landing and Hero */
+html.dark .from-cyan-50 {
+    --tw-gradient-from: #0b1329 !important;
+}
+html.dark .via-white {
+    --tw-gradient-via: #111c35 !important;
+}
+html.dark .to-white {
+    --tw-gradient-to: #0b1329 !important;
+}
+html.dark .from-cyan-100 {
+    --tw-gradient-from: #0f2744 !important;
+}
+html.dark .to-blue-50 {
+    --tw-gradient-to: #111c35 !important;
+}
+
+/* 4. Borders & Dividers */
+html.dark .border-slate-100,
+html.dark .border-slate-200,
+html.dark .border-slate-300,
+html.dark .border-slate-400 {
+    border-color: rgba(51, 65, 85, 0.6) !important;
+}
+
+html.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+html.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+    border-color: rgba(51, 65, 85, 0.5) !important;
+}
+
+/* 5. Typography & Text Colors */
+html.dark .text-slate-900,
+html.dark .text-slate-800 {
+    color: #f8fafc !important;
+}
+
+html.dark .text-slate-700,
+html.dark .text-slate-600 {
+    color: #cbd5e1 !important;
+}
+
+html.dark .text-slate-500 {
+    color: #94a3b8 !important;
+}
+
+/* 6. Form Controls: Inputs, Selects, Textareas & Radios */
+html.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+html.dark select,
+html.dark textarea {
+    background-color: #091024 !important;
+    color: #f8fafc !important;
+    border-color: #334155 !important;
+}
+
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus {
+    border-color: #06b6d4 !important;
+    box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.25) !important;
+    outline: none !important;
+}
+
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+    color: #475569 !important;
+}
+
+html.dark select option {
+    background-color: #091024 !important;
+    color: #f8fafc !important;
+}
+
+html.dark input[type="checkbox"],
+html.dark input[type="radio"] {
+    background-color: #1e293b;
+    border-color: #475569;
+}
+
+/* 7. Tables & Data Grids */
+html.dark table {
+    color: #cbd5e1;
+}
+
+html.dark thead.bg-slate-50,
+html.dark thead.bg-slate-100,
+html.dark thead {
+    background-color: #0d162b !important;
+}
+
+html.dark th {
+    background-color: #0d162b !important;
+    color: #94a3b8 !important;
+    border-color: rgba(51, 65, 85, 0.6) !important;
+}
+
+html.dark td {
+    border-color: rgba(51, 65, 85, 0.4) !important;
+}
+
+html.dark tbody tr:hover {
+    background-color: rgba(30, 41, 59, 0.5) !important;
+}
+
+/* 8. Status Badges & Alert Pills (Seamless Dark Tone with High Contrast) */
+html.dark .bg-amber-100 {
+    background-color: rgba(245, 158, 11, 0.2) !important;
+    color: #fbbf24 !important;
+    border-color: rgba(245, 158, 11, 0.35) !important;
+}
+html.dark .text-amber-800, html.dark .text-amber-700 {
+    color: #fbbf24 !important;
+}
+
+html.dark .bg-blue-100 {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+    color: #60a5fa !important;
+    border-color: rgba(59, 130, 246, 0.35) !important;
+}
+html.dark .text-blue-800, html.dark .text-blue-700 {
+    color: #60a5fa !important;
+}
+
+html.dark .bg-indigo-100 {
+    background-color: rgba(99, 102, 241, 0.2) !important;
+    color: #818cf8 !important;
+    border-color: rgba(99, 102, 241, 0.35) !important;
+}
+html.dark .text-indigo-800, html.dark .text-indigo-700 {
+    color: #818cf8 !important;
+}
+
+html.dark .bg-cyan-100 {
+    background-color: rgba(6, 182, 212, 0.2) !important;
+    color: #22d3ee !important;
+    border-color: rgba(6, 182, 212, 0.35) !important;
+}
+html.dark .text-cyan-800, html.dark .text-cyan-700 {
+    color: #22d3ee !important;
+}
+
+html.dark .bg-emerald-100 {
+    background-color: rgba(16, 185, 129, 0.2) !important;
+    color: #34d399 !important;
+    border-color: rgba(16, 185, 129, 0.35) !important;
+}
+html.dark .text-emerald-800, html.dark .text-emerald-700 {
+    color: #34d399 !important;
+}
+
+html.dark .bg-rose-100 {
+    background-color: rgba(244, 63, 94, 0.2) !important;
+    color: #fb7185 !important;
+    border-color: rgba(244, 63, 94, 0.35) !important;
+}
+html.dark .text-rose-800, html.dark .text-rose-700 {
+    color: #fb7185 !important;
+}
+
+html.dark .bg-gray-100 {
+    background-color: rgba(100, 116, 139, 0.2) !important;
+    color: #94a3b8 !important;
+    border-color: rgba(100, 116, 139, 0.35) !important;
+}
+html.dark .text-gray-800, html.dark .text-gray-700 {
+    color: #cbd5e1 !important;
+}
+
+/* 9. Flash Message Banners & Callout Alerts */
+html.dark .bg-emerald-50 {
+    background-color: rgba(6, 78, 59, 0.35) !important;
+    color: #a7f3d0 !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+html.dark .bg-rose-50 {
+    background-color: rgba(136, 19, 55, 0.35) !important;
+    color: #fecdd3 !important;
+    border-color: rgba(244, 63, 94, 0.3) !important;
+}
+html.dark .bg-sky-50 {
+    background-color: rgba(12, 74, 110, 0.35) !important;
+    color: #bae6fd !important;
+    border-color: rgba(14, 165, 233, 0.3) !important;
+}
+html.dark .bg-amber-50 {
+    background-color: rgba(120, 53, 15, 0.35) !important;
+    color: #fde68a !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+html.dark .bg-cyan-50 {
+    background-color: rgba(22, 78, 99, 0.35) !important;
+    color: #a5f3fc !important;
+    border-color: rgba(6, 182, 212, 0.3) !important;
+}
+html.dark .bg-blue-50 {
+    background-color: rgba(30, 58, 138, 0.35) !important;
+    color: #bfdbfe !important;
+    border-color: rgba(59, 130, 246, 0.3) !important;
+}
+
+/* 10. Buttons & Interactive Hover States */
+html.dark .hover\:bg-slate-50:hover, 
+html.dark .hover\:bg-slate-100:hover {
+    background-color: #1e293b !important;
+}
+html.dark .hover\:bg-cyan-50:hover {
+    background-color: rgba(8, 145, 178, 0.25) !important;
+}
+html.dark .hover\:bg-emerald-50:hover {
+    background-color: rgba(5, 150, 105, 0.25) !important;
+}
+html.dark .hover\:bg-rose-50:hover {
+    background-color: rgba(225, 29, 72, 0.25) !important;
+}
+html.dark .hover\:bg-blue-50:hover {
+    background-color: rgba(37, 99, 235, 0.25) !important;
+}
+
+/* 11. Headers, Navbars & Dropdowns */
+html.dark header.bg-white,
+html.dark nav.bg-white {
+    background-color: #0e172e !important;
+    border-color: rgba(51, 65, 85, 0.7) !important;
+}
+
+html.dark .shadow-sm,
+html.dark .shadow-md,
+html.dark .shadow-lg,
+html.dark .shadow-xl,
+html.dark .shadow-2xl {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 12. Leaflet Maps Dark Theme Integration */
+html.dark .leaflet-tile-pane {
+    filter: brightness(0.65) invert(1) contrast(3) hue-rotate(200deg) saturate(0.35) brightness(0.75);
+}
+html.dark .leaflet-container {
+    background-color: #0b1329 !important;
+}
+html.dark .leaflet-popup-content-wrapper,
+html.dark .leaflet-popup-tip {
+    background-color: #111c35 !important;
+    color: #f1f5f9 !important;
+    border: 1px solid rgba(51, 65, 85, 0.7);
 }

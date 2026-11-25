@@ -12,7 +12,6 @@ class DeliveryLocation extends Model
 
     protected $fillable = [
         'delivery_id',
-        'driver_id',
         'latitude',
         'longitude',
         'accuracy',
@@ -36,10 +35,5 @@ class DeliveryLocation extends Model
     public function delivery(): BelongsTo
     {
         return $this->belongsTo(Delivery::class);
-    }
-
-    public function driver(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'driver_id');
     }
 }

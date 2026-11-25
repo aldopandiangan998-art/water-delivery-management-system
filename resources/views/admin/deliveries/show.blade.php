@@ -22,7 +22,7 @@
                 <span class="text-xs text-slate-400 font-mono">Order #{{ $delivery->order->order_number }}</span>
             </div>
             <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">{{ $delivery->delivery_number }}</h1>
-            <p class="text-xs text-slate-500">Petugas Pengantar: <span class="font-bold text-slate-700">{{ $delivery->driver?->name ?? 'Admin' }}</span></p>
+            <p class="text-xs text-slate-500">Pengantaran Depot Toko Nova Jaya</p>
         </div>
 
         <div class="flex items-center space-x-2">
@@ -162,12 +162,6 @@
                                        class="w-full text-xs border border-slate-300 rounded-xl p-2 bg-white font-bold text-emerald-700">
                             </div>
                         @endif
-
-                        <div>
-                            <label class="block text-xs font-bold text-slate-700 mb-1">Catatan Tambahan (Opsional):</label>
-                            <input type="text" name="driver_notes" placeholder="Contoh: Diterima langsung oleh pelanggan di teras..."
-                                   class="w-full text-xs border border-slate-300 rounded-xl p-2.5">
-                        </div>
 
                         <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-xs transition flex items-center justify-center">
                             <i class="fa-solid fa-check-double mr-2"></i> Konfirmasi Pesanan Selesai

@@ -20,7 +20,7 @@ class CustomerDashboardController extends Controller
         // Check for currently active delivery or order
         $activeOrder = Order::where('user_id', $user->id)
             ->whereIn('status', ['pending', 'confirmed', 'processing', 'ready_for_delivery'])
-            ->with(['delivery.driver', 'items.product', 'address'])
+            ->with(['delivery', 'items.product', 'address'])
             ->latest()
             ->first();
 

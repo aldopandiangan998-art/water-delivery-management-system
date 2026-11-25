@@ -10,11 +10,11 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
                 <h1 class="text-xl font-black text-slate-900 tracking-tight">Daftar Seluruh Pesanan</h1>
-                <p class="text-xs text-slate-500">Kelola konfirmasi, penugasan kurir, dan pembayaran pesanan pelanggan.</p>
+                <p class="text-xs text-slate-500">Kelola konfirmasi, pengantaran, dan pembayaran pesanan pelanggan.</p>
             </div>
             <div class="flex items-center space-x-2 text-xs">
                 <a href="{{ route('admin.deliveries.map') }}" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold transition flex items-center shadow-xs">
-                    <i class="fa-solid fa-map-location-dot mr-1.5"></i> Buka Peta Kurir
+                    <i class="fa-solid fa-map-location-dot mr-1.5"></i> Buka Peta Pengantaran
                 </a>
             </div>
         </div>
@@ -71,7 +71,7 @@
                         <th class="px-5 py-3.5">Rincian Barang</th>
                         <th class="px-5 py-3.5">Total & Bayar</th>
                         <th class="px-5 py-3.5">Status Pesanan</th>
-                        <th class="px-5 py-3.5">Kurir Antar</th>
+                        <th class="px-5 py-3.5">Pengantaran</th>
                         <th class="px-5 py-3.5 text-right">Aksi</th>
                     </tr>
                 </thead>
@@ -116,11 +116,6 @@
                                         <i class="fa-solid {{ $order->payment_method_badge['icon'] }} mr-0.5 text-[9px]"></i>
                                         {{ $order->payment_method_badge['label'] }}
                                     </span>
-                                    @if ($order->payment_method === 'qris' && $order->is_qris_confirmed && $order->payment_status !== 'paid')
-                                        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-300 animate-pulse">
-                                            <i class="fa-solid fa-receipt mr-0.5"></i> Bukti QRIS Masuk
-                                        </span>
-                                    @endif
                                 </div>
                             </td>
 
@@ -131,23 +126,11 @@
                             </td>
 
                             <td class="px-5 py-3.5 whitespace-nowrap">
-                                @if ($order->delivery && $order->delivery->driver)
-                                    <div class="font-semibold text-slate-800">{{ $order->delivery->driver->name }}</div>
-                                    <div class="text-[10px] text-slate-400 capitalize">{{ $order->delivery->status }}</div>
+                                @if ($order->delivery)
+                                    <div class="font-semibold text-slate-800">{{ $order->delivery->delivery_number }}</div>
+                                    <div class="text-[10px] text-slate-500 capitalize">{{ $order->delivery->status_badge['label'] ?? $order->delivery->status }}</div>
                                 @else
-                                    <!-- Quick Assign Driver form inline -->
-                                    <form method="POST" action="{{ route('admin.orders.assign-driver', $order) }}" class="flex items-center space-x-1">
-                                        @csrf
-                                        <select name="driver_id" required class="text-xs border border-slate-200 rounded-lg p-1 bg-white">
-                                            <option value="">Pilih Driver</option>
-                                            @foreach ($drivers as $dr)
-                                                <option value="{{ $dr->id }}">{{ $dr->name }}</option>
-                                            @endforeach
-                                        </select>
-                                        <button type="submit" class="px-2 py-1 bg-cyan-600 text-white rounded-lg text-xs font-bold hover:bg-cyan-700">
-                                            Tugaskan
-                                        </button>
-                                    </form>
+                                    <span class="text-xs text-slate-400 italic">Belum dibuat</span>
                                 @endif
                             </td>
 

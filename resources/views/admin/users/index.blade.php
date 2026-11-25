@@ -8,7 +8,7 @@
     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
             <h1 class="text-xl font-black text-slate-900 tracking-tight">Manajemen Akun & Hak Akses</h1>
-            <p class="text-xs text-slate-500">Kelola daftar pengguna, tetapkan peran (Super Admin, Admin, Pelanggan), dan status akun.</p>
+            <p class="text-xs text-slate-500">Kelola daftar pengguna, tetapkan peran (Admin atau Pelanggan), dan status akun.</p>
         </div>
     </div>
 
@@ -44,11 +44,8 @@
 
                             <td class="px-5 py-3.5 whitespace-nowrap">
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
-                                    {{ $u->role === 'super_admin' ? 'bg-purple-100 text-purple-800 border border-purple-200' : '' }}
-                                    {{ $u->role === 'admin' ? 'bg-indigo-100 text-indigo-800 border border-indigo-200' : '' }}
-                                    {{ $u->role === 'driver' ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : '' }}
-                                    {{ $u->role === 'customer' ? 'bg-slate-100 text-slate-700 border border-slate-200' : '' }}">
-                                    {{ str_replace('_', ' ', $u->role) }}
+                                    {{ $u->role === 'admin' ? 'bg-indigo-100 text-indigo-800 border border-indigo-200' : 'bg-slate-100 text-slate-700 border border-slate-200' }}">
+                                    {{ $u->role === 'admin' ? 'Admin' : 'Pelanggan' }}
                                 </span>
                             </td>
 
@@ -79,7 +76,6 @@
                                         <select name="role" onchange="this.form.submit()" class="text-xs border border-slate-200 rounded-lg p-1 bg-white font-medium">
                                             <option value="customer" {{ $u->role === 'customer' ? 'selected' : '' }}>Pelanggan</option>
                                             <option value="admin" {{ $u->role === 'admin' ? 'selected' : '' }}>Admin</option>
-                                            <option value="super_admin" {{ $u->role === 'super_admin' ? 'selected' : '' }}>Super Admin</option>
                                         </select>
                                     </form>
 

@@ -174,13 +174,6 @@
                             <span>Ongkos Kirim</span>
                             <span class="font-semibold text-slate-800" x-text="formatRupiah(deliveryFee)"></span>
                         </div>
-                        <div x-show="paymentMethod === 'qris' && calculateQrisFee() > 0" x-cloak class="flex justify-between text-teal-700">
-                            <span class="flex items-center">
-                                <span>Biaya Layanan QRIS (0.7%)</span>
-                                <i class="fa-solid fa-circle-question ml-1 text-[10px] text-teal-500" title="Biaya resmi transaksi QRIS"></i>
-                            </span>
-                            <span class="font-semibold" x-text="formatRupiah(calculateQrisFee())"></span>
-                        </div>
                         <div class="flex justify-between text-base font-black text-slate-900 pt-3 border-t border-slate-200">
                             <span>Total Pembayaran</span>
                             <span class="text-cyan-700" x-text="formatRupiah(calculateTotal())"></span>
@@ -190,46 +183,22 @@
                     <!-- Payment Method Selection -->
                     <div class="space-y-2 pt-2 border-t border-slate-100">
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Metode Pembayaran</label>
-                        <div class="grid grid-cols-2 gap-2 text-xs">
-                            <label :class="paymentMethod === 'cod' ? 'border-cyan-600 bg-cyan-50 font-bold text-cyan-800 ring-1 ring-cyan-500 shadow-xs' : 'border-slate-200 text-slate-700 hover:border-slate-300'"
-                                   class="p-3 rounded-xl border text-center cursor-pointer transition flex flex-col items-center justify-center">
-                                <input type="radio" name="payment_method" value="cod" x-model="paymentMethod" class="sr-only">
-                                <i class="fa-solid fa-hand-holding-dollar block text-lg mb-1 text-emerald-600"></i>
-                                <span>Tunai / COD</span>
-                                <span class="text-[10px] text-slate-500 font-normal mt-0.5">Bayar di Tempat</span>
-                            </label>
-
-                            <label :class="paymentMethod === 'qris' ? 'border-teal-600 bg-teal-50 font-bold text-teal-900 ring-1 ring-teal-500 shadow-xs' : 'border-slate-200 text-slate-700 hover:border-slate-300'"
-                                   class="p-3 rounded-xl border text-center cursor-pointer transition flex flex-col items-center justify-center">
-                                <input type="radio" name="payment_method" value="qris" x-model="paymentMethod" class="sr-only">
-                                <i class="fa-solid fa-qrcode block text-lg mb-1 text-teal-600"></i>
-                                <span>QRIS Instan</span>
-                                <span class="text-[10px] text-slate-500 font-normal mt-0.5">Semua E-Wallet / Bank</span>
-                            </label>
-                        </div>
-
-                        <!-- Info Box for QRIS -->
-                        <div x-show="paymentMethod === 'qris'" x-cloak class="mt-2 p-3.5 bg-gradient-to-r from-teal-50 to-cyan-50 border border-teal-200 rounded-2xl text-xs space-y-2">
-                            <div class="flex items-center space-x-2 text-teal-900 font-bold">
-                                <i class="fa-solid fa-qrcode text-base text-teal-600"></i>
-                                <span>QRIS Toko (Doppnnstore)</span>
+                        <div class="p-3.5 rounded-xl border border-cyan-600 bg-cyan-50 font-bold text-cyan-900 ring-1 ring-cyan-500 shadow-xs flex items-center justify-between">
+                            <input type="hidden" name="payment_method" value="cod">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-9 h-9 rounded-lg bg-cyan-600 text-white flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-hand-holding-dollar text-base"></i>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-bold text-slate-900">Tunai / COD (Bayar di Tempat)</div>
+                                    <div class="text-[10px] text-slate-500 font-normal">Bayar langsung secara tunai kepada kurir saat pesanan tiba</div>
+                                </div>
                             </div>
-                            <p class="text-[11px] text-slate-600 leading-relaxed">
-                                Barcode QRIS resmi Toko Nova Jaya beserta nominal pas pembayaran akan langsung ditampilkan di layar setelah Anda mengklik <b>Pesan Sekarang</b>.
-                            </p>
-                            <div class="flex items-center space-x-1.5 text-[10px] font-semibold text-teal-700">
-                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">BCA</span>
-                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">Mandiri</span>
-                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">BRI</span>
-                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">GoPay</span>
-                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">OVO</span>
-                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">Dana</span>
-                                <span class="px-1.5 py-0.5 bg-white rounded border border-teal-200">ShopeePay</span>
-                            </div>
+                            <span class="text-xs font-black text-cyan-700">COD</span>
                         </div>
 
                         <!-- Info Box for COD -->
-                        <div x-show="paymentMethod === 'cod'" x-cloak class="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-600 space-y-1">
+                        <div class="mt-2 p-3 bg-slate-50 border border-slate-200 rounded-xl text-[11px] text-slate-600 space-y-1">
                             <div class="font-bold text-slate-800 flex items-center">
                                 <i class="fa-solid fa-circle-info text-cyan-600 mr-1.5"></i> Pembayaran Tunai saat Galon Tiba
                             </div>
@@ -341,16 +310,8 @@ function orderApp(config) {
             return this.cartItems.reduce((acc, it) => acc + it.subtotal, 0);
         },
 
-        calculateQrisFee() {
-            if (this.paymentMethod !== 'qris') return 0;
-            const base = this.calculateSubtotal() + this.deliveryFee;
-            if (base <= 0) return 0;
-            const gross = Math.ceil(base / 0.993);
-            return Math.max(0, gross - base);
-        },
-
         calculateTotal() {
-            return this.calculateSubtotal() + this.deliveryFee + this.calculateQrisFee();
+            return this.calculateSubtotal() + this.deliveryFee;
         },
 
         formatRupiah(val) {

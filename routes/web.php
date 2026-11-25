@@ -4,14 +4,11 @@ use App\Http\Controllers\Admin\AddressController as AdminAddressController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DeliveryController as AdminDeliveryController;
 use App\Http\Controllers\Admin\FinanceController as AdminFinanceController;
-use App\Http\Controllers\Admin\IntegrationController as AdminIntegrationController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\ServiceAreaController as AdminServiceAreaController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
-use App\Http\Controllers\Api\DanaWebhookController;
-use App\Http\Controllers\Api\TripayWebhookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Customer\AddressController as CustomerAddressController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
@@ -26,18 +23,24 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 Route::get('/', [PublicController::class, 'index'])->name('home');
+Route::get('/language/{locale}', function (\Illuminate\Http\Request $request, string $locale) {
+    if (in_array($locale, ['id', 'en'])) {
+        session(['locale' => $locale]);
+        session()->save();
+        cookie()->queue(cookie()->forever('locale', $locale));
+        \Illuminate\Support\Facades\App::setLocale($locale);
+    }
+
+    $returnUrl = $request->query('return');
+    if ($returnUrl && filter_var($returnUrl, FILTER_VALIDATE_URL) && str_starts_with($returnUrl, url('/'))) {
+        return redirect()->to($returnUrl);
+    }
+
+    return redirect()->back(fallback: route('home'));
+})->name('language.switch');
 Route::get('/products/{product:slug}', [PublicController::class, 'product'])->name('public.product');
 Route::get('/service-areas', [PublicController::class, 'serviceAreas'])->name('public.service-areas');
 Route::get('/storage/{path}', [StorageController::class, 'show'])->where('path', '.*')->name('storage.show');
-
-/*
-|--------------------------------------------------------------------------
-| Webhook Routes (CSRF Excluded)
-|--------------------------------------------------------------------------
-*/
-Route::post('/api/webhooks/dana-notification', [DanaWebhookController::class, 'handle'])->name('api.webhooks.dana');
-Route::post('/api/webhooks/tripay-notification', [TripayWebhookController::class, 'handle'])->name('api.webhooks.tripay');
-Route::post('/api/webhooks/tripay-simulate/{order}', [TripayWebhookController::class, 'simulate'])->name('api.webhooks.tripay.simulate');
 
 /*
 |--------------------------------------------------------------------------
@@ -58,7 +61,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 | Customer Portal Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:customer,admin,super_admin'])->prefix('customer')->name('customer.')->group(function () {
+Route::middleware(['auth', 'role:customer,admin'])->prefix('customer')->name('customer.')->group(function () {
     Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [CustomerDashboardController::class, 'profile'])->name('profile');
     Route::put('/profile', [CustomerDashboardController::class, 'updateProfile'])->name('profile.update');
@@ -87,13 +90,12 @@ Route::middleware(['auth', 'role:customer,admin,super_admin'])->prefix('customer
 | Admin Dashboard Routes
 |--------------------------------------------------------------------------
 */
-Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
-    Route::post('/orders/{order}/assign-driver', [AdminOrderController::class, 'assignDriver'])->name('orders.assign-driver');
     Route::put('/orders/{order}/payment', [AdminOrderController::class, 'updatePayment'])->name('orders.payment');
 
     Route::get('/deliveries', [AdminDeliveryController::class, 'index'])->name('deliveries.index');
@@ -127,9 +129,4 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
     Route::put('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
     Route::post('/users/{user}/toggle-active', [AdminUserController::class, 'toggleActive'])->name('users.toggle-active');
-
-    Route::get('/settings/integrations', [AdminIntegrationController::class, 'index'])->name('settings.integrations');
-    Route::post('/settings/integrations', [AdminIntegrationController::class, 'update'])->name('settings.integrations.update');
-    Route::post('/settings/integrations/test-whatsapp', [AdminIntegrationController::class, 'testWhatsApp'])->name('settings.integrations.test-whatsapp');
-    Route::get('/settings/integrations/live-qr', [AdminIntegrationController::class, 'getLiveQr'])->name('settings.integrations.live-qr');
 });

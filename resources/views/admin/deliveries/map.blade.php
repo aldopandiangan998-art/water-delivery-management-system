@@ -21,10 +21,10 @@
         <div>
             <div class="flex items-center space-x-2">
                 <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
-                <h1 class="text-xl font-black text-slate-900 tracking-tight">Peta Monitoring Kurir Lapangan</h1>
+                <h1 class="text-xl font-black text-slate-900 tracking-tight">Peta Monitoring Pengantaran</h1>
             </div>
             <p class="text-xs text-slate-500 mt-1">
-                Posisi kurir diperbarui otomatis setiap 4 detik. Terintegrasi API OpenStreetMap untuk pencarian dan kalibrasi titik depot.
+                Posisi pengantaran diperbarui otomatis setiap 4 detik. Terintegrasi API OpenStreetMap untuk pencarian dan kalibrasi titik depot.
             </p>
         </div>
 
@@ -216,8 +216,8 @@
 
                             <div>
                                 <div class="font-bold text-xs text-slate-800 flex items-center">
-                                    <i class="fa-solid fa-motorcycle text-emerald-600 mr-1.5"></i>
-                                    <span x-text="item.driver_name"></span>
+                                    <i class="fa-solid fa-truck-fast text-emerald-600 mr-1.5"></i>
+                                    <span x-text="item.delivery_number"></span>
                                 </div>
                                 <div class="text-[11px] text-slate-500 truncate mt-0.5" x-text="'Tujuan: ' + item.customer_name"></div>
                                 <div class="text-[10px] text-slate-400 truncate" x-text="item.customer_address"></div>
@@ -231,7 +231,7 @@
                     </template>
 
                     <div x-show="drivers.length === 0" class="text-center text-slate-400 py-12 text-xs">
-                        Tidak ada kurir yang sedang dalam perjalanan saat ini.
+                        Tidak ada pengantaran yang sedang dalam perjalanan saat ini.
                     </div>
                 </div>
             </div>
@@ -240,7 +240,7 @@
             <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 text-[11px] space-y-1 text-slate-600">
                 <div class="font-bold text-slate-700">Keterangan Ikon Peta:</div>
                 <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-blue-600 mr-2"></span> Depot Utama Toko Nova Jaya (Bratang Gede)</div>
-                <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-2"></span> Kurir Lapangan (Live GPS)</div>
+                <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-emerald-500 mr-2"></span> Armada Pengantaran (Live GPS)</div>
                 <div class="flex items-center"><span class="w-3 h-3 rounded-full bg-rose-600 mr-2"></span> Alamat Pengantaran Pelanggan</div>
             </div>
         </div>
@@ -663,7 +663,7 @@ function adminFleetRadar(config) {
 
                         this.markers[driverKey] = L.marker([item.driver_lat, item.driver_lng], { icon: driverIcon })
                             .addTo(this.map)
-                            .bindPopup(`<b>Kurir: ${item.driver_name}</b><br>Mengantar #${item.order_number}<br>Pembaruan: ${item.recorded_at}`);
+                            .bindPopup(`<b>Pengantaran: ${item.delivery_number}</b><br>Pesanan #${item.order_number}<br>Pembaruan: ${item.recorded_at}`);
                     }
                 }
             });

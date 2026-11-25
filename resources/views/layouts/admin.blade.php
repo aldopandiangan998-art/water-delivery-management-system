@@ -1,90 +1,76 @@
 @php
     $user = Auth::user();
-    $isSuperAdmin = $user && $user->role === 'super_admin';
 
-    // Dynamic Role Primary Color & Theme Configuration
+    // Admin Theme Configuration
     $theme = [
-        'is_super_admin'     => $isSuperAdmin,
-        'role_title'         => $isSuperAdmin ? 'SUPER ADMIN' : 'ADMIN',
-        'role_icon'          => $isSuperAdmin ? 'fa-crown text-amber-400' : 'fa-shield-halved text-cyan-400',
+        'is_super_admin'     => false,
+        'role_title'         => 'ADMIN',
+        'role_icon'          => 'fa-shield-halved text-cyan-400',
         
-        // Sidebar Main Background & Borders (Mengikuti Primary Color Masing-masing Role)
-        'sidebar_bg_style'   => $isSuperAdmin 
-            ? 'linear-gradient(180deg, #1d0d42 0%, #150930 45%, #0e0520 100%)' 
-            : 'linear-gradient(180deg, #0a2142 0%, #06162d 45%, #030d1c 100%)',
-        'sidebar_border'     => $isSuperAdmin ? 'border-purple-800/40' : 'border-sky-800/40',
-        'sidebar_header_style'=> $isSuperAdmin 
-            ? 'background-color: rgba(25, 11, 59, 0.95);' 
-            : 'background-color: rgba(8, 29, 58, 0.95);',
-        'sidebar_footer_style'=> $isSuperAdmin 
-            ? 'background-color: rgba(19, 7, 43, 0.95);' 
-            : 'background-color: rgba(5, 20, 41, 0.95);',
-        'sidebar_scrollbar'  => $isSuperAdmin ? 'rgba(167, 139, 250, 0.45)' : 'rgba(56, 189, 248, 0.45)',
-        'sidebar_thumb'      => $isSuperAdmin ? 'rgba(167, 139, 250, 0.35)' : 'rgba(56, 189, 248, 0.35)',
-        'sidebar_thumb_hover'=> $isSuperAdmin ? 'rgba(167, 139, 250, 0.65)' : 'rgba(56, 189, 248, 0.65)',
+        // Sidebar Main Background & Borders
+        'sidebar_bg_style'   => 'linear-gradient(180deg, #0a2142 0%, #06162d 45%, #030d1c 100%)',
+        'sidebar_border'     => 'border-sky-800/40',
+        'sidebar_header_style'=> 'background-color: rgba(8, 29, 58, 0.95);',
+        'sidebar_footer_style'=> 'background-color: rgba(5, 20, 41, 0.95);',
+        'sidebar_scrollbar'  => 'rgba(56, 189, 248, 0.45)',
+        'sidebar_thumb'      => 'rgba(56, 189, 248, 0.35)',
+        'sidebar_thumb_hover'=> 'rgba(56, 189, 248, 0.65)',
         
         // Brand & Header Badges
-        'role_badge_bg'      => $isSuperAdmin 
-            ? 'bg-violet-900/80 text-violet-200 border-violet-600/60 shadow-xs' 
-            : 'bg-blue-900/80 text-cyan-200 border-cyan-600/60 shadow-xs',
-        'brand_gradient'     => $isSuperAdmin
-            ? 'from-violet-600 via-indigo-600 to-purple-700 shadow-violet-950/70'
-            : 'from-blue-600 via-sky-500 to-cyan-500 shadow-blue-950/70',
-        'accent_text'        => $isSuperAdmin ? 'text-violet-400' : 'text-cyan-400',
-        'accent_border'      => $isSuperAdmin ? 'border-violet-500' : 'border-cyan-500',
+        'role_badge_bg'      => 'bg-blue-900/80 text-cyan-200 border-cyan-600/60 shadow-xs',
+        'brand_gradient'     => 'from-blue-600 via-sky-500 to-cyan-500 shadow-blue-950/70',
+        'accent_text'        => 'text-cyan-400',
+        'accent_border'      => 'border-cyan-500',
         
         // Navigation Links
-        'nav_active'         => $isSuperAdmin
-            ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-bold shadow-md shadow-violet-950/60'
-            : 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold shadow-md shadow-blue-950/60',
-        'nav_inactive'       => $isSuperAdmin
-            ? 'text-violet-200/75 hover:text-white hover:bg-purple-900/40'
-            : 'text-sky-200/75 hover:text-white hover:bg-sky-900/40',
-        'indicator_active'   => $isSuperAdmin ? 'bg-amber-400' : 'bg-cyan-300',
+        'nav_active'         => 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-bold shadow-md shadow-blue-950/60',
+        'nav_inactive'       => 'text-sky-200/75 hover:text-white hover:bg-sky-900/40',
+        'indicator_active'   => 'bg-cyan-300',
         'icon_box_active'    => 'bg-white/20 text-white shadow-xs',
-        'icon_box_inactive'  => $isSuperAdmin 
-            ? 'bg-purple-950/70 text-purple-300 group-hover:text-amber-300 group-hover:bg-purple-900/60 group-hover:border-purple-700/50' 
-            : 'bg-sky-950/70 text-sky-300 group-hover:text-cyan-300 group-hover:bg-sky-900/60 group-hover:border-sky-700/50',
+        'icon_box_inactive'  => 'bg-sky-950/70 text-sky-300 group-hover:text-cyan-300 group-hover:bg-sky-900/60 group-hover:border-sky-700/50',
         
         // Group Titles & Dividers
-        'group_title_text'   => $isSuperAdmin ? 'text-purple-300/90' : 'text-sky-300/90',
-        'group_divider'      => $isSuperAdmin ? 'bg-purple-800/40' : 'bg-sky-800/40',
+        'group_title_text'   => 'text-sky-300/90',
+        'group_divider'      => 'bg-sky-800/40',
         
         // Profile Bottom & Dropup Menu
-        'avatar_gradient'    => $isSuperAdmin
-            ? 'from-violet-600 via-purple-600 to-amber-500 ring-2 ring-violet-500/40'
-            : 'from-blue-600 via-sky-600 to-cyan-500 ring-2 ring-cyan-500/40',
-        'profile_role_badge' => $isSuperAdmin
-            ? 'bg-violet-500/20 text-violet-200 border-violet-500/40'
-            : 'bg-cyan-500/20 text-cyan-200 border-cyan-500/40',
-        'profile_btn_hover'  => $isSuperAdmin ? 'hover:bg-purple-900/35 hover:border-purple-800/40' : 'hover:bg-sky-900/35 hover:border-sky-800/40',
-        'dropup_bg'          => $isSuperAdmin ? 'bg-[#180936] border-purple-700/60' : 'bg-[#071933] border-sky-700/60',
-        'dropup_summary_bg'  => $isSuperAdmin ? 'bg-[#110526]/90 border-purple-800/50' : 'bg-[#040f20]/90 border-sky-800/50',
-        'dropup_item_hover'  => $isSuperAdmin ? 'hover:bg-purple-900/40' : 'hover:bg-sky-900/40',
+        'avatar_gradient'    => 'from-blue-600 via-sky-600 to-cyan-500 ring-2 ring-cyan-500/40',
+        'profile_role_badge' => 'bg-cyan-500/20 text-cyan-200 border-cyan-500/40',
+        'profile_btn_hover'  => 'hover:bg-sky-900/35 hover:border-sky-800/40',
+        'dropup_bg'          => 'bg-[#071933] border-sky-700/60',
+        'dropup_summary_bg'  => 'bg-[#040f20]/90 border-sky-800/50',
+        'dropup_item_hover'  => 'hover:bg-sky-900/40',
         
         // Topbar Controls
-        'toggle_btn_hover'   => $isSuperAdmin
-            ? 'hover:text-violet-600 hover:bg-violet-50 hover:border-violet-200'
-            : 'hover:text-cyan-600 hover:bg-cyan-50 hover:border-cyan-200',
+        'toggle_btn_hover'   => 'hover:text-cyan-600 hover:bg-cyan-50 hover:border-cyan-200',
     ];
 
     $pendingOrdersBadge = \App\Models\Order::where('status', 'pending')->count();
     $activeDeliveriesBadge = \App\Models\Delivery::whereIn('status', ['assigned', 'in_transit', 'arrived'])->count();
 @endphp
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-slate-100">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-100 dark:bg-slate-950">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Admin - {{ config('app.name', 'AquaFlow') }} - @yield('page_title', 'Dashboard')</title>
+    <title>Admin - {{ config('app.name', 'AquaFlow') }} - @yield('page_title', __('Dashboard'))</title>
 
     <!-- Vite CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- FontAwesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Prevent Dark Mode Flash -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
 
     @stack('styles')
 
@@ -111,82 +97,96 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-slate-100 text-slate-800 antialiased font-sans flex flex-col" x-data="{ sidebarOpen: (window.innerWidth >= 768) }">
+<body class="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased font-sans flex flex-col" x-data="{ sidebarOpen: (window.innerWidth >= 768) }">
+
+    <!-- Mobile Backdrop Overlay -->
+    <div x-show="sidebarOpen" 
+         @click="sidebarOpen = false" 
+         x-cloak
+         class="md:hidden fixed inset-0 z-30 bg-slate-950/60 backdrop-blur-xs transition-opacity duration-300">
+    </div>
 
     <!-- DEDICATED LEFT SIDEBAR NAVIGATION (Non-blocking & Independently Scrollable) -->
-    <aside class="fixed inset-y-0 left-0 z-40 w-64 h-screen max-h-screen text-slate-200 flex flex-col border-r {{ $theme['sidebar_border'] }} shadow-2xl transition-all duration-300 ease-in-out"
+    <aside class="fixed inset-y-0 left-0 z-40 h-screen max-h-screen text-slate-200 flex flex-col border-r {{ $theme['sidebar_border'] }} shadow-2xl transition-all duration-300 ease-in-out"
            style="background: {{ $theme['sidebar_bg_style'] }};"
-           :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
+           :class="sidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full md:translate-x-0 md:w-16'">
 
         <!-- Sidebar Top: Brand & Depot Status -->
-        <div class="h-16 flex items-center justify-between px-4 border-b {{ $theme['sidebar_border'] }} shrink-0"
+        <div class="h-16 flex items-center border-b {{ $theme['sidebar_border'] }} shrink-0 px-3 transition-all duration-300"
+             :class="sidebarOpen ? 'justify-between' : 'justify-center'"
              style="{{ $theme['sidebar_header_style'] }}">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3 overflow-hidden group">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr {{ $theme['brand_gradient'] }} flex items-center justify-center text-white shadow-md shrink-0 group-hover:scale-105 transition-transform duration-200">
-                    <i class="fa-solid fa-droplet text-lg"></i>
+            <a href="{{ route('admin.dashboard') }}" 
+               x-show="sidebarOpen"
+               class="flex items-center space-x-2.5 overflow-hidden group">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr {{ $theme['brand_gradient'] }} flex items-center justify-center text-white shadow-md shrink-0 group-hover:scale-105 transition-transform duration-200">
+                    <i class="fa-solid fa-droplet text-base"></i>
                 </div>
                 <div class="overflow-hidden">
-                    <div class="text-base font-black text-white tracking-tight flex items-center">
+                    <div class="text-sm font-black text-white tracking-tight flex items-center whitespace-nowrap">
                         <span>Aqua<span class="{{ $theme['accent_text'] }}">Flow</span></span>
-                        <span class="ml-2 px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider {{ $theme['role_badge_bg'] }} border flex items-center">
-                            <i class="fa-solid {{ $theme['role_icon'] }} mr-1 text-[8px]"></i>
+                        <span class="ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider {{ $theme['role_badge_bg'] }} border flex items-center">
+                            <i class="fa-solid {{ $theme['role_icon'] }} mr-1 text-[7px]"></i>
                             {{ $theme['role_title'] }}
                         </span>
                     </div>
-                    <span class="text-[10px] flex items-center font-semibold text-emerald-400 mt-0.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5 shrink-0"></span>
-                        Depot Online • Siap Antar
-                    </span>
                 </div>
             </a>
 
-            <!-- Mobile Close Button -->
-            <button type="button" @click="sidebarOpen = false" 
-                    class="md:hidden text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-850 transition" 
-                    title="Tutup Navigasi">
-                <i class="fa-solid fa-xmark text-lg"></i>
+            <!-- Toggle Button (Di dalam tampilan sidebar navigasi) -->
+            <button type="button" @click="sidebarOpen = !sidebarOpen" 
+                    class="text-slate-300 hover:text-white p-2 rounded-xl hover:bg-white/10 transition cursor-pointer flex items-center justify-center shrink-0" 
+                    :title="sidebarOpen ? '{{ __('Tutup / Perkecil Navigasi') }}' : '{{ __('Buka / Perlebar Navigasi') }}'">
+                <i class="fa-solid fa-bars-staggered text-base"></i>
             </button>
         </div>
 
         <!-- Sidebar Navigation Menu Links (Independently Scrollable with Role Theme) -->
-        <nav class="flex-1 min-h-0 px-3 py-4 space-y-6 overflow-y-auto overscroll-contain custom-sidebar-scroll text-xs font-semibold">
+        <nav class="flex-1 min-h-0 py-4 space-y-5 overflow-y-auto overscroll-contain custom-sidebar-scroll text-xs font-semibold transition-all duration-300"
+             :class="sidebarOpen ? 'px-3' : 'px-2'">
 
             <!-- Group 1: Operasional Utama -->
             <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} flex items-center justify-between">
-                    <span>Operasional Utama</span>
-                    <span class="w-8 h-px {{ $theme['group_divider'] }}"></span>
+                <div class="pb-1 flex items-center" :class="sidebarOpen ? 'px-3 justify-between' : 'justify-center'">
+                    <span x-show="sidebarOpen" class="text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} whitespace-nowrap">{{ __('Operasional Utama') }}</span>
+                    <span class="h-px {{ $theme['group_divider'] }}" :class="sidebarOpen ? 'w-8' : 'w-6 my-1'"></span>
                 </div>
 
                 <!-- Dashboard -->
                 @php $isActive = request()->routeIs('admin.dashboard'); @endphp
                 <a href="{{ route('admin.dashboard') }}" 
-                   class="group relative flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent"
+                         :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                         <i class="fa-solid fa-chart-pie text-sm"></i>
                     </div>
-                    <span class="truncate">Ringkasan Bisnis</span>
+                    <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Ringkasan Bisnis') }}</span>
                 </a>
 
                 <!-- Orders -->
                 @php $isActive = request()->routeIs('admin.orders.*'); @endphp
                 <a href="{{ route('admin.orders.index') }}" 
-                   class="group relative flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
                     <div class="flex items-center min-w-0">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 relative {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent"
+                             :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                             <i class="fa-solid fa-boxes-stacked text-sm"></i>
+                            @if ($pendingOrdersBadge > 0)
+                                <span x-show="!sidebarOpen" class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse border border-slate-900"></span>
+                            @endif
                         </div>
-                        <span class="truncate">Kelola Pesanan</span>
+                        <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Kelola Pesanan') }}</span>
                     </div>
                     @if ($pendingOrdersBadge > 0)
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 shadow-xs animate-pulse">
-                            {{ $pendingOrdersBadge }} Baru
+                        <span x-show="sidebarOpen" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 shadow-xs animate-pulse">
+                            {{ $pendingOrdersBadge }} {{ __('Baru') }}
                         </span>
                     @endif
                 </a>
@@ -194,18 +194,23 @@
                 <!-- Deliveries -->
                 @php $isActive = request()->routeIs('admin.deliveries.index') || request()->routeIs('admin.deliveries.show'); @endphp
                 <a href="{{ route('admin.deliveries.index') }}" 
-                   class="group relative flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
                     <div class="flex items-center min-w-0">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 relative {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent"
+                             :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                             <i class="fa-solid fa-truck-fast text-sm"></i>
+                            @if ($activeDeliveriesBadge > 0)
+                                <span x-show="!sidebarOpen" class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-500 border border-slate-900"></span>
+                            @endif
                         </div>
-                        <span class="truncate">Tugas Pengantaran</span>
+                        <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Tugas Pengantaran') }}</span>
                     </div>
                     @if ($activeDeliveriesBadge > 0)
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500 text-white shadow-xs">
+                        <span x-show="sidebarOpen" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-500 text-white shadow-xs">
                             {{ $activeDeliveriesBadge }}
                         </span>
                     @endif
@@ -214,17 +219,20 @@
                 <!-- Live Radar Map -->
                 @php $isActive = request()->routeIs('admin.deliveries.map'); @endphp
                 <a href="{{ route('admin.deliveries.map') }}" 
-                   class="group relative flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
                     <div class="flex items-center min-w-0">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
+                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 relative {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent"
+                             :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                             <i class="fa-solid fa-satellite-dish text-sm"></i>
+                            <span x-show="!sidebarOpen" class="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                         </div>
-                        <span class="truncate">Peta Radar Real-Time</span>
+                        <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Peta Radar Real-Time') }}</span>
                     </div>
-                    <span class="relative flex h-2 w-2 mr-1">
+                    <span x-show="sidebarOpen" class="relative flex h-2 w-2 mr-1">
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                     </span>
@@ -233,132 +241,126 @@
                 <!-- Customer Addresses Management -->
                 @php $isActive = request()->routeIs('admin.addresses.*'); @endphp
                 <a href="{{ route('admin.addresses.index') }}" 
-                   class="group relative flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent"
+                         :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                         <i class="fa-solid fa-map-location-dot text-sm"></i>
                     </div>
-                    <span class="truncate">Alamat Pelanggan</span>
+                    <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Alamat Pelanggan') }}</span>
                 </a>
             </div>
 
             <!-- Group 2: Produk & Layanan Wilayah -->
             <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} flex items-center justify-between">
-                    <span>Katalog & Logistik</span>
-                    <span class="w-8 h-px {{ $theme['group_divider'] }}"></span>
+                <div class="pb-1 flex items-center" :class="sidebarOpen ? 'px-3 justify-between' : 'justify-center'">
+                    <span x-show="sidebarOpen" class="text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} whitespace-nowrap">{{ __('Katalog & Logistik') }}</span>
+                    <span class="h-px {{ $theme['group_divider'] }}" :class="sidebarOpen ? 'w-8' : 'w-6 my-1'"></span>
                 </div>
 
                 <!-- Products -->
                 @php $isActive = request()->routeIs('admin.products.*'); @endphp
                 <a href="{{ route('admin.products.index') }}" 
-                   class="group relative flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent"
+                         :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                         <i class="fa-solid fa-bottle-water text-sm"></i>
                     </div>
-                    <span class="truncate">Produk & Stok Galon</span>
+                    <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Produk & Stok Galon') }}</span>
                 </a>
 
                 <!-- Service Areas -->
                 @php $isActive = request()->routeIs('admin.service-areas.*'); @endphp
                 <a href="{{ route('admin.service-areas.index') }}" 
-                   class="group relative flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent"
+                         :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                         <i class="fa-solid fa-signs-post text-sm"></i>
                     </div>
-                    <span class="truncate">Wilayah & Ongkir</span>
+                    <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Wilayah & Ongkir') }}</span>
                 </a>
             </div>
 
             <!-- Group 3: Finansial & Reputasi -->
             <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} flex items-center justify-between">
-                    <span>Keuangan & Reputasi</span>
-                    <span class="w-8 h-px {{ $theme['group_divider'] }}"></span>
+                <div class="pb-1 flex items-center" :class="sidebarOpen ? 'px-3 justify-between' : 'justify-center'">
+                    <span x-show="sidebarOpen" class="text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} whitespace-nowrap">{{ __('Keuangan & Reputasi') }}</span>
+                    <span class="h-px {{ $theme['group_divider'] }}" :class="sidebarOpen ? 'w-8' : 'w-6 my-1'"></span>
                 </div>
 
                 <!-- Finance -->
                 @php $isActive = request()->routeIs('admin.finance.*'); @endphp
                 <a href="{{ route('admin.finance.index') }}" 
-                   class="group relative flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent"
+                         :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                         <i class="fa-solid fa-wallet text-sm"></i>
                     </div>
-                    <span class="truncate">Keuangan & Beban</span>
+                    <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Keuangan & Beban') }}</span>
                 </a>
 
                 <!-- Reviews -->
                 @php $isActive = request()->routeIs('admin.reviews.*'); @endphp
                 <a href="{{ route('admin.reviews.index') }}" 
-                   class="group relative flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent"
+                         :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                         <i class="fa-solid fa-star text-sm"></i>
                     </div>
-                    <span class="truncate">Ulasan Pelanggan</span>
+                    <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Ulasan Pelanggan') }}</span>
                 </a>
             </div>
 
             <!-- Group 4: Sistem & Pengguna -->
             <div class="space-y-1">
-                <div class="px-3 pb-1 text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} flex items-center justify-between">
-                    <span>Sistem & Akses</span>
-                    <span class="w-8 h-px {{ $theme['group_divider'] }}"></span>
+                <div class="pb-1 flex items-center" :class="sidebarOpen ? 'px-3 justify-between' : 'justify-center'">
+                    <span x-show="sidebarOpen" class="text-[10px] font-extrabold uppercase tracking-widest {{ $theme['group_title_text'] }} whitespace-nowrap">{{ __('Sistem & Akses') }}</span>
+                    <span class="h-px {{ $theme['group_divider'] }}" :class="sidebarOpen ? 'w-8' : 'w-6 my-1'"></span>
                 </div>
 
                 <!-- Users -->
                 @php $isActive = request()->routeIs('admin.users.*'); @endphp
                 <a href="{{ route('admin.users.index') }}" 
-                   class="group relative flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
+                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
                     @if ($isActive)
                         <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
                     @endif
-                    <div class="flex items-center min-w-0">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
-                            <i class="fa-solid fa-users-gear text-sm"></i>
-                        </div>
-                        <span class="truncate">Manajemen Pengguna</span>
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent"
+                         :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
+                        <i class="fa-solid fa-users-gear text-sm"></i>
                     </div>
-                    @if ($isSuperAdmin)
-                        <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-400/15 text-amber-300 border border-amber-400/30">
-                            Akses Penuh
-                        </span>
-                    @endif
-                </a>
-
-                <!-- Integrasi QRIS & WhatsApp -->
-                @php $isActive = request()->routeIs('admin.settings.integrations*'); @endphp
-                <a href="{{ route('admin.settings.integrations') }}" 
-                   class="group relative flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
-                    @if ($isActive)
-                        <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
-                    @endif
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
-                        <i class="fa-solid fa-plug text-sm"></i>
-                    </div>
-                    <span class="truncate">Integrasi QRIS & WA</span>
+                    <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Manajemen Pengguna') }}</span>
                 </a>
 
                 <!-- View Public Web -->
                 <a href="{{ route('home') }}" target="_blank"
-                   class="group flex items-center px-3 py-2 rounded-xl {{ $theme['nav_inactive'] }} transition-all duration-200">
-                    <div class="w-8 h-8 rounded-lg {{ $theme['icon_box_inactive'] }} border border-transparent flex items-center justify-center mr-2.5 transition-all duration-200">
+                   class="group flex items-center rounded-xl {{ $theme['nav_inactive'] }} transition-all duration-200"
+                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'">
+                    <div class="w-8 h-8 rounded-lg {{ $theme['icon_box_inactive'] }} border border-transparent flex items-center justify-center transition-all duration-200 shrink-0"
+                         :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                         <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
                     </div>
-                    <span class="truncate">Buka Web Publik</span>
+                    <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Buka Web Publik') }}</span>
                 </a>
             </div>
 
@@ -366,7 +368,8 @@
 
         <!-- Sidebar Bottom: Admin Profile & Dropup Menu with Logout -->
         <div x-data="{ userMenuOpen: false }" 
-             class="relative p-3 border-t {{ $theme['sidebar_border'] }} shrink-0"
+             class="relative border-t {{ $theme['sidebar_border'] }} shrink-0 transition-all duration-300"
+             :class="sidebarOpen ? 'p-3' : 'p-2 flex justify-center'"
              style="{{ $theme['sidebar_footer_style'] }}">
             <!-- Dropup Floating Menu -->
             <div x-show="userMenuOpen"
@@ -378,12 +381,13 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 translate-y-0 scale-100"
                  x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-                 class="absolute bottom-full left-2 right-2 mb-2 {{ $theme['dropup_bg'] }} border rounded-2xl shadow-2xl p-2 z-50 overflow-hidden"
+                 class="absolute bottom-full mb-2 {{ $theme['dropup_bg'] }} border rounded-2xl shadow-2xl p-2 z-50 overflow-hidden"
+                 :class="sidebarOpen ? 'left-2 right-2' : 'left-2 w-60'"
                  style="display: none;">
                 
                 <!-- Account Summary -->
                 <div class="px-3 py-2.5 {{ $theme['dropup_summary_bg'] }} rounded-xl mb-1.5 border">
-                    <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Sedang Masuk Sebagai</p>
+                    <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{{ __('Sedang Masuk Sebagai') }}</p>
                     <p class="text-xs font-bold text-white truncate mt-0.5">{{ Auth::user()->name }}</p>
                     <p class="text-[10px] text-slate-400 truncate">{{ Auth::user()->email }}</p>
                     <div class="mt-1.5 flex items-center">
@@ -394,34 +398,13 @@
                     </div>
                 </div>
 
-                <!-- Fast Actions -->
-                <div class="space-y-0.5">
-                    <a href="{{ route('admin.addresses.index') }}" 
-                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white {{ $theme['dropup_item_hover'] }} transition">
-                        <i class="fa-solid fa-map-location-dot w-5 text-slate-400 text-center mr-2"></i>
-                        <span>Kelola Alamat Pelanggan</span>
-                    </a>
-                    <a href="{{ route('admin.users.index') }}" 
-                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white {{ $theme['dropup_item_hover'] }} transition">
-                        <i class="fa-solid fa-users-gear w-5 text-slate-400 text-center mr-2"></i>
-                        <span>Manajemen Pengguna</span>
-                    </a>
-                    <a href="{{ route('home') }}" target="_blank"
-                       class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-200 hover:text-white {{ $theme['dropup_item_hover'] }} transition">
-                        <i class="fa-solid fa-globe w-5 text-slate-400 text-center mr-2"></i>
-                        <span>Buka Web Publik</span>
-                    </a>
-                </div>
-
-                <div class="my-1.5 border-t {{ $theme['sidebar_border'] }}"></div>
-
                 <!-- Logout Action -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" 
                             class="w-full flex items-center px-3 py-2 rounded-xl text-xs font-bold text-rose-400 hover:text-white hover:bg-rose-600 transition group cursor-pointer">
                         <i class="fa-solid fa-arrow-right-from-bracket w-5 text-rose-400 group-hover:text-white text-center mr-2"></i>
-                        <span>Keluar (Logout)</span>
+                        <span>{{ __('Keluar (Logout)') }}</span>
                     </button>
                 </form>
             </div>
@@ -429,23 +412,24 @@
             <!-- Profile Trigger Button -->
             <button type="button" 
                     @click="userMenuOpen = !userMenuOpen"
-                    class="w-full flex items-center justify-between p-1.5 rounded-xl {{ $theme['profile_btn_hover'] }} transition text-left group cursor-pointer border border-transparent">
-                <div class="flex items-center space-x-2.5 overflow-hidden">
+                    class="flex items-center p-1.5 rounded-xl {{ $theme['profile_btn_hover'] }} transition text-left group cursor-pointer border border-transparent"
+                    :class="sidebarOpen ? 'w-full justify-between' : 'justify-center'">
+                <div class="flex items-center overflow-hidden" :class="sidebarOpen ? 'space-x-2.5' : ''">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-tr {{ $theme['avatar_gradient'] }} text-white font-black flex items-center justify-center text-xs shrink-0 shadow-sm group-hover:scale-105 transition-transform duration-200">
                         {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                     </div>
-                    <div class="overflow-hidden">
+                    <div class="overflow-hidden" x-show="sidebarOpen">
                         <div class="text-xs font-bold text-white truncate group-hover:{{ $theme['accent_text'] }} transition">
                             {{ Auth::user()->name }}
                         </div>
-                        <div class="text-[10px] {{ $theme['accent_text'] }} uppercase font-bold tracking-wider flex items-center mt-0.5">
+                        <div class="text-[10px] {{ $theme['accent_text'] }} uppercase font-bold tracking-wider flex items-center mt-0.5 whitespace-nowrap">
                             <i class="fa-solid {{ $theme['role_icon'] }} mr-1 text-[8px]"></i>
                             <span>{{ $theme['role_title'] }}</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="text-slate-400 group-hover:text-white transition p-1 shrink-0">
+                <div x-show="sidebarOpen" class="text-slate-400 group-hover:text-white transition p-1 shrink-0">
                     <i class="fa-solid fa-chevron-up text-xs transition-transform duration-200" :class="{'rotate-180': userMenuOpen}"></i>
                 </div>
             </button>
@@ -455,47 +439,26 @@
 
     <!-- MAIN RIGHT CONTENT WRAPPER (Smooth Responsive Transition, Non-blocking) -->
     <div class="flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out"
-         :class="sidebarOpen ? 'md:pl-64' : 'md:pl-0'">
+         :class="sidebarOpen ? 'md:pl-64' : 'md:pl-16'">
 
         <!-- Top Header Bar -->
-        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-2xs">
+        <header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-2xs">
             <div class="flex items-center space-x-3">
-                <!-- Sidebar Toggle Button (Non-blocking, Works on Desktop & Mobile) -->
-                <button type="button" 
-                        @click="sidebarOpen = !sidebarOpen" 
-                        class="p-2.5 rounded-xl text-slate-600 {{ $theme['toggle_btn_hover'] }} border border-slate-200 transition-all duration-200 flex items-center justify-center cursor-pointer shadow-2xs"
-                        title="Buka / Tutup Navigasi Sidebar">
-                    <i class="fa-solid fa-bars-staggered text-base"></i>
-                </button>
-
-                <div>
-                    <h1 class="text-base sm:text-lg font-black text-slate-900 tracking-tight flex items-center">
-                        @yield('page_title', 'Admin Panel')
-                    </h1>
-                </div>
+                <h1 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center">
+                    @yield('page_title', __('Admin Panel'))
+                </h1>
             </div>
 
             <!-- Header Right Shortcut Controls -->
             <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Theme (Dark/Light) & Language Controls -->
+                @include('partials.theme-lang-controls')
+
                 <!-- Role Badge in Header -->
                 <div class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold {{ $theme['role_badge_bg'] }} border">
                     <i class="fa-solid {{ $theme['role_icon'] }} mr-1.5 text-xs"></i>
                     <span>{{ $theme['role_title'] }}</span>
                 </div>
-
-                <a href="{{ route('home') }}" target="_blank" 
-                   class="text-xs font-bold text-slate-600 hover:text-cyan-600 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl transition flex items-center shadow-2xs">
-                    <i class="fa-solid fa-globe mr-1.5 text-slate-400"></i>
-                    <span class="hidden sm:inline">Lihat Web Publik</span>
-                    <span class="sm:hidden">Web</span>
-                </a>
-
-                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', \App\Models\BusinessSetting::get('company_whatsapp', '62881026146848')) }}" target="_blank"
-                   class="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-xl transition flex items-center shadow-2xs">
-                    <i class="fa-brands fa-whatsapp mr-1.5 text-emerald-600 text-sm"></i>
-                    <span class="hidden sm:inline">WhatsApp CS</span>
-                    <span class="sm:hidden">WA</span>
-                </a>
             </div>
         </header>
 

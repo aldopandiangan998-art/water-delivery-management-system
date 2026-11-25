@@ -1,11 +1,20 @@
 <!DOCTYPE html>
-<html lang="id" class="h-full bg-slate-50">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-slate-50 dark:bg-slate-950">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'AquaFlow') }} - @yield('title', 'Portal Pelanggan')</title>
+    <title>{{ config('app.name', 'AquaFlow') }} - @yield('title', __('Portal Pelanggan'))</title>
+
+    <!-- Dark Mode Initial Script to Prevent Flicker -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
 
     <!-- Vite CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -38,7 +47,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-800 antialiased font-sans flex flex-col" x-data="{ sidebarOpen: (window.innerWidth >= 768) }">
+<body class="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased font-sans flex flex-col" x-data="{ sidebarOpen: (window.innerWidth >= 768) }">
 
     @php
         $activeCustomerOrdersCount = \App\Models\Order::where('user_id', Auth::id())
@@ -67,13 +76,13 @@
                     </div>
                     <span class="text-[10px] flex items-center font-semibold text-emerald-400 mt-0.5">
                         <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse mr-1.5"></span>
-                        Pelanggan Terverifikasi
+                        {{ __('Pelanggan Terverifikasi') }}
                     </span>
                 </div>
             </a>
 
             <!-- Mobile Close Button -->
-            <button type="button" @click="sidebarOpen = false" class="md:hidden text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition" title="Tutup Navigasi">
+            <button type="button" @click="sidebarOpen = false" class="md:hidden text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition" title="{{ __('Tutup Navigasi') }}">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
         </div>
@@ -85,14 +94,14 @@
             <!-- Group 1: Layanan Pesanan -->
             <div class="space-y-1">
                 <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                    Layanan Pesanan
+                    {{ __('Layanan Pesanan') }}
                 </div>
 
                 <!-- Dashboard -->
                 <a href="{{ route('customer.dashboard') }}" 
                    class="flex items-center px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.dashboard') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                     <i class="fa-solid fa-house w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.dashboard') ? 'text-white' : 'text-cyan-400' }}"></i>
-                    <span>Dashboard Saya</span>
+                    <span>{{ __('Dashboard Saya') }}</span>
                 </a>
 
                 <!-- Order Water -->
@@ -100,10 +109,10 @@
                    class="flex items-center justify-between px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.orders.create') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                     <div class="flex items-center">
                         <i class="fa-solid fa-cart-plus w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.orders.create') ? 'text-white' : 'text-blue-400' }}"></i>
-                        <span>Pesan Air Galon</span>
+                        <span>{{ __('Pesan Air Galon') }}</span>
                     </div>
                     <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-cyan-500 text-white shadow-2xs">
-                        Pesan Cepat
+                        {{ __('Pesan Cepat') }}
                     </span>
                 </a>
 
@@ -112,11 +121,11 @@
                    class="flex items-center justify-between px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.orders.index') || request()->routeIs('customer.orders.show') || request()->routeIs('customer.orders.track') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                     <div class="flex items-center">
                         <i class="fa-solid fa-box-archive w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.orders.index') || request()->routeIs('customer.orders.show') || request()->routeIs('customer.orders.track') ? 'text-white' : 'text-emerald-400' }}"></i>
-                        <span>Pesanan Saya</span>
+                        <span>{{ __('Pesanan Saya') }}</span>
                     </div>
                     @if ($activeCustomerOrdersCount > 0)
                         <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 animate-pulse">
-                            {{ $activeCustomerOrdersCount }} Aktif
+                            {{ $activeCustomerOrdersCount }} {{ __('Aktif') }}
                         </span>
                     @endif
                 </a>
@@ -125,14 +134,14 @@
                 <a href="{{ route('customer.addresses.index') }}" 
                    class="flex items-center px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.addresses.*') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                     <i class="fa-solid fa-location-dot w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.addresses.*') ? 'text-white' : 'text-purple-400' }}"></i>
-                    <span>Alamat Pengantaran</span>
+                    <span>{{ __('Alamat Pengantaran') }}</span>
                 </a>
             </div>
 
             <!-- Group 2: Akun & Bantuan -->
             <div class="space-y-1">
                 <div class="px-3 pb-1 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-                    Informasi & Bantuan
+                    {{ __('Informasi & Bantuan') }}
                 </div>
 
                 <!-- Store Profile & Map -->
@@ -140,7 +149,7 @@
                    class="flex items-center justify-between px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.store-profile') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
                     <div class="flex items-center">
                         <i class="fa-solid fa-store w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.store-profile') ? 'text-white' : 'text-blue-400' }}"></i>
-                        <span>Profil & Lokasi Toko</span>
+                        <span>{{ __('Profil & Lokasi Toko') }}</span>
                     </div>
                     <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-blue-500/20 text-blue-300 border border-blue-500/30">
                         Maps
@@ -169,7 +178,7 @@
                 
                 <!-- Account Summary -->
                 <div class="px-3 py-2.5 bg-slate-950/80 rounded-xl mb-1.5 border border-slate-800">
-                    <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Akun Pelanggan</p>
+                    <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{{ __('Akun Pelanggan') }}</p>
                     <p class="text-xs font-bold text-white truncate mt-0.5">{{ Auth::user()->name }}</p>
                     <p class="text-[10px] text-slate-400 truncate">{{ Auth::user()->email }}</p>
                     <div class="mt-1.5 flex items-center">
@@ -185,7 +194,7 @@
                     <a href="{{ route('customer.profile') }}" 
                        class="flex items-center px-3 py-2 rounded-xl text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">
                         <i class="fa-solid fa-user-gear w-5 text-slate-400 text-center mr-2"></i>
-                        <span>Profil & Kata Sandi</span>
+                        <span>{{ __('Profil & Kata Sandi') }}</span>
                     </a>
                 </div>
 
@@ -197,7 +206,7 @@
                     <button type="submit" 
                             class="w-full flex items-center px-3 py-2 rounded-xl text-xs font-bold text-rose-400 hover:text-white hover:bg-rose-600 transition group cursor-pointer">
                         <i class="fa-solid fa-arrow-right-from-bracket w-5 text-rose-400 group-hover:text-white text-center mr-2"></i>
-                        <span>Keluar (Logout)</span>
+                        <span>{{ __('Keluar (Logout)') }}</span>
                     </button>
                 </form>
             </div>
@@ -233,37 +242,40 @@
          :class="sidebarOpen ? 'md:pl-64' : 'md:pl-0'">
 
         <!-- Top Header Bar -->
-        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-2xs">
+        <header class="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shadow-2xs">
             <div class="flex items-center space-x-3">
                 <!-- Sidebar Toggle Button (Non-blocking, Works on Desktop & Mobile) -->
                 <button type="button" 
                         @click="sidebarOpen = !sidebarOpen" 
-                        class="p-2.5 rounded-xl text-slate-600 hover:text-cyan-600 hover:bg-cyan-50 border border-slate-200 transition-all duration-200 flex items-center justify-center cursor-pointer shadow-2xs"
-                        title="Buka / Tutup Navigasi Sidebar">
+                        class="p-2.5 rounded-xl text-slate-600 dark:text-slate-300 hover:text-cyan-600 dark:hover:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition-all duration-200 flex items-center justify-center cursor-pointer shadow-2xs"
+                        title="{{ __('Buka / Tutup Navigasi Sidebar') }}">
                     <i class="fa-solid fa-bars-staggered text-base"></i>
                 </button>
 
                 <div>
-                    <h1 class="text-base sm:text-lg font-black text-slate-900 tracking-tight flex items-center">
-                        @yield('title', 'Portal Pelanggan')
+                    <h1 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center">
+                        @yield('title', __('Portal Pelanggan'))
                     </h1>
                 </div>
             </div>
 
             <!-- Header Right Shortcut Controls -->
             <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Theme and Language Switcher -->
+                @include('partials.theme-lang-controls')
+
                 <!-- Direct Order CTA -->
                 <a href="{{ route('customer.orders.create') }}" 
                    class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-sm transition flex items-center">
                     <i class="fa-solid fa-cart-plus mr-1.5"></i>
-                    <span>Pesan Air</span>
+                    <span>{{ __('Pesan Air') }}</span>
                 </a>
 
                 <!-- WhatsApp CS button -->
                 <a href="https://wa.me/{{ $cleanWhatsapp }}?text=Halo%20Admin%20AquaFlow,%20saya%20mau%20tanya%20pesanan" target="_blank"
-                   class="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-xl transition flex items-center shadow-2xs">
-                    <i class="fa-brands fa-whatsapp mr-1.5 text-emerald-600 text-sm"></i>
-                    <span class="hidden sm:inline">CS WhatsApp</span>
+                   class="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-xl transition flex items-center shadow-2xs">
+                    <i class="fa-brands fa-whatsapp mr-1.5 text-emerald-600 dark:text-emerald-400 text-sm"></i>
+                    <span class="hidden sm:inline">{{ __('CS WhatsApp') }}</span>
                 </a>
             </div>
         </header>
@@ -312,14 +324,14 @@
         </main>
 
         <!-- Customer Portal Footer -->
-        <footer class="bg-white border-t border-slate-200 py-4 px-6 text-xs text-slate-500 flex flex-col sm:flex-row justify-between items-center gap-2">
+        <footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 px-6 text-xs text-slate-500 dark:text-slate-400 flex flex-col sm:flex-row justify-between items-center gap-2">
             <div class="flex items-center space-x-2">
-                <span class="font-bold text-slate-800">AquaFlow Member Portal</span>
+                <span class="font-bold text-slate-800 dark:text-slate-200">AquaFlow Member Portal</span>
                 <span>&bull;</span>
                 <span>Layanan Pesan Antar Air Minum Higienis</span>
             </div>
-            <div class="text-[11px] text-slate-400">
-                Pusat Bantuan WhatsApp: <a href="https://wa.me/{{ $cleanWhatsapp }}" target="_blank" class="font-bold text-emerald-600 hover:underline">{{ \App\Models\BusinessSetting::get('company_phone', '0881-0261-46848') }}</a>
+            <div class="text-[11px] text-slate-400 dark:text-slate-500">
+                Pusat Bantuan WhatsApp: <a href="https://wa.me/{{ $cleanWhatsapp }}" target="_blank" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline">{{ \App\Models\BusinessSetting::get('company_phone', '0881-0261-46848') }}</a>
             </div>
         </footer>
 

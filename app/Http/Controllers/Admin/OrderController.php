@@ -18,7 +18,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Order::with(['user', 'items', 'delivery.driver'])->latest();
+        $query = Order::with(['user', 'items', 'delivery'])->latest();
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -42,9 +42,8 @@ class OrderController extends Controller
         }
 
         $orders = $query->paginate(15)->withQueryString();
-        $drivers = User::whereIn('role', ['admin', 'super_admin'])->where('is_active', true)->get();
 
-        return view('admin.orders.index', compact('orders', 'drivers'));
+        return view('admin.orders.index', compact('orders'));
     }
 
     public function show(Order $order)
@@ -53,7 +52,6 @@ class OrderController extends Controller
             'user.profile',
             'items.product',
             'statusHistories.changer',
-            'delivery.driver',
             'delivery.statusHistories.changer',
             'delivery.photos',
             'delivery.locations',
@@ -61,9 +59,7 @@ class OrderController extends Controller
             'review',
         ]);
 
-        $drivers = User::whereIn('role', ['admin', 'super_admin'])->where('is_active', true)->get();
-
-        return view('admin.orders.show', compact('order', 'drivers'));
+        return view('admin.orders.show', compact('order'));
     }
 
     public function updateStatus(Request $request, Order $order)
@@ -83,6 +79,15 @@ class OrderController extends Controller
                 'completed_at' => $newStatus === 'completed' ? now() : $order->completed_at,
                 'cancelled_at' => in_array($newStatus, ['cancelled', 'rejected']) ? now() : $order->cancelled_at,
             ]);
+
+            // Auto-create delivery if order is confirmed/processing/ready_for_delivery and delivery doesn't exist
+            if (in_array($newStatus, ['confirmed', 'processing', 'ready_for_delivery']) && ! $order->delivery) {
+                Delivery::create([
+                    'delivery_number' => 'DEL-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
+                    'order_id' => $order->id,
+                    'status' => 'assigned',
+                ]);
+            }
 
             // If cancelled or rejected, restock inventory
             if (in_array($newStatus, ['cancelled', 'rejected']) && ! in_array($oldStatus, ['cancelled', 'rejected'])) {
@@ -116,52 +121,6 @@ class OrderController extends Controller
         });
 
         return back()->with('success', "Status pesanan #{$order->order_number} berhasil diperbarui.");
-    }
-
-    public function assignDriver(Request $request, Order $order)
-    {
-        $validated = $request->validate([
-            'driver_id' => ['required', 'exists:users,id'],
-        ]);
-
-        DB::transaction(function () use ($order, $validated) {
-            $driver = User::findOrFail($validated['driver_id']);
-
-            $delivery = $order->delivery;
-            if (! $delivery) {
-                $delivery = Delivery::create([
-                    'delivery_number' => 'DEL-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
-                    'order_id' => $order->id,
-                    'driver_id' => $driver->id,
-                    'status' => 'assigned',
-                ]);
-            } else {
-                $delivery->update([
-                    'driver_id' => $driver->id,
-                    'status' => in_array($delivery->status, ['not_assigned', 'assigned']) ? 'assigned' : $delivery->status,
-                ]);
-            }
-
-            DeliveryStatusHistory::create([
-                'delivery_id' => $delivery->id,
-                'status' => 'assigned',
-                'notes' => "Pengantaran ditugaskan kepada {$driver->name} oleh " . Auth::user()->name,
-                'changed_by' => Auth::id(),
-            ]);
-
-            // Update order status to confirmed if still pending
-            if ($order->status === 'pending') {
-                $order->update(['status' => 'confirmed']);
-                OrderStatusHistory::create([
-                    'order_id' => $order->id,
-                    'status' => 'confirmed',
-                    'notes' => "Pesanan dikonfirmasi dan ditugaskan ke driver {$driver->name}",
-                    'changed_by' => Auth::id(),
-                ]);
-            }
-        });
-
-        return back()->with('success', 'Driver berhasil ditugaskan untuk pengantaran pesanan ini.');
     }
 
     public function updatePayment(Request $request, Order $order)

@@ -93,12 +93,12 @@ class DatabaseSeeder extends Seeder
             'notes' => 'Area Rungkut Industri & Rungkut Asri',
         ]);
 
-        // 3. Users: Admin, Staff, Customers
+        // 3. Users: Admin and Customers
         $superAdmin = User::create([
-            'name' => 'Owner / Super Admin',
-            'email' => 'superadmin@aquaflow.com',
+            'name' => 'Owner Admin',
+            'email' => 'owner@aquaflow.com',
             'phone' => '0811-1111-2222',
-            'role' => 'super_admin',
+            'role' => 'admin',
             'is_active' => true,
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
@@ -389,12 +389,10 @@ class DatabaseSeeder extends Seeder
         $deliveryPast = Delivery::create([
             'delivery_number' => 'DEL-' . date('Ymd') . '-0001',
             'order_id' => $orderPast->id,
-            'driver_id' => $admin->id,
             'status' => 'delivered',
             'started_at' => Carbon::yesterday()->setHour(10)->setMinute(10),
             'arrived_at' => Carbon::yesterday()->setHour(10)->setMinute(35),
             'completed_at' => Carbon::yesterday()->setHour(10)->setMinute(45),
-            'driver_notes' => 'Diterima oleh Pak Budi langsung di teras, galon kosong 3 buah sudah diambil.',
         ]);
 
         DeliveryStatusHistory::create([
@@ -475,10 +473,8 @@ class DatabaseSeeder extends Seeder
         $deliveryActive = Delivery::create([
             'delivery_number' => 'DEL-' . date('Ymd') . '-0002',
             'order_id' => $orderActive->id,
-            'driver_id' => $admin->id,
             'status' => 'in_transit',
             'started_at' => now()->subMinutes(12),
-            'driver_notes' => 'Sedang dalam perjalanan melintasi Jl. Bratang Gede & Ngagel',
         ]);
 
         // Seed realistic GPS path moving from Depot Toko Nova Jaya (-7.303488, 112.753373) toward customer in Surabaya
@@ -493,7 +489,6 @@ class DatabaseSeeder extends Seeder
         foreach ($routePoints as $pt) {
             DeliveryLocation::create([
                 'delivery_id' => $deliveryActive->id,
-                'driver_id' => $admin->id,
                 'latitude' => $pt[0],
                 'longitude' => $pt[1],
                 'accuracy' => 5.2,

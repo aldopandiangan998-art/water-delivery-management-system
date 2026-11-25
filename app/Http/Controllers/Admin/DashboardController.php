@@ -41,7 +41,7 @@ class DashboardController extends Controller
             ->get();
 
         // Recent Orders
-        $recentOrders = Order::with(['user', 'items', 'delivery.driver'])
+        $recentOrders = Order::with(['user', 'items', 'delivery'])
             ->latest()
             ->take(8)
             ->get();
