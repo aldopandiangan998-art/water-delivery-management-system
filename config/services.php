@@ -39,4 +39,13 @@ return [
         'api_key' => env('GOOGLE_MAPS_API_KEY'),
     ],
 
+    'dana' => [
+        'webhook_secret' => env('DANA_WEBHOOK_SECRET', 'dana-novajaya-secret-2026'),
+    ],
+
+    'fonnte' => [
+        'token' => env('FONNTE_API_TOKEN', ''),
+        'endpoint' => env('FONNTE_ENDPOINT', 'https://api.fonnte.com/send'),
+    ],
+
 ];

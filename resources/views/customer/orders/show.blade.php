@@ -445,5 +445,41 @@
         </script>
     @endif
 
+    {{-- Real-time QRIS payment status polling (only for unpaid QRIS orders) --}}
+    @if ($order->payment_method === 'qris' && $order->payment_status !== 'paid')
+        <script>
+            (function () {
+                const statusUrl = "{{ route('customer.orders.status-check', $order) }}";
+                let pollCount = 0;
+                const maxPolls = 300; // max 20 menit (300 x 4 detik)
+
+                function checkPaymentStatus() {
+                    if (pollCount >= maxPolls) return;
+                    pollCount++;
+
+                    fetch(statusUrl, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.is_paid || data.payment_status === 'paid') {
+                            // Payment confirmed by DANA webhook - redirect to updated page
+                            window.location.reload();
+                        } else {
+                            setTimeout(checkPaymentStatus, 4000);
+                        }
+                    })
+                    .catch(() => {
+                        // Retry on network error silently
+                        setTimeout(checkPaymentStatus, 8000);
+                    });
+                }
+
+                // Start polling 4 seconds after page load
+                setTimeout(checkPaymentStatus, 4000);
+            })();
+        </script>
+    @endif
+
 </div>
 @endsection

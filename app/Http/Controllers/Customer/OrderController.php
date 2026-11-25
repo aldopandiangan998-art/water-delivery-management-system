@@ -12,6 +12,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Review;
 use App\Models\StockMovement;
+use App\Services\WhatsAppNotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -176,6 +177,12 @@ class OrderController extends Controller
             ]);
 
             if ($order->payment_method === 'cod') {
+                try {
+                    app(WhatsAppNotificationService::class)->sendOrderNotification($order);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('Gagal mengirim auto WA COD: ' . $e->getMessage());
+                }
+
                 return redirect()->route('customer.orders.show', $order)
                     ->with('auto_open_whatsapp', true)
                     ->with('success', "Pesanan #{$order->order_number} berhasil dibuat! Mengarahkan ke WhatsApp Admin untuk konfirmasi pengantaran (COD)...");
@@ -222,6 +229,12 @@ class OrderController extends Controller
             'notes' => 'Pelanggan telah mengonfirmasi pembayaran QRIS dan mengirimkan data transfer.',
             'changed_by' => Auth::id(),
         ]);
+
+        try {
+            app(WhatsAppNotificationService::class)->sendOrderNotification($order);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengirim auto WA QRIS confirmation: ' . $e->getMessage());
+        }
 
         return redirect()->route('customer.orders.show', $order)
             ->with('auto_open_whatsapp', true)
@@ -378,5 +391,24 @@ class OrderController extends Controller
         ]);
 
         return back()->with('success', 'Terima kasih atas ulasan dan penilaian Anda!');
+    }
+
+    /**
+     * Check real-time payment status for customer live polling
+     */
+    public function statusCheck(Order $order)
+    {
+        if ($order->user_id !== Auth::id() && ! in_array(Auth::user()?->role, ['admin', 'super_admin'])) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        return response()->json([
+            'order_id' => $order->id,
+            'order_number' => $order->order_number,
+            'status' => $order->status,
+            'payment_status' => $order->payment_status,
+            'is_paid' => $order->payment_status === 'paid',
+            'is_qris_confirmed' => $order->is_qris_confirmed,
+        ]);
     }
 }

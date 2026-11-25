@@ -339,6 +339,19 @@
                     @endif
                 </a>
 
+                <!-- Integrasi QRIS & WhatsApp -->
+                @php $isActive = request()->routeIs('admin.settings.integrations*'); @endphp
+                <a href="{{ route('admin.settings.integrations') }}" 
+                   class="group relative flex items-center px-3 py-2 rounded-xl transition-all duration-200 {{ $isActive ? $theme['nav_active'] : $theme['nav_inactive'] }}">
+                    @if ($isActive)
+                        <span class="absolute left-0 top-2 bottom-2 w-1 {{ $theme['indicator_active'] }} rounded-r-full"></span>
+                    @endif
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-2.5 transition-all duration-200 {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent">
+                        <i class="fa-solid fa-plug text-sm"></i>
+                    </div>
+                    <span class="truncate">Integrasi QRIS & WA</span>
+                </a>
+
                 <!-- View Public Web -->
                 <a href="{{ route('home') }}" target="_blank"
                    class="group flex items-center px-3 py-2 rounded-xl {{ $theme['nav_inactive'] }} transition-all duration-200">

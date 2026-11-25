@@ -4,11 +4,13 @@ use App\Http\Controllers\Admin\AddressController as AdminAddressController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DeliveryController as AdminDeliveryController;
 use App\Http\Controllers\Admin\FinanceController as AdminFinanceController;
+use App\Http\Controllers\Admin\IntegrationController as AdminIntegrationController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\ServiceAreaController as AdminServiceAreaController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Api\DanaWebhookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Customer\AddressController as CustomerAddressController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
@@ -26,6 +28,13 @@ Route::get('/', [PublicController::class, 'index'])->name('home');
 Route::get('/products/{product:slug}', [PublicController::class, 'product'])->name('public.product');
 Route::get('/service-areas', [PublicController::class, 'serviceAreas'])->name('public.service-areas');
 Route::get('/storage/{path}', [StorageController::class, 'show'])->where('path', '.*')->name('storage.show');
+
+/*
+|--------------------------------------------------------------------------
+| Webhook Routes (CSRF Excluded)
+|--------------------------------------------------------------------------
+*/
+Route::post('/api/webhooks/dana-notification', [DanaWebhookController::class, 'handle'])->name('api.webhooks.dana');
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +68,7 @@ Route::middleware(['auth', 'role:customer,admin,super_admin'])->prefix('customer
     Route::post('/orders/{order}/confirm-payment', [CustomerOrderController::class, 'confirmPayment'])->name('orders.confirm-payment');
     Route::post('/orders/{order}/cancel', [CustomerOrderController::class, 'cancel'])->name('orders.cancel');
     Route::get('/orders/{order}/track', [CustomerOrderController::class, 'track'])->name('orders.track');
+    Route::get('/orders/{order}/status-check', [CustomerOrderController::class, 'statusCheck'])->name('orders.status-check');
     Route::get('/api/orders/{order}/location', [CustomerOrderController::class, 'apiLocation'])->name('orders.api-location');
     Route::post('/orders/{order}/review', [CustomerOrderController::class, 'review'])->name('orders.review');
 
@@ -114,4 +124,8 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
     Route::put('/users/{user}/role', [AdminUserController::class, 'updateRole'])->name('users.role');
     Route::post('/users/{user}/toggle-active', [AdminUserController::class, 'toggleActive'])->name('users.toggle-active');
+
+    Route::get('/settings/integrations', [AdminIntegrationController::class, 'index'])->name('settings.integrations');
+    Route::post('/settings/integrations', [AdminIntegrationController::class, 'update'])->name('settings.integrations.update');
+    Route::post('/settings/integrations/test-whatsapp', [AdminIntegrationController::class, 'testWhatsApp'])->name('settings.integrations.test-whatsapp');
 });
