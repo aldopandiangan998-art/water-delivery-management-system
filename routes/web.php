@@ -128,4 +128,5 @@ Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin')->name('ad
     Route::get('/settings/integrations', [AdminIntegrationController::class, 'index'])->name('settings.integrations');
     Route::post('/settings/integrations', [AdminIntegrationController::class, 'update'])->name('settings.integrations.update');
     Route::post('/settings/integrations/test-whatsapp', [AdminIntegrationController::class, 'testWhatsApp'])->name('settings.integrations.test-whatsapp');
+    Route::get('/settings/integrations/live-qr', [AdminIntegrationController::class, 'getLiveQr'])->name('settings.integrations.live-qr');
 });

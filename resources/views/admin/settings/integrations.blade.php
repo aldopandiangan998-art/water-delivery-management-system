@@ -157,6 +157,128 @@
         </div>
     </form>
 
+    <!-- Live WhatsApp QR Scanner Modal & Trigger (Langsung di AquaFlow) -->
+    <div x-data="{
+        qrModalOpen: false,
+        qrLoading: false,
+        qrUrl: null,
+        qrConnected: false,
+        qrInterval: null,
+        openQrModal() {
+            this.qrModalOpen = true;
+            this.fetchQr();
+            this.qrInterval = setInterval(() => {
+                if (this.qrModalOpen && !this.qrConnected) {
+                    this.fetchQr();
+                }
+            }, 12000);
+        },
+        closeQrModal() {
+            this.qrModalOpen = false;
+            if (this.qrInterval) clearInterval(this.qrInterval);
+        },
+        async fetchQr() {
+            this.qrLoading = !this.qrUrl;
+            try {
+                const res = await fetch('{{ route('admin.settings.integrations.live-qr') }}');
+                const data = await res.json();
+                if (data.status) {
+                    this.qrConnected = data.connected;
+                    if (data.qr_url) {
+                        this.qrUrl = data.qr_url;
+                    }
+                    if (data.connected && this.qrInterval) {
+                        clearInterval(this.qrInterval);
+                    }
+                }
+            } catch (e) {
+                console.error('Error fetching live QR:', e);
+            } finally {
+                this.qrLoading = false;
+            }
+        }
+    }" class="bg-gradient-to-r from-teal-500 via-cyan-600 to-blue-600 rounded-3xl p-6 text-white shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-white text-2xl shrink-0">
+                <i class="fa-solid fa-qrcode"></i>
+            </div>
+            <div>
+                <h3 class="text-base font-black">Scan QR Code WhatsApp Toko (Langsung di Sini)</h3>
+                <p class="text-xs text-teal-100 mt-0.5">
+                    Tidak perlu repot mencari menu di web Fonnte. Klik tombol di samping untuk memunculkan barcode QR Code live langsung di layar ini.
+                </p>
+            </div>
+        </div>
+        <button type="button" @click="openQrModal()"
+                class="shrink-0 px-5 py-3 rounded-2xl text-xs font-black bg-white hover:bg-slate-100 text-teal-800 shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 cursor-pointer">
+            <i class="fa-solid fa-camera"></i>
+            <span>Buka QR Code WhatsApp</span>
+        </button>
+
+        <!-- QR Scanner Modal -->
+        <div x-show="qrModalOpen" x-cloak 
+             class="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-xs">
+            <div class="relative max-w-sm w-full bg-white rounded-3xl p-6 shadow-2xl text-slate-800 text-center" @click.stop>
+                <button type="button" @click="closeQrModal()" 
+                        class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+
+                <h4 class="font-black text-base text-slate-900 mb-1">Scan QR Code WhatsApp Toko</h4>
+                <p class="text-xs text-slate-500 mb-4">Nomor Toko: <b>{{ $adminPhone }}</b></p>
+
+                <!-- Connected State -->
+                <template x-if="qrConnected">
+                    <div class="py-6 space-y-3">
+                        <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <h5 class="font-black text-sm text-emerald-700">WhatsApp Sudah Terhubung!</h5>
+                        <p class="text-xs text-slate-600">Perangkat Toko Nova Jaya telah aktif dan siap mengirim notifikasi pesanan otomatis.</p>
+                        <button type="button" @click="closeQrModal()" class="mt-2 px-5 py-2 rounded-xl text-xs font-bold bg-emerald-600 text-white">
+                            Selesai & Tutup
+                        </button>
+                    </div>
+                </template>
+
+                <!-- QR Display State -->
+                <template x-if="!qrConnected">
+                    <div>
+                        <div class="bg-slate-50 border-2 border-dashed border-teal-300 rounded-2xl p-4 flex flex-col items-center justify-center min-h-[260px]">
+                            <template x-if="qrLoading">
+                                <div class="flex flex-col items-center space-y-2 text-xs text-slate-500">
+                                    <i class="fa-solid fa-spinner fa-spin text-2xl text-teal-600"></i>
+                                    <span>Memuat QR Code dari server...</span>
+                                </div>
+                            </template>
+                            <template x-if="!qrLoading && qrUrl">
+                                <div>
+                                    <img :src="qrUrl" alt="QR Code WhatsApp" class="w-56 h-56 rounded-xl mx-auto shadow-sm border border-slate-200">
+                                    <div class="text-[11px] text-teal-700 font-bold mt-2 flex items-center justify-center gap-1">
+                                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                                        <span>QR Aktif (Otomatis refresh)</span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="mt-4 text-left bg-teal-50 border border-teal-200 rounded-xl p-3 text-[11px] text-teal-900 space-y-1">
+                            <div class="font-bold flex items-center gap-1">
+                                <i class="fa-brands fa-whatsapp text-emerald-600"></i>
+                                <span>Cara Scan di HP:</span>
+                            </div>
+                            <ol class="list-decimal list-inside space-y-0.5 text-slate-600">
+                                <li>Buka WA di HP nomor <b>{{ $adminPhone }}</b></li>
+                                <li>Pilih <b>Perangkat Tertaut (Linked Devices)</b></li>
+                                <li>Ketuk <b>Tautkan Perangkat</b> & sorot ke barcode di atas</li>
+                            </ol>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </div>
+
     <!-- Section 3b: Test WhatsApp Section -->
     <div class="bg-emerald-50/60 border border-emerald-200 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
         <div>

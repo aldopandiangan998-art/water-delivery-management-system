@@ -77,4 +77,42 @@ class IntegrationController extends Controller
         $detail = $result['response']['reason'] ?? $result['message'] ?? $result['error'] ?? 'Periksa apakah nomor WA di Fonnte sudah berstatus CONNECTED.';
         return back()->with('error', 'Gagal mengirim pesan WhatsApp: ' . $detail);
     }
+
+    /**
+     * Get live WhatsApp QR code directly from Fonnte API for scanning inside AquaFlow
+     */
+    public function getLiveQr()
+    {
+        $token = WhatsAppNotificationService::getToken();
+        if (empty($token)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Fonnte API Token belum dikonfigurasi.',
+            ], 422);
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'Authorization' => $token,
+            ])->asForm()->timeout(15)->post('https://api.fonnte.com/qr', [
+                'type' => 'qr',
+            ]);
+
+            $result = $response->json();
+            $connected = ! empty($result['connected']);
+            $qrBase64 = ! empty($result['url']) ? 'data:image/png;base64,' . $result['url'] : null;
+
+            return response()->json([
+                'status' => true,
+                'connected' => $connected,
+                'qr_url' => $qrBase64,
+                'message' => $result['message'] ?? '',
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengambil QR dari Fonnte: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }
