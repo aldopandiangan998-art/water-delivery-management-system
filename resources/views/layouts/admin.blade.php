@@ -517,6 +517,10 @@
 
     </div>
 
+    <!-- Mobile Bottom Navigation & Toast Feedback -->
+    <x-bottom-nav />
+    <x-toast />
+
     <!-- Global Confirmation Modal for Delete/Cancel Actions -->
     <x-confirm-modal />
 

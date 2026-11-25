@@ -339,9 +339,13 @@
 
     <!-- Floating WhatsApp Support Button -->
     <a href="https://wa.me/{{ $cleanWhatsapp }}?text=Halo%20Admin%20AquaFlow,%20saya%20mau%20tanya%20pesanan" target="_blank" 
-       class="fixed bottom-6 right-5 z-40 bg-emerald-500 hover:bg-emerald-600 text-white w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition duration-200">
+       class="fixed bottom-20 md:bottom-6 right-5 z-40 bg-emerald-500 hover:bg-emerald-600 text-white w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition duration-200">
         <i class="fa-brands fa-whatsapp text-2xl sm:text-3xl"></i>
     </a>
+
+    <!-- Mobile Bottom Navigation & Toast Feedback -->
+    <x-bottom-nav />
+    <x-toast />
 
     <!-- Global Confirmation Modal for Delete/Cancel Actions -->
     <x-confirm-modal />

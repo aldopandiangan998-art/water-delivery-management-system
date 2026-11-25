@@ -40,6 +40,7 @@ Route::get('/language/{locale}', function (\Illuminate\Http\Request $request, st
 })->name('language.switch');
 Route::get('/products/{product:slug}', [PublicController::class, 'product'])->name('public.product');
 Route::get('/service-areas', [PublicController::class, 'serviceAreas'])->name('public.service-areas');
+Route::get('/ui-kit', fn() => view('ui-kit'))->name('ui-kit');
 Route::get('/storage/{path}', [StorageController::class, 'show'])->where('path', '.*')->name('storage.show');
 
 /*
