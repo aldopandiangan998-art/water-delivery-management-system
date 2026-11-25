@@ -42,7 +42,7 @@ class DanaWebhookTest extends TestCase
         $this->admin = User::create([
             'name' => 'Admin Nova Jaya',
             'email' => 'admin@novajaya.com',
-            'phone' => '0881026146848',
+            'phone' => '083186109775',
             'role' => 'admin',
             'is_active' => true,
             'password' => Hash::make('password'),
@@ -87,7 +87,7 @@ class DanaWebhookTest extends TestCase
 
         // Default secret
         BusinessSetting::set('dana_webhook_secret', 'test-dana-secret-key-123');
-        BusinessSetting::set('company_whatsapp', '62881026146848');
+        BusinessSetting::set('company_whatsapp', '6283186109775');
     }
 
     public function test_webhook_rejects_unauthorized_request_without_secret(): void

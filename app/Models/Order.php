@@ -147,7 +147,7 @@ class Order extends Model
 
     public function getWhatsappUrlAttribute(): string
     {
-        $adminPhone = BusinessSetting::get('company_whatsapp', '62881026146848');
+        $adminPhone = BusinessSetting::get('company_whatsapp', '6283186109775');
         $cleanPhone = preg_replace('/[^0-9]/', '', $adminPhone);
         if (str_starts_with($cleanPhone, '0')) {
             $cleanPhone = '62' . substr($cleanPhone, 1);

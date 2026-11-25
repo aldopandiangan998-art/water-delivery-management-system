@@ -44,7 +44,7 @@
         $activeCustomerOrdersCount = \App\Models\Order::where('user_id', Auth::id())
             ->whereIn('status', ['pending', 'confirmed', 'processing', 'ready_for_delivery'])
             ->count();
-        $companyWhatsapp = \App\Models\BusinessSetting::get('company_whatsapp', '62881026146848');
+        $companyWhatsapp = \App\Models\BusinessSetting::get('company_whatsapp', '6283186109775');
         $cleanWhatsapp = preg_replace('/[^0-9]/', '', $companyWhatsapp);
     @endphp
 

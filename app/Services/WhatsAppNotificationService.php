@@ -50,7 +50,7 @@ class WhatsAppNotificationService
      */
     public static function getAdminPhone(): string
     {
-        $phone = BusinessSetting::get('company_whatsapp', '62881026146848');
+        $phone = BusinessSetting::get('company_whatsapp', '6283186109775');
         return static::formatPhoneNumber($phone);
     }
 

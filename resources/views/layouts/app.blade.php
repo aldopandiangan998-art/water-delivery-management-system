@@ -136,7 +136,7 @@
     </footer>
 
     <!-- Floating WhatsApp Button -->
-    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', \App\Models\BusinessSetting::get('company_whatsapp', '62881026146848')) }}?text=Halo%20AquaFlow,%20saya%20mau%20pesan%20air%20galon" target="_blank" 
+    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', \App\Models\BusinessSetting::get('company_whatsapp', '6283186109775')) }}?text=Halo%20AquaFlow,%20saya%20mau%20pesan%20air%20galon" target="_blank" 
        class="fixed bottom-6 right-6 z-40 bg-emerald-500 hover:bg-emerald-600 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition duration-200">
         <i class="fa-brands fa-whatsapp text-3xl"></i>
     </a>

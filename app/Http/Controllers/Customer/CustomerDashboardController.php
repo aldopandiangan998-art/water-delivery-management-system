@@ -94,7 +94,7 @@ class CustomerDashboardController extends Controller
             'company_name' => BusinessSetting::get('company_name', 'Toko Nova Jaya - AquaFlow Fresh & Pure'),
             'company_tagline' => BusinessSetting::get('company_tagline', 'Depot Air Minum Higienis & Antar Cepat Langsung ke Rumah Anda'),
             'company_phone' => BusinessSetting::get('company_phone', '0881-0261-46848'),
-            'company_whatsapp' => BusinessSetting::get('company_whatsapp', '62881026146848'),
+            'company_whatsapp' => BusinessSetting::get('company_whatsapp', '6283186109775'),
             'company_address' => BusinessSetting::get('company_address', 'Jl. Bratang Gede VI H No. 130, Kelurahan Ngagelrejo, Kecamatan Wonokromo, Kota Surabaya, Jawa Timur 60245'),
             'company_email' => BusinessSetting::get('company_email', 'support@aquaflowdelivery.com'),
             'business_hours' => BusinessSetting::get('business_hours', 'Senin - Minggu: 07:00 - 20:00 WIB'),

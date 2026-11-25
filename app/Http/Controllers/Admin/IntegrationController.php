@@ -21,7 +21,7 @@ class IntegrationController extends Controller
         $danaWebhookUrl = url('/api/webhooks/dana-notification');
         $danaSecret = BusinessSetting::get('dana_webhook_secret') ?: config('services.dana.webhook_secret', 'dana-novajaya-secret-2026');
         $fonnteToken = BusinessSetting::get('fonnte_api_token') ?: config('services.fonnte.token', '');
-        $adminPhone = BusinessSetting::get('company_whatsapp', '62881026146848');
+        $adminPhone = BusinessSetting::get('company_whatsapp', '6283186109775');
 
         return view('admin.settings.integrations', compact(
             'danaWebhookUrl',
@@ -54,7 +54,7 @@ class IntegrationController extends Controller
      */
     public function testWhatsApp(Request $request)
     {
-        $adminPhone = BusinessSetting::get('company_whatsapp', '62881026146848');
+        $adminPhone = BusinessSetting::get('company_whatsapp', '6283186109775');
         $token = WhatsAppNotificationService::getToken();
 
         if (empty($token)) {

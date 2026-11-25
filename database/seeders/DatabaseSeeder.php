@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
             'company_name' => 'Toko Nova Jaya - AquaFlow Fresh & Pure',
             'company_tagline' => 'Depot Air Minum Higienis & Antar Cepat Langsung ke Rumah Anda',
             'company_phone' => '0881-0261-46848',
-            'company_whatsapp' => '62881026146848',
+            'company_whatsapp' => '6283186109775',
             'company_address' => 'Jl. Bratang Gede VI H No. 130, Kelurahan Ngagelrejo, Kecamatan Wonokromo, Kota Surabaya, Jawa Timur 60245',
             'company_email' => 'support@aquaflowdelivery.com',
             'bank_name' => 'BCA',
