@@ -2,6 +2,13 @@
 
 @section('page_title', __('Edit Produk - ') . $product->name)
 
+@section('breadcrumbs')
+    <x-breadcrumbs :items="[
+        ['title' => __('Katalog Produk'), 'url' => route('admin.products.index')],
+        ['title' => $product->name]
+    ]" />
+@endsection
+
 @section('content')
 <div class="max-w-3xl mx-auto space-y-6">
 

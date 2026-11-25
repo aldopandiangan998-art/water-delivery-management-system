@@ -474,6 +474,22 @@
             </div>
         </header>
 
+        <!-- Breadcrumbs Navigation Sub-header Bar -->
+        <div class="bg-white/70 dark:bg-slate-900/70 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 px-4 sm:px-6 lg:px-8 py-2.5">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                @hasSection('breadcrumbs')
+                    @yield('breadcrumbs')
+                @else
+                    <x-breadcrumbs />
+                @endif
+
+                <div class="hidden sm:flex items-center space-x-2 text-[11px] text-slate-400 dark:text-slate-500 font-medium shrink-0">
+                    <i class="fa-regular fa-clock text-slate-400"></i>
+                    <span>{{ now()->translatedFormat('l, d M Y') }}</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Flash Alert Messages -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-4">
             @if (session('success'))

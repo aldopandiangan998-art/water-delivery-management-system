@@ -2,6 +2,13 @@
 
 @section('page_title', 'Tugas Pengantaran #' . $delivery->delivery_number)
 
+@section('breadcrumbs')
+    <x-breadcrumbs :items="[
+        ['title' => __('Pengantaran'), 'url' => route('admin.deliveries.index')],
+        ['title' => '#' . $delivery->delivery_number]
+    ]" />
+@endsection
+
 @section('content')
 <div class="max-w-4xl mx-auto space-y-6" 
      x-data="adminDeliveryExecution({

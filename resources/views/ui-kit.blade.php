@@ -9,7 +9,18 @@
         <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Showcase of reusable Blade components, tokens, and responsive patterns.</p>
     </div>
 
-    <!-- 1. Buttons -->
+    <!-- 1. Breadcrumbs Navigation -->
+    <x-card title="Breadcrumbs Navigation (<x-breadcrumbs>)">
+        <div class="space-y-3">
+            <x-breadcrumbs :items="[
+                ['title' => 'Admin', 'url' => '#'],
+                ['title' => 'Katalog Produk', 'url' => '#'],
+                ['title' => 'Air Galon RO 19L']
+            ]" />
+        </div>
+    </x-card>
+
+    <!-- 2. Buttons -->
     <x-card title="Buttons (<x-button>)">
         <div class="flex flex-wrap items-center gap-3">
             <x-button variant="primary" icon="fa-solid fa-cart-plus">Primary Button</x-button>

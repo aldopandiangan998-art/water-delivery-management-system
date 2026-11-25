@@ -2,6 +2,13 @@
 
 @section('page_title', 'Radar Peta Kurir Real-Time')
 
+@section('breadcrumbs')
+    <x-breadcrumbs :items="[
+        ['title' => __('Pengantaran'), 'url' => route('admin.deliveries.index')],
+        ['title' => __('Peta Kurir & Radar GPS')]
+    ]" />
+@endsection
+
 @section('content')
 <div class="space-y-6" 
      x-data="adminFleetRadar({

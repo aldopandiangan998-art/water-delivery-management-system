@@ -2,6 +2,13 @@
 
 @section('page_title', __('Rincian Pesanan #') . $order->order_number)
 
+@section('breadcrumbs')
+    <x-breadcrumbs :items="[
+        ['title' => __('Kelola Pesanan'), 'url' => route('admin.orders.index')],
+        ['title' => '#' . $order->order_number]
+    ]" />
+@endsection
+
 @section('content')
 <div class="space-y-6">
 
