@@ -263,9 +263,9 @@ class TripayService
     {
         $mockRef = 'DEV-T' . strtoupper(substr(md5($order->order_number . time()), 0, 10));
         
-        // Dynamic QR generator URL displaying nominal & order number
-        $qrContent = "00020101021226600016ID.CO.TRIPAY.WWW011893600998{$mockRef}520454995303360540" . strlen($totalAmount) . "{$totalAmount}5802ID5914TOKO NOVA JAYA6007BANDUNG62070703A016304";
-        $qrImageUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=10&data=' . urlencode($qrContent);
+        // Use Toko Nova Jaya / Doppnnstore DANA QRIS as default
+        $qrImageUrl = asset('images/qris.jpg');
+        $qrContent = "ID1025464152988";
 
         $order->update([
             'tripay_reference' => $mockRef,
