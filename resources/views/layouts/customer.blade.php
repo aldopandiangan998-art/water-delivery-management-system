@@ -163,13 +163,6 @@
                     </span>
                 </a>
 
-                <!-- Profile -->
-                <a href="{{ route('customer.profile') }}" 
-                   class="flex items-center px-3 py-2.5 rounded-xl transition duration-150 {{ request()->routeIs('customer.profile') ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
-                    <i class="fa-solid fa-user-gear w-5 mr-3 text-center text-sm {{ request()->routeIs('customer.profile') ? 'text-white' : 'text-amber-400' }}"></i>
-                    <span>Profil & Kata Sandi</span>
-                </a>
-
                 <!-- WhatsApp CS Support -->
                 <a href="https://wa.me/{{ $cleanWhatsapp }}?text=Halo%20Admin%20AquaFlow,%20saya%20pelanggan%20mau%20tanya%20pesanan" target="_blank"
                    class="flex items-center px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-emerald-400 transition duration-150">
