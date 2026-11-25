@@ -48,4 +48,13 @@ return [
         'endpoint' => env('FONNTE_ENDPOINT', 'https://api.fonnte.com/send'),
     ],
 
+    'tripay' => [
+        'api_key' => env('TRIPAY_API_KEY', ''),
+        'private_key' => env('TRIPAY_PRIVATE_KEY', ''),
+        'merchant_code' => env('TRIPAY_MERCHANT_CODE', ''),
+        'mode' => env('TRIPAY_MODE', 'sandbox'), // sandbox or live
+        'pass_fee_to_customer' => env('TRIPAY_PASS_FEE_TO_CUSTOMER', true),
+        'qris_rate' => env('TRIPAY_QRIS_RATE', 0.007), // 0.7% standard MDR BI
+    ],
+
 ];

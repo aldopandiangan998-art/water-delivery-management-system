@@ -147,6 +147,111 @@
                 @error('fonnte_api_token')<p class="text-xs text-rose-600 mt-1">{{ $message }}</p>@enderror
             </div>
 
+            <!-- TRIPAY GATEWAY INTEGRATION (100% OTOMATIS) -->
+            <div class="pt-6 border-t border-slate-200 space-y-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center font-black text-sm">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-sm text-slate-900">Tripay Payment Gateway (QRIS Real-Time Otomatis)</h3>
+                            <p class="text-xs text-slate-500">Deteksi pembayaran otomatis 24 jam langsung dari server ke server tanpa butuh HP Android.</p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase {{ $tripayMode === 'live' ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' : 'bg-amber-100 text-amber-800 border border-amber-300' }}">
+                        Mode: {{ strtoupper($tripayMode) }}
+                    </span>
+                </div>
+
+                <!-- Webhook URL Tripay -->
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200" x-data="{ copiedTripay: false }">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">
+                        URL Webhook Callback Tripay (Salin ke Dashboard Tripay Anda)
+                    </label>
+                    <div class="flex items-center gap-2">
+                        <code class="flex-1 text-xs bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 text-teal-700 font-mono break-all">{{ $tripayWebhookUrl }}</code>
+                        <button type="button" @click="navigator.clipboard.writeText('{{ $tripayWebhookUrl }}'); copiedTripay = true; setTimeout(() => copiedTripay = false, 2500)"
+                                class="shrink-0 px-3 py-2.5 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-900 text-white transition flex items-center gap-1.5">
+                            <i class="fa-solid" :class="copiedTripay ? 'fa-check' : 'fa-copy'"></i>
+                            <span x-text="copiedTripay ? 'Tersalin!' : 'Salin'"></span>
+                        </button>
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">Tempelkan URL di atas pada menu <b>Merchant</b> &gt; <b>Edit Merchant</b> &gt; <b>URL Callback</b> di akun Tripay Anda.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Merchant Code -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                            Kode Merchant (Merchant Code)
+                        </label>
+                        <input type="text" name="tripay_merchant_code" value="{{ old('tripay_merchant_code', $tripayMerchantCode) }}"
+                               class="w-full text-sm font-mono border border-slate-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-teal-500 focus:border-teal-400 bg-white"
+                               placeholder="Contoh: T12345">
+                    </div>
+
+                    <!-- Mode Environment -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                            Lingkungan Sistem (Mode)
+                        </label>
+                        <select name="tripay_mode" class="w-full text-sm border border-slate-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-teal-500 focus:border-teal-400 bg-white">
+                            <option value="sandbox" {{ $tripayMode === 'sandbox' ? 'selected' : '' }}>Sandbox (Uji Coba & Simulasi Gratis)</option>
+                            <option value="live" {{ $tripayMode === 'live' ? 'selected' : '' }}>Live (Produksi Asli / Uang Riil)</option>
+                        </select>
+                    </div>
+
+                    <!-- API Key -->
+                    <div x-data="{ showKey: false }">
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                            API Key Tripay
+                        </label>
+                        <div class="relative">
+                            <input :type="showKey ? 'text' : 'password'" name="tripay_api_key"
+                                   value="{{ old('tripay_api_key', $tripayApiKey) }}"
+                                   class="w-full text-sm font-mono border border-slate-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-teal-500 focus:border-teal-400 bg-white pr-10"
+                                   placeholder="DEV-xxxxxxxx">
+                            <button type="button" @click="showKey = !showKey"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs">
+                                <i :class="showKey ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Private Key -->
+                    <div x-data="{ showPriv: false }">
+                        <label class="block text-xs font-bold text-slate-700 mb-1.5">
+                            Private Key Tripay
+                        </label>
+                        <div class="relative">
+                            <input :type="showPriv ? 'text' : 'password'" name="tripay_private_key"
+                                   value="{{ old('tripay_private_key', $tripayPrivateKey) }}"
+                                   class="w-full text-sm font-mono border border-slate-300 rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-teal-500 focus:border-teal-400 bg-white pr-10"
+                                   placeholder="xxxxxxxxxxxx">
+                            <button type="button" @click="showPriv = !showPriv"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs">
+                                <i :class="showPriv ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkbox Fee 0.7% to Customer -->
+                <div class="bg-teal-50/70 p-4 rounded-2xl border border-teal-200">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" name="tripay_pass_fee_to_customer" value="1" {{ $tripayPassFee ? 'checked' : '' }}
+                               class="mt-0.5 rounded text-teal-600 focus:ring-teal-500 w-4 h-4">
+                        <div>
+                            <span class="text-xs font-extrabold text-teal-950 block">Bebankan Biaya Layanan QRIS (0.7%) ke Pelanggan</span>
+                            <span class="text-[11px] text-teal-800 block mt-0.5 leading-relaxed">
+                                Rekomendasi: <b>Aktifkan</b>. Sistem akan otomatis menambahkan biaya 0.7% ke total tagihan pelanggan, sehingga uang yang masuk ke saldo toko Anda tetap <b>100% utuh tanpa potongan sepeser pun</b>.
+                            </span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
         </div>
         <div class="px-6 py-4 border-t border-slate-100 flex items-center justify-between gap-3 bg-slate-50">
             <span class="text-xs text-slate-500">Pastikan nomor WA Admin aktif dan siap menerima pesan.</span>

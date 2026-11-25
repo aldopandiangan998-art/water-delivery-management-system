@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\ReviewController as AdminReviewController;
 use App\Http\Controllers\Admin\ServiceAreaController as AdminServiceAreaController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Api\DanaWebhookController;
+use App\Http\Controllers\Api\TripayWebhookController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Customer\AddressController as CustomerAddressController;
 use App\Http\Controllers\Customer\CustomerDashboardController;
@@ -35,6 +36,8 @@ Route::get('/storage/{path}', [StorageController::class, 'show'])->where('path',
 |--------------------------------------------------------------------------
 */
 Route::post('/api/webhooks/dana-notification', [DanaWebhookController::class, 'handle'])->name('api.webhooks.dana');
+Route::post('/api/webhooks/tripay-notification', [TripayWebhookController::class, 'handle'])->name('api.webhooks.tripay');
+Route::post('/api/webhooks/tripay-simulate/{order}', [TripayWebhookController::class, 'simulate'])->name('api.webhooks.tripay.simulate');
 
 /*
 |--------------------------------------------------------------------------

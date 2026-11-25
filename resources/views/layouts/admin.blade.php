@@ -490,7 +490,7 @@
                     <span class="sm:hidden">Web</span>
                 </a>
 
-                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', \App\Models\BusinessSetting::get('company_whatsapp', '6283186109775')) }}" target="_blank"
+                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', \App\Models\BusinessSetting::get('company_whatsapp', '62881026146848')) }}" target="_blank"
                    class="text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-xl transition flex items-center shadow-2xs">
                     <i class="fa-brands fa-whatsapp mr-1.5 text-emerald-600 text-sm"></i>
                     <span class="hidden sm:inline">WhatsApp CS</span>

@@ -98,10 +98,15 @@
                         </div>
                         <div>
                             <div class="flex items-center space-x-2">
-                                <h2 class="text-base font-black tracking-tight">Pembayaran QRIS Toko</h2>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950 animate-pulse">Wajib Bayar & Konfirmasi</span>
+                                <h2 class="text-base font-black tracking-tight">Pembayaran QRIS Realtime Otomatis</h2>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-400 text-slate-950 animate-pulse">Auto-Detect Realtime</span>
                             </div>
-                            <p class="text-xs text-teal-100">Merchant: <b>Doppnnstore</b> &bull; NMID: ID1025464152988</p>
+                            <p class="text-xs text-teal-100">
+                                @if ($order->tripay_reference)
+                                    Ref Gateway: <b>{{ $order->tripay_reference }}</b> &bull;
+                                @endif
+                                Merchant: <b>Toko Nova Jaya (Doppnnstore)</b>
+                            </p>
                         </div>
                     </div>
                     <div class="text-left sm:text-right bg-white/10 px-3 py-1.5 rounded-xl backdrop-blur-xs border border-white/20">
@@ -110,10 +115,12 @@
                     </div>
                 </div>
 
-                <!-- Info banner: Belum Masuk ke Admin -->
-                <div class="bg-amber-50 border-b border-amber-200 px-5 py-2.5 flex items-center text-xs text-amber-900 font-medium space-x-2">
-                    <i class="fa-solid fa-circle-exclamation text-amber-600 text-sm shrink-0"></i>
-                    <span>Pesanan belum diteruskan ke WhatsApp Admin. Silakan scan dan selesaikan transfer QRIS, lalu klik tombol <b>"Saya Sudah Bayar"</b> di bawah agar orderan otomatis masuk ke WhatsApp Admin.</span>
+                <!-- Info banner: Otomatis Terverifikasi via Gateway -->
+                <div class="bg-emerald-50 border-b border-emerald-200 px-5 py-2.5 flex items-center justify-between text-xs text-emerald-900 font-medium space-x-2">
+                    <div class="flex items-center space-x-2">
+                        <i class="fa-solid fa-bolt text-emerald-600 text-sm shrink-0"></i>
+                        <span><b>Deteksi Otomatis Aktif:</b> Cukup scan barcode dengan m-Banking / E-Wallet Anda. Begitu pembayaran selesai, sistem otomatis mengubah pesanan menjadi <b>LUNAS</b> tanpa perlu admin klik manual.</span>
+                    </div>
                 </div>
 
                 <!-- Body: QRIS Image & Instructions -->
@@ -121,8 +128,8 @@
                     <!-- Left: QR Code Display -->
                     <div class="flex flex-col items-center justify-center bg-slate-50 p-5 rounded-2xl border border-slate-200">
                         <div class="relative group cursor-pointer" @click="modalOpen = true">
-                            <img src="{{ asset('images/qris.jpg') }}" alt="QRIS Doppnnstore" 
-                                 class="w-64 max-w-full h-auto rounded-xl shadow-md border-2 border-white object-contain">
+                            <img src="{{ $order->qris_qr_url ?: asset('images/qris.jpg') }}" alt="QRIS Doppnnstore" 
+                                 class="w-64 max-w-full h-auto rounded-xl shadow-md border-2 border-white object-contain bg-white p-2">
                             <div class="absolute inset-0 bg-black/30 rounded-xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center text-white text-xs font-bold space-x-1">
                                 <i class="fa-solid fa-magnifying-glass-plus text-base"></i>
                                 <span>Klik untuk Perbesar</span>
@@ -131,7 +138,7 @@
 
                         <!-- Action Buttons below QR -->
                         <div class="mt-4 flex flex-wrap gap-2 justify-center w-full">
-                            <a href="{{ asset('images/qris.jpg') }}" download="QRIS-Doppnnstore.jpg"
+                            <a href="{{ $order->qris_qr_url ?: asset('images/qris.jpg') }}" download="QRIS-{{ $order->order_number }}.png"
                                class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-200 hover:bg-slate-300 text-slate-800 transition flex items-center">
                                 <i class="fa-solid fa-download mr-1.5"></i> Unduh Gambar QRIS
                             </a>
@@ -141,6 +148,41 @@
                                 <i class="fa-solid fa-check mr-1.5 text-emerald-600" x-show="copied"></i>
                                 <span x-text="copied ? 'Tersalin!' : 'Salin Nominal Rp {{ number_format($order->total_amount, 0, ',', '.') }}'"></span>
                             </button>
+                        </div>
+
+                        <!-- Testing Simulator Button -->
+                        <div class="mt-4 w-full pt-3 border-t border-slate-200 text-center">
+                            <button type="button"
+                                    x-data="{ simulating: false }"
+                                    :disabled="simulating"
+                                    @click="
+                                        simulating = true;
+                                        fetch('{{ route('api.webhooks.tripay.simulate', $order) }}', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                            }
+                                        })
+                                        .then(res => res.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                window.location.reload();
+                                            } else {
+                                                alert(data.message || 'Gagal simulasi');
+                                                simulating = false;
+                                            }
+                                        })
+                                        .catch(() => {
+                                            alert('Terjadi kesalahan koneksi.');
+                                            simulating = false;
+                                        });
+                                    "
+                                    class="w-full py-2 px-3 rounded-xl text-[11px] font-black bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-xs transition flex items-center justify-center space-x-1.5 cursor-pointer">
+                                <i class="fa-solid fa-flask" :class="simulating ? 'animate-spin' : ''"></i>
+                                <span x-text="simulating ? 'Memvalidasi Pembayaran...' : '⚡ Uji Coba: Simulasi Pembayaran QRIS Lunas (Testing)'"></span>
+                            </button>
+                            <p class="text-[10px] text-slate-400 mt-1">Gunakan tombol ini saat ingin menguji alur otomatis tanpa transfer uang asli.</p>
                         </div>
                     </div>
 
@@ -343,6 +385,12 @@
                 <span>Ongkos Kirim:</span>
                 <span class="font-semibold text-slate-800">Rp {{ number_format($order->delivery_fee, 0, ',', '.') }}</span>
             </div>
+            @if ($order->service_fee > 0)
+                <div class="flex justify-between text-teal-700 font-semibold">
+                    <span>Biaya Layanan QRIS (0.7%):</span>
+                    <span>Rp {{ number_format($order->service_fee, 0, ',', '.') }}</span>
+                </div>
+            @endif
             <div class="flex justify-between text-base font-black text-slate-900 pt-2 border-t border-slate-100">
                 <span>Total Tagihan:</span>
                 <span class="text-cyan-700">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>

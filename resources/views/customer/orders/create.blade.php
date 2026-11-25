@@ -174,6 +174,13 @@
                             <span>Ongkos Kirim</span>
                             <span class="font-semibold text-slate-800" x-text="formatRupiah(deliveryFee)"></span>
                         </div>
+                        <div x-show="paymentMethod === 'qris' && calculateQrisFee() > 0" x-cloak class="flex justify-between text-teal-700">
+                            <span class="flex items-center">
+                                <span>Biaya Layanan QRIS (0.7%)</span>
+                                <i class="fa-solid fa-circle-question ml-1 text-[10px] text-teal-500" title="Biaya resmi transaksi QRIS"></i>
+                            </span>
+                            <span class="font-semibold" x-text="formatRupiah(calculateQrisFee())"></span>
+                        </div>
                         <div class="flex justify-between text-base font-black text-slate-900 pt-3 border-t border-slate-200">
                             <span>Total Pembayaran</span>
                             <span class="text-cyan-700" x-text="formatRupiah(calculateTotal())"></span>
@@ -334,8 +341,16 @@ function orderApp(config) {
             return this.cartItems.reduce((acc, it) => acc + it.subtotal, 0);
         },
 
+        calculateQrisFee() {
+            if (this.paymentMethod !== 'qris') return 0;
+            const base = this.calculateSubtotal() + this.deliveryFee;
+            if (base <= 0) return 0;
+            const gross = Math.ceil(base / 0.993);
+            return Math.max(0, gross - base);
+        },
+
         calculateTotal() {
-            return this.calculateSubtotal() + this.deliveryFee;
+            return this.calculateSubtotal() + this.deliveryFee + this.calculateQrisFee();
         },
 
         formatRupiah(val) {

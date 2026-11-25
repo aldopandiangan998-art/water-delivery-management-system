@@ -23,11 +23,26 @@ class IntegrationController extends Controller
         $fonnteToken = BusinessSetting::get('fonnte_api_token') ?: config('services.fonnte.token', '');
         $adminPhone = BusinessSetting::get('company_whatsapp', '6283186109775');
 
+        // Tripay Configuration
+        $tripayWebhookUrl = url('/api/webhooks/tripay-notification');
+        $tripayApiKey = BusinessSetting::get('tripay_api_key') ?: config('services.tripay.api_key', '');
+        $tripayPrivateKey = BusinessSetting::get('tripay_private_key') ?: config('services.tripay.private_key', '');
+        $tripayMerchantCode = BusinessSetting::get('tripay_merchant_code') ?: config('services.tripay.merchant_code', '');
+        $tripayMode = BusinessSetting::get('tripay_mode') ?: config('services.tripay.mode', 'sandbox');
+        $tripayPassFee = BusinessSetting::get('tripay_pass_fee_to_customer');
+        $tripayPassFee = $tripayPassFee !== null ? filter_var($tripayPassFee, FILTER_VALIDATE_BOOLEAN) : (bool) config('services.tripay.pass_fee_to_customer', true);
+
         return view('admin.settings.integrations', compact(
             'danaWebhookUrl',
             'danaSecret',
             'fonnteToken',
-            'adminPhone'
+            'adminPhone',
+            'tripayWebhookUrl',
+            'tripayApiKey',
+            'tripayPrivateKey',
+            'tripayMerchantCode',
+            'tripayMode',
+            'tripayPassFee'
         ));
     }
 
@@ -37,16 +52,29 @@ class IntegrationController extends Controller
     public function update(Request $request)
     {
         $validated = $request->validate([
-            'dana_webhook_secret' => ['required', 'string', 'min:6', 'max:100'],
+            'dana_webhook_secret' => ['nullable', 'string', 'min:6', 'max:100'],
             'fonnte_api_token' => ['nullable', 'string', 'max:100'],
             'company_whatsapp' => ['required', 'string', 'max:25'],
+            'tripay_api_key' => ['nullable', 'string', 'max:255'],
+            'tripay_private_key' => ['nullable', 'string', 'max:255'],
+            'tripay_merchant_code' => ['nullable', 'string', 'max:50'],
+            'tripay_mode' => ['nullable', 'in:sandbox,live'],
+            'tripay_pass_fee_to_customer' => ['nullable'],
         ]);
 
-        BusinessSetting::set('dana_webhook_secret', trim($validated['dana_webhook_secret']));
+        if (! empty($validated['dana_webhook_secret'])) {
+            BusinessSetting::set('dana_webhook_secret', trim($validated['dana_webhook_secret']));
+        }
         BusinessSetting::set('fonnte_api_token', trim($validated['fonnte_api_token'] ?? ''));
         BusinessSetting::set('company_whatsapp', trim($validated['company_whatsapp']));
 
-        return back()->with('success', 'Pengaturan integrasi QRIS DANA dan WhatsApp Gateway berhasil diperbarui.');
+        BusinessSetting::set('tripay_api_key', trim($validated['tripay_api_key'] ?? ''));
+        BusinessSetting::set('tripay_private_key', trim($validated['tripay_private_key'] ?? ''));
+        BusinessSetting::set('tripay_merchant_code', trim($validated['tripay_merchant_code'] ?? ''));
+        BusinessSetting::set('tripay_mode', $validated['tripay_mode'] ?? 'sandbox');
+        BusinessSetting::set('tripay_pass_fee_to_customer', $request->has('tripay_pass_fee_to_customer') ? '1' : '0');
+
+        return back()->with('success', 'Pengaturan integrasi Tripay QRIS, DANA, dan WhatsApp Gateway berhasil diperbarui.');
     }
 
     /**
