@@ -541,6 +541,9 @@
 
     </div>
 
+    <!-- Global Confirmation Modal for Delete/Cancel Actions -->
+    <x-confirm-modal />
+
     @stack('scripts')
 </body>
 </html>

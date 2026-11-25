@@ -66,10 +66,17 @@
                                     </button>
                                 </form>
 
-                                <form method="POST" action="{{ route('admin.reviews.destroy', $rev) }}" onsubmit="return confirm('Hapus ulasan ini?')" class="inline">
+                                <form method="POST" action="{{ route('admin.reviews.destroy', $rev) }}" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-semibold p-1">
+                                    <button type="button" 
+                                            @click="$dispatch('open-confirm-modal', {
+                                                form: $el.closest('form'),
+                                                title: 'Hapus Ulasan Pelanggan',
+                                                message: 'Apakah Anda yakin ingin menghapus ulasan dari pelanggan {{ addslashes($rev->order?->recipient_name ?? 'Pelanggan') }}?'
+                                            })"
+                                            class="text-rose-500 hover:text-rose-700 text-xs font-semibold p-1 cursor-pointer"
+                                            title="Hapus Ulasan">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>

@@ -66,10 +66,16 @@
                         <span class="text-slate-400">Alamat Pilihan</span>
                     @endif
 
-                    <form method="POST" action="{{ route('customer.addresses.destroy', $address) }}" onsubmit="return confirm('Hapus alamat ini?')">
+                    <form method="POST" action="{{ route('customer.addresses.destroy', $address) }}">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="text-rose-600 hover:text-rose-800 font-medium">
+                        <button type="button" 
+                                @click="$dispatch('open-confirm-modal', {
+                                    form: $el.closest('form'),
+                                    title: 'Hapus Alamat Pengantaran',
+                                    message: 'Apakah Anda yakin ingin menghapus alamat \'{{ addslashes($address->label) }}\'? Tindakan ini bersifat permanen.'
+                                })"
+                                class="text-rose-600 hover:text-rose-800 font-medium cursor-pointer">
                             <i class="fa-solid fa-trash mr-1"></i> Hapus
                         </button>
                     </form>

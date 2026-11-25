@@ -410,10 +410,18 @@ function adminFleetRadar(config) {
             }
         },
 
-        async removeApiKey() {
-            if (!confirm('Yakin ingin menghapus API Key dan kembali menggunakan OpenStreetMap (Gratis)?')) return;
-            this.inputApiKey = '';
-            await this.saveApiKey();
+        removeApiKey() {
+            window.dispatchEvent(new CustomEvent('open-confirm-modal', {
+                detail: {
+                    title: 'Hapus Google Maps API Key',
+                    message: 'Apakah Anda yakin ingin menghapus API Key dan kembali menggunakan OpenStreetMap (Gratis)?',
+                    confirmText: 'Ya, Hapus Key',
+                    callback: async () => {
+                        this.inputApiKey = '';
+                        await this.saveApiKey();
+                    }
+                }
+            }));
         },
 
         initMap() {

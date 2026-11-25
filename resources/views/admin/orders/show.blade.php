@@ -274,8 +274,16 @@
                         @method('PUT')
                         <input type="hidden" name="payment_status" value="paid">
                         <input type="hidden" name="amount_paid" value="{{ $order->total_amount }}">
-                        <button type="submit" 
-                                onclick="return confirm('Konfirmasi bahwa uang QRIS sebesar Rp {{ number_format($order->total_amount, 0, ',', '.') }} telah masuk ke rekening/e-wallet Doppnnstore?')"
+                        <button type="button" 
+                                @click="$dispatch('open-confirm-modal', {
+                                    form: $el.closest('form'),
+                                    title: 'Konfirmasi Pelunasan QRIS',
+                                    message: 'Konfirmasi bahwa pembayaran QRIS sebesar Rp {{ number_format($order->total_amount, 0, ',', '.') }} telah masuk ke rekening / e-wallet Doppnnstore?',
+                                    confirmText: 'Ya, Konfirmasi Lunas',
+                                    confirmButtonClass: 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20',
+                                    iconClass: 'fa-solid fa-qrcode text-teal-600',
+                                    iconBgClass: 'bg-teal-100 ring-8 ring-teal-50'
+                                })"
                                 class="w-full py-2.5 px-3 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white rounded-xl text-xs font-black shadow-sm flex items-center justify-center space-x-1.5 transition cursor-pointer">
                             <i class="fa-solid fa-qrcode text-sm"></i>
                             <span>Konfirmasi Lunas (QRIS Diterima)</span>

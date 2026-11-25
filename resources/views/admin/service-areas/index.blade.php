@@ -68,10 +68,17 @@
                             </td>
 
                             <td class="px-5 py-3.5 text-right whitespace-nowrap space-x-2">
-                                <form method="POST" action="{{ route('admin.service-areas.destroy', $area) }}" onsubmit="return confirm('Hapus wilayah ini?')" class="inline">
+                                <form method="POST" action="{{ route('admin.service-areas.destroy', $area) }}" class="inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-rose-500 hover:text-rose-700 text-xs font-semibold p-1">
+                                    <button type="button" 
+                                            @click="$dispatch('open-confirm-modal', {
+                                                form: $el.closest('form'),
+                                                title: 'Hapus Wilayah Layanan',
+                                                message: 'Apakah Anda yakin ingin menghapus wilayah layanan \'{{ addslashes($area->name) }}\'?'
+                                            })"
+                                            class="text-rose-500 hover:text-rose-700 text-xs font-semibold p-1 cursor-pointer"
+                                            title="Hapus Wilayah">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>

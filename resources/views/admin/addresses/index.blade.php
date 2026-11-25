@@ -158,12 +158,17 @@
                                     <i class="fa-solid fa-pen-to-square"></i> Edit
                                 </a>
 
-                                <form method="POST" action="{{ route('admin.addresses.destroy', $addr) }}" 
-                                      class="inline-block"
-                                      onsubmit="return confirm('Apakah Anda yakin ingin menghapus alamat ini?')">
+                                <form method="POST" action="{{ route('admin.addresses.destroy', $addr) }}" class="inline-block">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="text-xs font-bold px-2.5 py-1 rounded-lg text-rose-600 bg-rose-50 hover:bg-rose-100 transition">
+                                    <button type="button" 
+                                            @click="$dispatch('open-confirm-modal', {
+                                                form: $el.closest('form'),
+                                                title: 'Hapus Alamat Pelanggan',
+                                                message: 'Apakah Anda yakin ingin menghapus alamat \'{{ addslashes($addr->label) }}\' milik pelanggan {{ addslashes($addr->recipient_name) }}?'
+                                            })"
+                                            class="text-xs font-bold px-2.5 py-1 rounded-lg text-rose-600 bg-rose-50 hover:bg-rose-100 transition cursor-pointer"
+                                            title="Hapus Alamat">
                                         <i class="fa-solid fa-trash"></i>
                                     </button>
                                 </form>

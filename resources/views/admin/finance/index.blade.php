@@ -99,10 +99,17 @@
                                     Rp {{ number_format($exp->amount, 0, ',', '.') }}
                                 </td>
                                 <td class="px-5 py-3 text-right whitespace-nowrap">
-                                    <form method="POST" action="{{ route('admin.finance.destroy-expense', $exp) }}" onsubmit="return confirm('Hapus catatan pengeluaran ini?')">
+                                    <form method="POST" action="{{ route('admin.finance.destroy-expense', $exp) }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-rose-500 hover:text-rose-700">
+                                        <button type="button" 
+                                                @click="$dispatch('open-confirm-modal', {
+                                                    form: $el.closest('form'),
+                                                    title: 'Hapus Catatan Pengeluaran',
+                                                    message: 'Apakah Anda yakin ingin menghapus pengeluaran \'{{ addslashes($exp->title) }}\' sebesar Rp {{ number_format($exp->amount, 0, ',', '.') }}?'
+                                                })"
+                                                class="text-rose-500 hover:text-rose-700 cursor-pointer p-1"
+                                                title="Hapus Pengeluaran">
                                             <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </form>

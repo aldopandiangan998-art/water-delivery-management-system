@@ -366,6 +366,9 @@
         <i class="fa-brands fa-whatsapp text-2xl sm:text-3xl"></i>
     </a>
 
+    <!-- Global Confirmation Modal for Delete/Cancel Actions -->
+    <x-confirm-modal />
+
     @stack('scripts')
 </body>
 </html>

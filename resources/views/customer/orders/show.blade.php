@@ -416,10 +416,19 @@
                 <div class="font-bold text-sm text-rose-900">Ingin membatalkan pesanan ini?</div>
                 <div class="text-xs text-rose-700">Pesanan hanya dapat dibatalkan sebelum kurir memulai perjalanan.</div>
             </div>
-            <form method="POST" action="{{ route('customer.orders.cancel', $order) }}" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?')">
+            <form method="POST" action="{{ route('customer.orders.cancel', $order) }}">
                 @csrf
                 <input type="hidden" name="cancellation_reason" value="Dibatalkan oleh pelanggan via portal">
-                <button type="submit" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                <button type="button" 
+                        @click="$dispatch('open-confirm-modal', {
+                            form: $el.closest('form'),
+                            title: 'Batalkan Pesanan Ini?',
+                            message: 'Apakah Anda yakin ingin membatalkan pesanan #{{ $order->order_number }}? Pesanan yang dibatalkan tidak dapat diproses lagi.',
+                            confirmText: 'Ya, Batalkan Pesanan',
+                            iconClass: 'fa-solid fa-ban text-rose-600',
+                            iconBgClass: 'bg-rose-100 ring-8 ring-rose-50'
+                        })"
+                        class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer">
                     Batalkan Pesanan
                 </button>
             </form>
