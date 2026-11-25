@@ -40,11 +40,21 @@
         </div>
     </x-card>
 
-    <!-- 3. Form Inputs -->
-    <x-card title="Form Controls (<x-input>, <x-select>, <x-textarea>, <x-checkbox>)">
+    <!-- 3. Form Inputs & Pickers -->
+    <x-card title="Form Controls (<x-input>, <x-select>, <x-textarea>, <x-checkbox>, <x-datepicker>)">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <x-input label="Nama Lengkap" placeholder="Masukkan nama..." icon="fa-solid fa-user" />
             <x-select label="Kategori Produk" placeholder="Pilih Kategori" :options="['1' => 'Air RO', '2' => 'Bio Mineral']" icon="fa-solid fa-boxes-stacked" />
+            <x-datepicker label="Pilih Tanggal Pengantaran" name="delivery_date" />
+            <div class="flex items-center space-x-3 pt-6">
+                <x-button variant="secondary" icon="fa-solid fa-magnifying-glass" @click="$dispatch('open-global-search')">
+                    Buka Global Search (Ctrl+K)
+                </x-button>
+                <div class="flex items-center space-x-2">
+                    <span class="text-xs text-slate-500 font-bold">Bell:</span>
+                    <x-notification-bell />
+                </div>
+            </div>
             <div class="md:col-span-2">
                 <x-textarea label="Catatan Pengantaran" placeholder="Contoh: Belakang pos satpam..." />
             </div>

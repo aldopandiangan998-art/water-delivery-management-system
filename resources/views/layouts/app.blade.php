@@ -154,6 +154,9 @@
     <x-bottom-nav />
     <x-toast />
 
+    <!-- Global Quick Search (Ctrl+K or /) -->
+    <x-global-search />
+
     @stack('scripts')
 </body>
 </html>

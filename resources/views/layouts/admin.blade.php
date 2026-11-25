@@ -451,6 +451,18 @@
 
             <!-- Header Right Shortcut Controls -->
             <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- Global Quick Search Trigger -->
+                <button type="button" 
+                        @click="$dispatch('open-global-search')"
+                        class="hidden md:inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700 transition cursor-pointer space-x-2">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                    <span>{{ __('Cari...') }}</span>
+                    <kbd class="px-1.5 py-0.5 text-[10px] font-mono bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700">Ctrl+K</kbd>
+                </button>
+
+                <!-- Notification Bell -->
+                <x-notification-bell />
+
                 <!-- Theme (Dark/Light) & Language Controls -->
                 @include('partials.theme-lang-controls')
 
@@ -523,6 +535,9 @@
 
     <!-- Global Confirmation Modal for Delete/Cancel Actions -->
     <x-confirm-modal />
+
+    <!-- Global Quick Search (Ctrl+K or /) -->
+    <x-global-search />
 
     @stack('scripts')
 </body>
