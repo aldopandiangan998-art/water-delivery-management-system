@@ -282,13 +282,6 @@
                     <i class="fa-solid fa-cart-plus mr-1.5"></i>
                     <span>{{ __('Pesan Air') }}</span>
                 </a>
-
-                <!-- WhatsApp CS button -->
-                <a href="https://wa.me/{{ $cleanWhatsapp }}?text=Halo%20Admin%20AquaFlow,%20saya%20mau%20tanya%20pesanan" target="_blank"
-                   class="text-xs font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 hover:bg-emerald-100 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-xl transition flex items-center shadow-2xs">
-                    <i class="fa-brands fa-whatsapp mr-1.5 text-emerald-600 dark:text-emerald-400 text-sm"></i>
-                    <span class="hidden sm:inline">{{ __('CS WhatsApp') }}</span>
-                </a>
             </div>
         </header>
 
