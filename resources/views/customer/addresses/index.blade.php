@@ -3,24 +3,30 @@
 @section('title', __('Alamat Pengantaran Saya'))
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" x-data="{ showModal: false }">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6" 
+     x-data="{ showModal: false, viewMode: localStorage.getItem('view_mode_customer_addresses') || 'grid' }"
+     x-effect="localStorage.setItem('view_mode_customer_addresses', viewMode)">
 
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Alamat Pengantaran') }}</h1>
             <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Kelola daftar lokasi rumah, kantor, atau toko tempat air minum diantar.') }}</p>
         </div>
-        <x-button type="button" variant="primary" @click="showModal = true" icon="fa-solid fa-plus">
-            {{ __('Tambah Alamat Baru') }}
-        </x-button>
+        <div class="flex items-center space-x-2.5">
+            <x-grid-list-toggle model="viewMode" />
+            <x-button type="button" variant="primary" @click="showModal = true" icon="fa-solid fa-plus">
+                {{ __('Tambah Alamat Baru') }}
+            </x-button>
+        </div>
     </div>
 
-    <!-- Address Cards Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Address Cards (Grid / List View) -->
+    <div :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-3'">
         @forelse ($addresses as $address)
-            <x-card class="p-6 flex flex-col justify-between {{ $address->is_default ? 'ring-2 ring-cyan-500 border-cyan-500/40' : '' }}">
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between">
+            <x-card class="p-5 {{ $address->is_default ? 'ring-2 ring-cyan-500 border-cyan-500/40' : '' }}"
+                    :class="viewMode === 'list' ? 'flex flex-col sm:flex-row sm:items-center justify-between gap-4' : 'flex flex-col justify-between h-full'">
+                <div :class="viewMode === 'list' ? 'flex-1 space-y-1.5' : 'space-y-3'">
+                    <div class="flex items-center gap-2">
                         <span class="text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                             {{ $address->label }}
                         </span>
@@ -32,28 +38,30 @@
                     </div>
 
                     <div>
-                        <div class="font-extrabold text-sm text-slate-900 dark:text-white">{{ $address->recipient_name }}</div>
-                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $address->recipient_phone }}</div>
+                        <span class="font-extrabold text-sm text-slate-900 dark:text-white">{{ $address->recipient_name }}</span>
+                        <span class="text-xs text-slate-500 dark:text-slate-400 ml-2">({{ $address->recipient_phone }})</span>
                     </div>
 
                     <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                         {{ $address->address_line }}
                     </p>
 
-                    @if ($address->benchmark)
-                        <div class="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
-                            <span class="font-bold text-slate-700 dark:text-slate-300">{{ __('Patokan') }}:</span> {{ $address->benchmark }}
-                        </div>
-                    @endif
+                    <div class="flex flex-wrap items-center gap-3 text-xs">
+                        @if ($address->benchmark)
+                            <span class="text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950/60 px-2 py-0.5 rounded border border-slate-100 dark:border-slate-800">
+                                <span class="font-bold text-slate-700 dark:text-slate-300">{{ __('Patokan') }}:</span> {{ $address->benchmark }}
+                            </span>
+                        @endif
 
-                    @if ($address->serviceArea)
-                        <div class="text-xs font-semibold text-cyan-600 dark:text-cyan-400">
-                            {{ __('Area') }}: {{ $address->serviceArea->name }} ({{ __('Ongkir') }}: Rp {{ number_format($address->serviceArea->delivery_fee, 0, ',', '.') }})
-                        </div>
-                    @endif
+                        @if ($address->serviceArea)
+                            <span class="font-semibold text-cyan-600 dark:text-cyan-400">
+                                <i class="fa-solid fa-location-dot mr-1"></i>{{ $address->serviceArea->name }} (Rp {{ number_format($address->serviceArea->delivery_fee, 0, ',', '.') }})
+                            </span>
+                        @endif
+                    </div>
                 </div>
 
-                <div class="pt-4 border-t border-slate-100 dark:border-slate-800 mt-4 flex items-center justify-between text-xs">
+                <div :class="viewMode === 'list' ? 'pt-3 sm:pt-0 sm:border-t-0 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between sm:justify-end gap-4 text-xs' : 'pt-4 border-t border-slate-100 dark:border-slate-800 mt-4 flex items-center justify-between text-xs'">
                     @if (!$address->is_default)
                         <form method="POST" action="{{ route('customer.addresses.set-default', $address) }}">
                             @csrf

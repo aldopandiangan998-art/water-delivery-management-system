@@ -3,7 +3,9 @@
 @section('page_title', 'Keuangan & Laporan Laba Rugi')
 
 @section('content')
-<div class="space-y-6" x-data="{ expenseModalOpen: false }">
+<div class="space-y-6" 
+     x-data="{ expenseModalOpen: false, viewMode: localStorage.getItem('view_mode_admin_expenses') || 'list' }"
+     x-effect="localStorage.setItem('view_mode_admin_expenses', viewMode)">
 
     <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -60,73 +62,120 @@
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
         <!-- Operational Expenses Table (7 cols) -->
-        <div class="lg:col-span-7 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-            <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+        <div class="lg:col-span-7 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xs">
+            <div class="p-5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
                 <div>
-                    <h2 class="font-bold text-slate-900 text-sm uppercase tracking-wider">Catatan Pengeluaran Operasional</h2>
-                    <p class="text-xs text-slate-400">Biaya bensin motor, pemeliharaan, pembelian tutup/tisu</p>
+                    <h2 class="font-bold text-slate-900 dark:text-white text-sm uppercase tracking-wider">{{ __('Catatan Pengeluaran Operasional') }}</h2>
+                    <p class="text-xs text-slate-400">{{ __('Biaya bensin motor, pemeliharaan, pembelian tutup/tisu') }}</p>
+                </div>
+                <x-grid-list-toggle model="viewMode" />
+            </div>
+
+            <!-- List View (Table) -->
+            <div x-show="viewMode === 'list'" x-cloak>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-800 text-left text-xs">
+                        <thead class="bg-slate-50 dark:bg-slate-950 text-slate-400 font-bold uppercase tracking-wider">
+                            <tr>
+                                <th class="px-5 py-3">{{ __('Tanggal & No') }}</th>
+                                <th class="px-5 py-3">{{ __('Kategori') }}</th>
+                                <th class="px-5 py-3">{{ __('Keterangan') }}</th>
+                                <th class="px-5 py-3">{{ __('Jumlah (Rp)') }}</th>
+                                <th class="px-5 py-3 text-right">{{ __('Aksi') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
+                            @forelse ($expenses as $exp)
+                                <tr class="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition">
+                                    <td class="px-5 py-3 font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">
+                                        {{ $exp->date->format('d M Y') }}
+                                        <div class="text-[10px] font-mono text-slate-400 font-normal mt-0.5">{{ $exp->expense_number }}</div>
+                                    </td>
+                                    <td class="px-5 py-3 whitespace-nowrap">
+                                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                            {{ $exp->category }}
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-3">
+                                        <div class="font-bold text-slate-900 dark:text-white">{{ $exp->title }}</div>
+                                        <div class="text-[10px] text-slate-400">{{ $exp->notes ?? '-' }}</div>
+                                    </td>
+                                    <td class="px-5 py-3 font-black text-rose-600 dark:text-rose-400 whitespace-nowrap">
+                                        Rp {{ number_format($exp->amount, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-5 py-3 text-right whitespace-nowrap">
+                                        <form method="POST" action="{{ route('admin.finance.destroy-expense', $exp) }}">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" 
+                                                    @click="$dispatch('open-confirm-modal', {
+                                                        form: $el.closest('form'),
+                                                        title: '{{ __('Hapus Catatan Pengeluaran') }}',
+                                                        message: '{{ __('Apakah Anda yakin ingin menghapus pengeluaran') }} \'{{ addslashes($exp->title) }}\' {{ __('sebesar') }} Rp {{ number_format($exp->amount, 0, ',', '.') }}?'
+                                                    })"
+                                                    class="text-rose-500 hover:text-rose-700 dark:text-rose-400 cursor-pointer p-1"
+                                                    title="{{ __('Hapus Pengeluaran') }}">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-5 py-8 text-center text-slate-400">
+                                        {{ __('Tidak ada catatan pengeluaran pada periode ini.') }}
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-slate-100 text-left text-xs">
-                    <thead class="bg-slate-50 text-slate-400 font-bold uppercase tracking-wider">
-                        <tr>
-                            <th class="px-5 py-3">Tanggal & No</th>
-                            <th class="px-5 py-3">Kategori</th>
-                            <th class="px-5 py-3">Keterangan</th>
-                            <th class="px-5 py-3">Jumlah (Rp)</th>
-                            <th class="px-5 py-3 text-right">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 text-slate-700">
-                        @forelse ($expenses as $exp)
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="px-5 py-3 font-semibold text-slate-800 whitespace-nowrap">
-                                    {{ $exp->date->format('d M Y') }}
-                                    <div class="text-[10px] font-mono text-slate-400 font-normal">{{ $exp->expense_number }}</div>
-                                </td>
-                                <td class="px-5 py-3 whitespace-nowrap">
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-100 text-slate-700">
-                                        {{ $exp->category }}
-                                    </span>
-                                </td>
-                                <td class="px-5 py-3">
-                                    <div class="font-bold text-slate-900">{{ $exp->title }}</div>
-                                    <div class="text-[10px] text-slate-400">{{ $exp->notes ?? '-' }}</div>
-                                </td>
-                                <td class="px-5 py-3 font-black text-rose-600 whitespace-nowrap">
-                                    Rp {{ number_format($exp->amount, 0, ',', '.') }}
-                                </td>
-                                <td class="px-5 py-3 text-right whitespace-nowrap">
-                                    <form method="POST" action="{{ route('admin.finance.destroy-expense', $exp) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" 
-                                                @click="$dispatch('open-confirm-modal', {
-                                                    form: $el.closest('form'),
-                                                    title: 'Hapus Catatan Pengeluaran',
-                                                    message: 'Apakah Anda yakin ingin menghapus pengeluaran \'{{ addslashes($exp->title) }}\' sebesar Rp {{ number_format($exp->amount, 0, ',', '.') }}?'
-                                                })"
-                                                class="text-rose-500 hover:text-rose-700 cursor-pointer p-1"
-                                                title="Hapus Pengeluaran">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="5" class="px-5 py-8 text-center text-slate-400">
-                                    Tidak ada catatan pengeluaran pada periode ini.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+            <!-- Grid View (Cards) -->
+            <div x-show="viewMode === 'grid'" x-cloak class="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                @forelse ($expenses as $exp)
+                    <div class="p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 flex flex-col justify-between space-y-3">
+                        <div class="space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                                    {{ $exp->category }}
+                                </span>
+                                <span class="text-[10px] text-slate-400 font-mono">{{ $exp->date->format('d M Y') }}</span>
+                            </div>
+                            <div class="font-bold text-sm text-slate-900 dark:text-white">{{ $exp->title }}</div>
+                            @if ($exp->notes)
+                                <div class="text-[11px] text-slate-400 line-clamp-2">{{ $exp->notes }}</div>
+                            @endif
+                        </div>
+                        <div class="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <div class="font-black text-rose-600 dark:text-rose-400 text-sm">
+                                Rp {{ number_format($exp->amount, 0, ',', '.') }}
+                            </div>
+                            <form method="POST" action="{{ route('admin.finance.destroy-expense', $exp) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" 
+                                        @click="$dispatch('open-confirm-modal', {
+                                            form: $el.closest('form'),
+                                            title: '{{ __('Hapus Catatan Pengeluaran') }}',
+                                            message: '{{ __('Apakah Anda yakin ingin menghapus pengeluaran') }} \'{{ addslashes($exp->title) }}\' {{ __('sebesar') }} Rp {{ number_format($exp->amount, 0, ',', '.') }}?'
+                                        })"
+                                        class="text-rose-500 hover:text-rose-700 dark:text-rose-400 cursor-pointer p-1"
+                                        title="{{ __('Hapus Pengeluaran') }}">
+                                    <i class="fa-solid fa-trash text-xs"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-full py-8 text-center text-slate-400 text-xs">
+                        {{ __('Tidak ada catatan pengeluaran pada periode ini.') }}
+                    </div>
+                @endforelse
             </div>
 
-            <div class="p-3 border-t border-slate-100">
+            <div class="p-3 border-t border-slate-100 dark:border-slate-800">
                 {{ $expenses->links() }}
             </div>
         </div>
