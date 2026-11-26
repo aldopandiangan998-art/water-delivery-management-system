@@ -246,7 +246,57 @@ class OrderController extends Controller
             'review',
         ]);
 
-        return view('customer.orders.show', compact('order'));
+        $addresses = CustomerAddress::where('user_id', Auth::id())->get();
+
+        return view('customer.orders.show', compact('order', 'addresses'));
+    }
+
+    public function updateAddress(Request $request, Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Alamat pengantaran hanya dapat diubah saat pesanan masih menunggu konfirmasi.');
+        }
+
+        $validated = $request->validate([
+            'customer_address_id' => ['required', 'exists:customer_addresses,id'],
+        ]);
+
+        $address = CustomerAddress::where('id', $validated['customer_address_id'])
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $deliveryFee = 0;
+        if ($address->serviceArea) {
+            $deliveryFee = (float) $address->serviceArea->delivery_fee;
+        }
+
+        $newTotal = $order->subtotal + $deliveryFee;
+
+        $order->update([
+            'customer_address_id' => $address->id,
+            'recipient_name' => $address->recipient_name,
+            'recipient_phone' => $address->recipient_phone,
+            'delivery_address_text' => $address->address_line,
+            'delivery_benchmark' => $address->benchmark,
+            'delivery_latitude' => $address->latitude,
+            'delivery_longitude' => $address->longitude,
+            'service_area_id' => $address->service_area_id,
+            'delivery_fee' => $deliveryFee,
+            'total_amount' => $newTotal,
+        ]);
+
+        OrderStatusHistory::create([
+            'order_id' => $order->id,
+            'status' => $order->status,
+            'notes' => "Pelanggan mengubah alamat pengantaran ke: {$address->label} ({$address->address_line})",
+            'changed_by' => Auth::id(),
+        ]);
+
+        return back()->with('success', 'Alamat pengantaran berhasil diperbarui.');
     }
 
     public function track(Order $order)

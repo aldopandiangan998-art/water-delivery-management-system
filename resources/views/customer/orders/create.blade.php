@@ -56,15 +56,35 @@
                         </a>
                     </div>
 
+                    <input type="hidden" name="customer_address_id" :value="selectedAddressId">
+
                     @if ($addresses->isNotEmpty())
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Dropdown Selector -->
+                        <div class="space-y-1.5">
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                <i class="fa-solid fa-list-check text-cyan-600 mr-1"></i> {{ __('Pilih Alamat Pengantaran:') }}
+                            </label>
+                            <select x-model.number="selectedAddressId" 
+                                    class="w-full text-xs font-medium rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white p-2.5 focus:ring-2 focus:ring-cyan-500 shadow-2xs">
+                                @foreach ($addresses as $addr)
+                                    <option value="{{ $addr->id }}">
+                                        {{ $addr->label }} &mdash; {{ $addr->recipient_name }} ({{ Str::limit($addr->address_line, 55) }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- Card Grid Selector -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                             <template x-for="addr in addresses" :key="addr.id">
-                                <label :class="selectedAddressId === addr.id ? 'border-cyan-600 bg-cyan-50/50 dark:bg-cyan-950/30 ring-2 ring-cyan-500' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600'"
-                                       class="p-4 rounded-2xl border cursor-pointer transition block relative bg-white dark:bg-slate-900 shadow-2xs">
-                                    <input type="radio" name="customer_address_id" :value="addr.id" x-model="selectedAddressId" class="sr-only">
-                                    <div class="flex items-center justify-between mb-1">
+                                <div @click="selectedAddressId = Number(addr.id)"
+                                     :class="Number(selectedAddressId) === Number(addr.id) ? 'border-cyan-600 bg-cyan-50/50 dark:bg-cyan-950/30 ring-2 ring-cyan-500 shadow-xs' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 bg-white dark:bg-slate-900 shadow-2xs'"
+                                     class="p-4 rounded-2xl border cursor-pointer transition block relative select-none">
+                                    <div class="flex items-center justify-between mb-1.5">
                                         <span class="font-extrabold text-[10px] uppercase px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300" x-text="addr.label"></span>
-                                        <span x-show="selectedAddressId === addr.id" class="text-cyan-600 dark:text-cyan-400 text-sm"><i class="fa-solid fa-circle-check"></i></span>
+                                        <span x-show="Number(selectedAddressId) === Number(addr.id)" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-cyan-600 text-white flex items-center gap-1 shadow-2xs">
+                                            <i class="fa-solid fa-check"></i> {{ __('Terpilih') }}
+                                        </span>
                                     </div>
                                     <div class="font-bold text-sm text-slate-900 dark:text-white" x-text="addr.recipient_name + ' (' + addr.recipient_phone + ')'"></div>
                                     <div class="text-xs text-slate-500 dark:text-slate-400 mt-1 line-clamp-2" x-text="addr.address_line"></div>
@@ -73,7 +93,7 @@
                                         <i class="fa-solid fa-truck mr-1"></i>
                                         <span>Area: <span x-text="addr.service_area ? addr.service_area.name : ''"></span> &bull; Ongkir: <span x-text="formatRupiah(addr.service_area ? addr.service_area.delivery_fee : 0)"></span></span>
                                     </div>
-                                </label>
+                                </div>
                             </template>
                         </div>
                     @else
@@ -254,7 +274,7 @@ function orderApp(config) {
     return {
         products: config.products,
         addresses: config.addresses,
-        selectedAddressId: config.defaultAddressId,
+        selectedAddressId: Number(config.defaultAddressId) || (config.addresses.length > 0 ? Number(config.addresses[0].id) : 0),
         paymentMethod: 'cod',
         cart: {},
 
@@ -271,7 +291,7 @@ function orderApp(config) {
 
         get deliveryFee() {
             if (!this.selectedAddressId) return 0;
-            const addr = this.addresses.find(a => a.id == this.selectedAddressId);
+            const addr = this.addresses.find(a => Number(a.id) === Number(this.selectedAddressId));
             return (addr && addr.service_area) ? Number(addr.service_area.delivery_fee) : 0;
         },
 

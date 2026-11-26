@@ -59,9 +59,16 @@
                         </x-badge>
                     </div>
 
-                    <div class="text-xs text-slate-500 dark:text-slate-400">
-                        {{ $order->created_at->format('d M Y, H:i') }} WIB &bull; 
-                        {{ __('Tujuan') }}: <span class="text-slate-700 dark:text-slate-300 font-medium">{{ $order->recipient_name }}</span>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-1.5">
+                        <span>{{ $order->created_at->format('d M Y, H:i') }} WIB</span>
+                        <span>&bull;</span>
+                        <span class="inline-flex items-center text-slate-700 dark:text-slate-300 font-medium">
+                            <i class="fa-solid fa-location-dot text-cyan-600 dark:text-cyan-400 mr-1 text-[11px]"></i>
+                            {{ __('Tujuan') }}: {{ $order->recipient_name }}
+                            @if ($order->delivery_address_text)
+                                <span class="text-slate-500 dark:text-slate-400 ml-1">({{ Str::limit($order->delivery_address_text, 45) }})</span>
+                            @endif
+                        </span>
                     </div>
 
                     <!-- Items brief -->
@@ -117,9 +124,16 @@
                         </x-badge>
                     </div>
 
-                    <div class="text-xs text-slate-500 dark:text-slate-400">
-                        {{ $order->created_at->format('d M Y, H:i') }} WIB &bull; 
-                        {{ __('Tujuan') }}: <span class="text-slate-700 dark:text-slate-300 font-medium">{{ $order->recipient_name }}</span>
+                    <div class="text-xs text-slate-500 dark:text-slate-400 flex flex-wrap items-center gap-1.5">
+                        <span>{{ $order->created_at->format('d M Y, H:i') }} WIB</span>
+                        <span>&bull;</span>
+                        <span class="inline-flex items-center text-slate-700 dark:text-slate-300 font-medium">
+                            <i class="fa-solid fa-location-dot text-cyan-600 dark:text-cyan-400 mr-1 text-[11px]"></i>
+                            {{ __('Tujuan') }}: {{ $order->recipient_name }}
+                            @if ($order->delivery_address_text)
+                                <span class="text-slate-500 dark:text-slate-400 ml-1">({{ Str::limit($order->delivery_address_text, 45) }})</span>
+                            @endif
+                        </span>
                     </div>
 
                     <!-- Items brief -->

@@ -426,4 +426,88 @@ class OrderWorkflowTest extends TestCase
 
         $this->assertEquals('AIzaSyTEST_KEY_123456789', \App\Models\BusinessSetting::get('google_maps_api_key'));
     }
+
+    public function test_customer_can_update_delivery_address_when_order_pending(): void
+    {
+        $this->actingAs($this->customer);
+
+        $order = Order::create([
+            'order_number' => 'ORD-TEST-ADDR-1',
+            'user_id' => $this->customer->id,
+            'customer_address_id' => $this->address->id,
+            'recipient_name' => $this->address->recipient_name,
+            'recipient_phone' => $this->address->recipient_phone,
+            'delivery_address_text' => $this->address->address_line,
+            'delivery_latitude' => $this->address->latitude,
+            'delivery_longitude' => $this->address->longitude,
+            'service_area_id' => $this->serviceArea->id,
+            'delivery_fee' => 3000,
+            'subtotal' => 14000,
+            'total_amount' => 17000,
+            'status' => 'pending',
+            'payment_method' => 'cod',
+            'payment_status' => 'unpaid',
+        ]);
+
+        $newAddress = CustomerAddress::create([
+            'user_id' => $this->customer->id,
+            'label' => 'Kantor Baru',
+            'recipient_name' => 'Budi Kantor',
+            'recipient_phone' => '089988776655',
+            'address_line' => 'Jl. Asia Afrika No. 100, Bandung',
+            'latitude' => -6.9200,
+            'longitude' => 107.6100,
+            'is_default' => false,
+        ]);
+
+        $response = $this->put(route('customer.orders.update-address', $order), [
+            'customer_address_id' => $newAddress->id,
+        ]);
+
+        $response->assertSessionHas('success');
+
+        $order->refresh();
+        $this->assertEquals($newAddress->id, $order->customer_address_id);
+        $this->assertEquals('Budi Kantor', $order->recipient_name);
+        $this->assertEquals('089988776655', $order->recipient_phone);
+        $this->assertEquals('Jl. Asia Afrika No. 100, Bandung', $order->delivery_address_text);
+    }
+
+    public function test_customer_cannot_update_delivery_address_when_order_not_pending(): void
+    {
+        $this->actingAs($this->customer);
+
+        $order = Order::create([
+            'order_number' => 'ORD-TEST-ADDR-2',
+            'user_id' => $this->customer->id,
+            'customer_address_id' => $this->address->id,
+            'recipient_name' => $this->address->recipient_name,
+            'recipient_phone' => $this->address->recipient_phone,
+            'delivery_address_text' => $this->address->address_line,
+            'status' => 'completed',
+            'payment_method' => 'cod',
+            'payment_status' => 'paid',
+            'subtotal' => 14000,
+            'delivery_fee' => 0,
+            'total_amount' => 14000,
+        ]);
+
+        $newAddress = CustomerAddress::create([
+            'user_id' => $this->customer->id,
+            'label' => 'Rumah Nenek',
+            'recipient_name' => 'Budi Nenek',
+            'recipient_phone' => '08111222333',
+            'address_line' => 'Jl. Braga No. 15',
+            'is_default' => false,
+        ]);
+
+        $response = $this->put(route('customer.orders.update-address', $order), [
+            'customer_address_id' => $newAddress->id,
+        ]);
+
+        $response->assertSessionHas('error');
+
+        $order->refresh();
+        $this->assertEquals($this->address->id, $order->customer_address_id);
+    }
 }
