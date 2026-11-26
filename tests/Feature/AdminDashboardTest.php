@@ -21,6 +21,35 @@ class AdminDashboardTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Ringkasan Bisnis');
-        $response->assertSee('ADMIN');
+        $response->assertSee('Profil Akun');
+    }
+
+    public function test_admin_can_view_and_update_profile(): void
+    {
+        $admin = User::factory()->create([
+            'name' => 'Admin Lama',
+            'phone' => '08111111111',
+            'role' => 'admin',
+            'is_active' => true,
+        ]);
+
+        $viewResponse = $this->actingAs($admin)->get(route('admin.profile'));
+        $viewResponse->assertStatus(200);
+        $viewResponse->assertSee('Pengaturan Profil Akun');
+        $viewResponse->assertSee($admin->name);
+
+        $updateResponse = $this->actingAs($admin)->put(route('admin.profile.update'), [
+            'name' => 'Admin Baru Sukses',
+            'phone' => '08999999999',
+            'new_password' => 'newpassword123',
+            'new_password_confirmation' => 'newpassword123',
+        ]);
+
+        $updateResponse->assertSessionHas('success');
+
+        $admin->refresh();
+        $this->assertEquals('Admin Baru Sukses', $admin->name);
+        $this->assertEquals('08999999999', $admin->phone);
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('newpassword123', $admin->password));
     }
 }

@@ -40,6 +40,10 @@
                 $computedItems[] = ['title' => __('Dashboard')];
                 break;
 
+            case 'admin.profile':
+                $computedItems[] = ['title' => __('Profil Akun')];
+                break;
+
             case 'admin.orders.index':
                 $computedItems[] = ['title' => __('Kelola Pesanan Air')];
                 break;

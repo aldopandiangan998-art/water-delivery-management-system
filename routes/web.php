@@ -93,6 +93,8 @@ Route::middleware(['auth', 'role:customer,admin'])->prefix('customer')->name('cu
 */
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/profile', [AdminDashboardController::class, 'profile'])->name('profile');
+    Route::put('/profile', [AdminDashboardController::class, 'updateProfile'])->name('profile.update');
 
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');

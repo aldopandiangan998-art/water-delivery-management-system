@@ -14,6 +14,7 @@
                 { title: '{{ __('Laporan Keuangan & Biaya') }}', category: '{{ __('Keuangan') }}', icon: 'fa-solid fa-receipt', url: '{{ route('admin.finance.index') }}' },
                 { title: '{{ __('Kelola Pengguna') }}', category: '{{ __('Pengguna') }}', icon: 'fa-solid fa-users', url: '{{ route('admin.users.index') }}' },
                 { title: '{{ __('Area Layanan Pengantaran') }}', category: '{{ __('Pengaturan') }}', icon: 'fa-solid fa-draw-polygon', url: '{{ route('admin.service-areas.index') }}' },
+                { title: '{{ __('Profil & Pengaturan Akun') }}', category: '{{ __('Akun') }}', icon: 'fa-solid fa-user-gear', url: '{{ route('admin.profile') }}' },
             @elseif(auth()->check())
                 { title: '{{ __('Dashboard Member') }}', category: '{{ __('Navigasi') }}', icon: 'fa-solid fa-house', url: '{{ route('customer.dashboard') }}' },
                 { title: '{{ __('Riwayat Pesanan Saya') }}', category: '{{ __('Pesanan') }}', icon: 'fa-solid fa-clock-rotate-left', url: '{{ route('customer.orders.index') }}' },

@@ -10,7 +10,10 @@ use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class DashboardController extends Controller
 {
@@ -69,5 +72,35 @@ class DashboardController extends Controller
             'recentOrders',
             'topProducts'
         ));
+    }
+
+    public function profile()
+    {
+        $user = Auth::user();
+        return view('admin.profile', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'phone' => ['nullable', 'string', 'max:20'],
+            'new_password' => ['nullable', 'min:8', 'confirmed'],
+        ]);
+
+        $user->name = $validated['name'];
+        if ($request->has('phone')) {
+            $user->phone = $validated['phone'];
+        }
+
+        if (! empty($validated['new_password'])) {
+            $user->password = Hash::make($validated['new_password']);
+        }
+
+        $user->save();
+
+        return back()->with('success', 'Profil akun Anda berhasil diperbarui.');
     }
 }

@@ -398,6 +398,13 @@
                     <p class="text-[10px] text-slate-400 truncate">{{ Auth::user()->email }}</p>
                 </div>
 
+                <!-- Profile Menu Option -->
+                <a href="{{ route('admin.profile') }}" 
+                   class="w-full flex items-center px-3 py-2 rounded-xl text-xs font-bold text-sky-200 hover:text-white hover:bg-sky-900/40 transition group cursor-pointer mb-1">
+                    <i class="fa-solid fa-user-gear w-5 text-cyan-400 group-hover:text-white text-center mr-2"></i>
+                    <span>{{ __('Profil Akun') }}</span>
+                </a>
+
                 <!-- Logout Action -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
