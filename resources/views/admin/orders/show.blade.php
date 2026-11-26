@@ -562,11 +562,24 @@ function orderRouteTracker(config) {
         lDestMarker: null,
         lAdminLiveMarker: null,
 
+        formatAddressQuery(text) {
+            let q = (text || '').trim();
+            if (!q) return 'Surabaya, Jawa Timur';
+            if (!/surabaya/i.test(q)) {
+                q += ', Surabaya';
+            }
+            if (!/jawa timur|jatim/i.test(q)) {
+                q += ', Jawa Timur';
+            }
+            return q;
+        },
+
         get googleNavigationUrl() {
             if (this.destLat && this.destLng) {
                 return `https://www.google.com/maps/dir/?api=1&origin=${this.depotLat},${this.depotLng}&destination=${this.destLat},${this.destLng}&travelmode=driving`;
             }
-            return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(this.addressText + ' Surabaya')}`;
+            const q = this.formatAddressQuery(this.addressText + (this.benchmark ? ' (' + this.benchmark + ')' : ''));
+            return `https://www.google.com/maps/dir/?api=1&origin=${this.depotLat},${this.depotLng}&destination=${encodeURIComponent(q)}&travelmode=driving`;
         },
 
         init() {
@@ -794,13 +807,16 @@ function orderRouteTracker(config) {
         autoGeocodeAddress() {
             if (this.isGeocoding || !this.addressText) return;
             this.isGeocoding = true;
-            this.toastNotice = 'Mencari koordinat alamat pelanggan secara otomatis...';
+            this.toastNotice = 'Mencari titik koordinat alamat jalan di wilayah Surabaya...';
 
-            const searchQuery = `${this.addressText}, Surabaya`;
+            const searchQuery = this.formatAddressQuery(this.addressText);
 
             if (this.isUsingGoogleMaps && window.google && window.google.maps) {
                 const geocoder = new google.maps.Geocoder();
-                geocoder.geocode({ address: searchQuery }, (results, status) => {
+                geocoder.geocode({ 
+                    address: searchQuery,
+                    componentRestrictions: { country: 'ID' }
+                }, (results, status) => {
                     this.isGeocoding = false;
                     if (status === 'OK' && results[0]) {
                         const loc = results[0].geometry.location;
@@ -810,7 +826,7 @@ function orderRouteTracker(config) {
                     }
                 });
             } else {
-                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`;
+                const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&countrycodes=id&limit=1`;
                 fetch(url)
                     .then(r => r.json())
                     .then(data => {

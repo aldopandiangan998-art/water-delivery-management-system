@@ -641,4 +641,26 @@ class OrderWorkflowTest extends TestCase
             'driver_lng' => 112.755,
         ]);
     }
+
+    public function test_customer_can_save_address_with_gps_coordinates(): void
+    {
+        $response = $this->actingAs($this->customer)->post(route('customer.addresses.store'), [
+            'label' => 'Alamat GPS Baru',
+            'recipient_name' => 'Budi Pelanggan',
+            'recipient_phone' => '08123456789',
+            'address_line' => 'Jl. Bratang Gede No. 12',
+            'benchmark' => 'Depan minimarket',
+            'latitude' => -7.301234,
+            'longitude' => 112.751234,
+            'is_default' => 0,
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('customer_addresses', [
+            'user_id' => $this->customer->id,
+            'label' => 'Alamat GPS Baru',
+            'latitude' => -7.301234,
+            'longitude' => 112.751234,
+        ]);
+    }
 }

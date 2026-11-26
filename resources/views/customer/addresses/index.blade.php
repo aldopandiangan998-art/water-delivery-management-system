@@ -188,7 +188,34 @@
 
     <!-- Modal Tambah Alamat -->
     <div x-show="showModal" x-cloak class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4" style="display: none;">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 border border-slate-100 dark:border-slate-800" @click.away="showModal = false">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-4 border border-slate-100 dark:border-slate-800" 
+             @click.away="showModal = false"
+             x-data="{
+                gettingGps: false,
+                gpsCaptured: {{ old('latitude') ? 'true' : 'false' }},
+                lat: '{{ old('latitude', '') }}',
+                lng: '{{ old('longitude', '') }}',
+                getGps() {
+                    if (!navigator.geolocation) {
+                        alert('{{ __('Browser Anda tidak mendukung sensor GPS.') }}');
+                        return;
+                    }
+                    this.gettingGps = true;
+                    navigator.geolocation.getCurrentPosition(
+                        (pos) => {
+                            this.lat = pos.coords.latitude.toFixed(6);
+                            this.lng = pos.coords.longitude.toFixed(6);
+                            this.gpsCaptured = true;
+                            this.gettingGps = false;
+                        },
+                        (err) => {
+                            this.gettingGps = false;
+                            alert('{{ __('Gagal membaca titik GPS: ') }}' + err.message + '. {{ __('Pastikan izin lokasi diaktifkan pada browser.') }}');
+                        },
+                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    );
+                }
+             }">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
                 <h3 class="font-black text-lg text-slate-900 dark:text-white tracking-tight">{{ __('Tambah Alamat Pengantaran') }}</h3>
                 <button type="button" @click="showModal = false" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer">
@@ -198,6 +225,9 @@
 
             <form method="POST" action="{{ route('customer.addresses.store') }}" class="space-y-4">
                 @csrf
+
+                <input type="hidden" name="latitude" x-model="lat">
+                <input type="hidden" name="longitude" x-model="lng">
 
                 <x-input 
                     :label="__('Label Alamat')" 
@@ -229,7 +259,7 @@
                     :label="__('Alamat Jalan Lengkap')" 
                     name="address_line" 
                     rows="2" 
-                    placeholder="{{ __('Nama jalan, nomor rumah, RT/RW, kelurahan, kecamatan...') }}" 
+                    placeholder="{{ __('Nama jalan, nomor rumah, RT/RW (contoh: Jl. Bratang Gede No. 12)...') }}" 
                     :value="old('address_line')" 
                     required 
                 />
@@ -240,6 +270,21 @@
                     placeholder="{{ __('Contoh: Pagar hitam depan masjid, samping warung makan...') }}" 
                     :value="old('benchmark')" 
                 />
+
+                <!-- GPS Pinpoint Helper -->
+                <div class="p-3.5 bg-cyan-50/70 dark:bg-cyan-950/30 rounded-2xl border border-cyan-200 dark:border-cyan-800 flex items-center justify-between gap-3">
+                    <div class="text-xs">
+                        <span class="font-bold text-slate-800 dark:text-slate-200 block">
+                            <i class="fa-solid fa-location-crosshairs text-cyan-600 mr-1"></i> {{ __('Kunci Lokasi Akurat Rumah (GPS)') }}
+                        </span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400" x-text="gpsCaptured ? 'Titik koordinat rumah Anda telah terkunci (' + lat + ', ' + lng + ')' : '{{ __('Klik tombol untuk mengunci titik GPS rumah Anda agar pengantar tidak tersesat') }}'"></span>
+                    </div>
+                    <button type="button" @click="getGps()" :disabled="gettingGps"
+                            class="px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs shrink-0 flex items-center shadow-xs cursor-pointer transition">
+                        <i class="fa-solid fa-location-arrow mr-1.5" :class="gettingGps ? 'animate-spin' : ''"></i>
+                        <span x-text="gettingGps ? '{{ __('Membaca...') }}' : (gpsCaptured ? '{{ __('Perbarui GPS') }}' : '{{ __('Gunakan GPS Saya') }}')"></span>
+                    </button>
+                </div>
 
                 <x-checkbox 
                     id="is_default" 

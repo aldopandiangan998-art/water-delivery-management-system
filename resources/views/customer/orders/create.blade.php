@@ -345,6 +345,21 @@
                            class="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white p-2.5 focus:ring-2 focus:ring-cyan-500">
                 </div>
 
+                <!-- GPS Pinpoint Helper -->
+                <div class="p-3.5 bg-cyan-50/70 dark:bg-cyan-950/30 rounded-2xl border border-cyan-200 dark:border-cyan-800 flex items-center justify-between gap-3">
+                    <div class="text-xs">
+                        <span class="font-bold text-slate-800 dark:text-slate-200 block">
+                            <i class="fa-solid fa-location-crosshairs text-cyan-600 mr-1"></i> {{ __('Kunci Lokasi Akurat Rumah (GPS)') }}
+                        </span>
+                        <span class="text-[11px] text-slate-500 dark:text-slate-400" x-text="newAddressForm.latitude ? 'Titik koordinat terkunci (' + Number(newAddressForm.latitude).toFixed(5) + ', ' + Number(newAddressForm.longitude).toFixed(5) + ')' : '{{ __('Kunci titik GPS rumah Anda agar pengantar tidak tersesat') }}'"></span>
+                    </div>
+                    <button type="button" @click="getModalGps()" :disabled="gettingModalGps"
+                            class="px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-700 text-white font-bold text-xs shrink-0 flex items-center shadow-xs cursor-pointer transition">
+                        <i class="fa-solid fa-location-arrow mr-1.5" :class="gettingModalGps ? 'animate-spin' : ''"></i>
+                        <span x-text="gettingModalGps ? '{{ __('Membaca...') }}' : (newAddressForm.latitude ? '{{ __('Perbarui GPS') }}' : '{{ __('Gunakan GPS Saya') }}')"></span>
+                    </button>
+                </div>
+
                 <div class="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <x-button type="button" @click="showAddAddressModal = false" variant="secondary" size="sm" ::disabled="savingAddress">
                         {{ __('Batal') }}
@@ -370,6 +385,7 @@ function orderApp(config) {
 
         showAddAddressModal: false,
         savingAddress: false,
+        gettingModalGps: false,
         newAddressError: '',
         newAddressForm: {
             label: 'Rumah',
@@ -377,7 +393,29 @@ function orderApp(config) {
             recipient_phone: '{{ addslashes(auth()->user()->phone ?? '') }}',
             address_line: '',
             benchmark: '',
+            latitude: null,
+            longitude: null,
             is_default: true,
+        },
+
+        getModalGps() {
+            if (!navigator.geolocation) {
+                alert('{{ __('Browser Anda tidak mendukung sensor GPS.') }}');
+                return;
+            }
+            this.gettingModalGps = true;
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    this.newAddressForm.latitude = pos.coords.latitude.toFixed(6);
+                    this.newAddressForm.longitude = pos.coords.longitude.toFixed(6);
+                    this.gettingModalGps = false;
+                },
+                (err) => {
+                    this.gettingModalGps = false;
+                    alert('{{ __('Gagal membaca titik GPS: ') }}' + err.message + '. {{ __('Pastikan izin lokasi diaktifkan pada browser.') }}');
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         },
 
         async saveNewAddress() {
