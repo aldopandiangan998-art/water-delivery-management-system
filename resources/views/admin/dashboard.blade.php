@@ -6,7 +6,7 @@
 <div class="space-y-6">
 
     <!-- Top KPI Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
         <!-- Today Orders -->
         <x-card class="p-5 flex items-center space-x-4 hover:shadow-md transition">
             <div class="w-12 h-12 rounded-2xl bg-cyan-100 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-xl font-bold shrink-0">
@@ -28,21 +28,6 @@
                 <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Omzet Lunas Hari Ini') }}</span>
                 <div class="text-xl font-black text-slate-900 dark:text-white mt-0.5">Rp {{ number_format($todayRevenue, 0, ',', '.') }}</div>
                 <div class="text-[11px] text-slate-400 mt-0.5">{{ __('Bulan ini') }}: Rp {{ number_format($monthlyRevenue, 0, ',', '.') }}</div>
-            </div>
-        </x-card>
-
-        <!-- Active Deliveries -->
-        <x-card class="p-5 flex items-center space-x-4 hover:shadow-md transition">
-            <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl font-bold shrink-0">
-                <i class="fa-solid fa-motorcycle"></i>
-            </div>
-            <div>
-                <span class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{{ __('Kurir Sedang Antar') }}</span>
-                <div class="text-2xl font-black text-slate-900 dark:text-white mt-0.5">{{ $activeDeliveriesCount }} <span class="text-xs font-normal text-slate-400">{{ __('pengantaran') }}</span></div>
-                <a href="{{ route('admin.deliveries.map') }}" class="text-[11px] font-bold text-cyan-600 dark:text-cyan-400 hover:underline inline-flex items-center">
-                    <span>{{ __('Lihat di peta') }}</span>
-                    <i class="fa-solid fa-arrow-right ml-1 text-[10px]"></i>
-                </a>
             </div>
         </x-card>
 
