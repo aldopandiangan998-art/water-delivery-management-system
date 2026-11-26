@@ -15,9 +15,6 @@
         </div>
         <div class="flex items-center space-x-2">
             <x-grid-list-toggle model="viewMode" />
-            <x-button :href="route('admin.addresses.create')" variant="primary" icon="fa-solid fa-plus">
-                {{ __('Tambah Alamat Baru') }}
-            </x-button>
         </div>
     </x-card>
 

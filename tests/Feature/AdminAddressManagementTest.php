@@ -86,44 +86,18 @@ class AdminAddressManagementTest extends TestCase
         $emptyResponse->assertDontSee('Rumah Sukajadi');
     }
 
-    public function test_admin_can_view_create_address_form(): void
+    public function test_admin_cannot_access_create_or_store_address(): void
     {
         $this->actingAs($this->admin);
 
-        $response = $this->get(route('admin.addresses.create', ['user_id' => $this->customer->id]));
+        $getResponse = $this->get('/admin/addresses/create');
+        $getResponse->assertStatus(404);
 
-        $response->assertStatus(200);
-        $response->assertSee('Tambah Alamat Pelanggan');
-        $response->assertSee($this->customer->name);
-    }
-
-    public function test_admin_can_create_customer_address(): void
-    {
-        $this->actingAs($this->admin);
-
-        $response = $this->post(route('admin.addresses.store'), [
+        $postResponse = $this->post('/admin/addresses', [
             'user_id' => $this->customer->id,
             'label' => 'Toko Kelontong',
-            'recipient_name' => 'Ibu Siti',
-            'recipient_phone' => '08198765432',
-            'address_line' => 'Jl. Sukasari No. 10',
-            'benchmark' => 'Sebelah warung madura',
-            'service_area_id' => $this->serviceArea->id,
-            'latitude' => -6.8860,
-            'longitude' => 107.5970,
-            'is_default' => 0,
         ]);
-
-        $response->assertRedirect(route('admin.addresses.index'));
-        $response->assertSessionHas('success');
-
-        $this->assertDatabaseHas('customer_addresses', [
-            'user_id' => $this->customer->id,
-            'label' => 'Toko Kelontong',
-            'recipient_name' => 'Ibu Siti',
-            'recipient_phone' => '08198765432',
-            'address_line' => 'Jl. Sukasari No. 10',
-        ]);
+        $postResponse->assertStatus(405);
     }
 
     public function test_admin_can_view_address_detail(): void
@@ -246,7 +220,7 @@ class AdminAddressManagementTest extends TestCase
         $response = $this->get(route('admin.addresses.index'));
         $response->assertStatus(403);
 
-        $postResponse = $this->post(route('admin.addresses.store'), []);
-        $postResponse->assertStatus(403);
+        $deleteResponse = $this->delete(route('admin.addresses.destroy', $this->address));
+        $deleteResponse->assertStatus(403);
     }
 }

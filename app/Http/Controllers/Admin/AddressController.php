@@ -46,56 +46,6 @@ class AddressController extends Controller
         return view('admin.addresses.index', compact('addresses', 'customers', 'serviceAreas'));
     }
 
-    public function create(Request $request)
-    {
-        $customers = User::where('role', 'customer')->where('is_active', true)->orderBy('name')->get();
-        $serviceAreas = ServiceArea::where('is_active', true)->orderBy('name')->get();
-        $selectedUserId = $request->query('user_id');
-
-        $depotLat = (float) BusinessSetting::get('store_latitude', -7.303488);
-        $depotLng = (float) BusinessSetting::get('store_longitude', 112.753373);
-
-        return view('admin.addresses.create', compact('customers', 'serviceAreas', 'selectedUserId', 'depotLat', 'depotLng'));
-    }
-
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'user_id' => ['required', 'exists:users,id'],
-            'label' => ['required', 'string', 'max:50'],
-            'recipient_name' => ['required', 'string', 'max:100'],
-            'recipient_phone' => ['required', 'string', 'max:20'],
-            'address_line' => ['required', 'string', 'max:500'],
-            'benchmark' => ['nullable', 'string', 'max:255'],
-            'service_area_id' => ['nullable', 'exists:service_areas,id'],
-            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
-            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
-            'is_default' => ['nullable', 'boolean'],
-        ]);
-
-        $hasAddresses = CustomerAddress::where('user_id', $validated['user_id'])->exists();
-        $isDefault = $hasAddresses ? $request->boolean('is_default') : true;
-
-        if ($isDefault) {
-            CustomerAddress::where('user_id', $validated['user_id'])->update(['is_default' => false]);
-        }
-
-        CustomerAddress::create([
-            'user_id' => $validated['user_id'],
-            'label' => $validated['label'],
-            'recipient_name' => $validated['recipient_name'],
-            'recipient_phone' => $validated['recipient_phone'],
-            'address_line' => $validated['address_line'],
-            'benchmark' => $validated['benchmark'] ?? null,
-            'service_area_id' => $validated['service_area_id'] ?? null,
-            'latitude' => $validated['latitude'] ?? null,
-            'longitude' => $validated['longitude'] ?? null,
-            'is_default' => $isDefault,
-        ]);
-
-        return redirect()->route('admin.addresses.index')->with('success', 'Alamat pelanggan berhasil ditambahkan.');
-    }
-
     public function show(CustomerAddress $address)
     {
         $address->load(['user.profile', 'serviceArea']);

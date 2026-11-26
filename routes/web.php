@@ -111,7 +111,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/api/deliveries/{delivery}/location', [AdminDeliveryController::class, 'updateLocation'])->name('deliveries.location');
     Route::get('/api/deliveries/live-drivers', [AdminDeliveryController::class, 'apiLiveDrivers'])->name('deliveries.live-drivers');
 
-    Route::resource('addresses', AdminAddressController::class);
+    Route::resource('addresses', AdminAddressController::class)->except(['create', 'store']);
     Route::post('/addresses/{address}/default', [AdminAddressController::class, 'setDefault'])->name('addresses.set-default');
 
     Route::resource('products', AdminProductController::class);
