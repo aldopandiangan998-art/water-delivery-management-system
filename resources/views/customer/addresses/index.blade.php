@@ -199,15 +199,15 @@
             <form method="POST" action="{{ route('customer.addresses.store') }}" class="space-y-4">
                 @csrf
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <x-input 
-                        :label="__('Label Alamat')" 
-                        name="label" 
-                        placeholder="{{ __('Contoh: Rumah, Toko Kelontong, Kantor') }}" 
-                        :value="old('label')" 
-                        required 
-                    />
+                <x-input 
+                    :label="__('Label Alamat')" 
+                    name="label" 
+                    placeholder="{{ __('Contoh: Rumah, Toko Kelontong, Kantor') }}" 
+                    :value="old('label')" 
+                    required 
+                />
 
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <x-input 
                         :label="__('Nama Penerima')" 
                         name="recipient_name" 
@@ -215,28 +215,12 @@
                         :value="old('recipient_name', auth()->user()->name)" 
                         required 
                     />
-                </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <x-input 
                         :label="__('Nomor WhatsApp / HP Penerima')" 
                         name="recipient_phone" 
                         placeholder="08123456789" 
                         :value="old('recipient_phone', auth()->user()->phone)" 
-                        required 
-                    />
-
-                    @php
-                        $areaOptions = ['' => __('Pilih Area Layanan')];
-                        foreach ($serviceAreas as $sa) {
-                            $areaOptions[$sa->id] = $sa->name . ' (Ongkir: Rp ' . number_format($sa->delivery_fee, 0, ',', '.') . ')';
-                        }
-                    @endphp
-                    <x-select 
-                        :label="__('Area Jangkauan Pengantaran')" 
-                        name="service_area_id" 
-                        :options="$areaOptions" 
-                        :selected="old('service_area_id')" 
                         required 
                     />
                 </div>
