@@ -99,6 +99,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+    Route::post('/orders/{order}/start-delivery', [AdminOrderController::class, 'startDelivery'])->name('orders.start-delivery');
     Route::post('/orders/{order}/complete-delivery', [AdminOrderController::class, 'completeDelivery'])->name('orders.complete-delivery');
     Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
     Route::put('/orders/{order}/payment', [AdminOrderController::class, 'updatePayment'])->name('orders.payment');

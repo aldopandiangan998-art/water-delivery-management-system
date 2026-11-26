@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BusinessSetting;
 use App\Models\Delivery;
+use App\Models\DeliveryLocation;
 use App\Models\DeliveryPhoto;
 use App\Models\DeliveryStatusHistory;
 use App\Models\Order;
@@ -69,6 +70,82 @@ class OrderController extends Controller
         $googleMapsApiKey = config('services.google_maps.api_key') ?: BusinessSetting::get('google_maps_api_key', '');
 
         return view('admin.orders.show', compact('order', 'depotLat', 'depotLng', 'companyName', 'companyAddress', 'googleMapsApiKey'));
+    }
+
+    public function startDelivery(Request $request, Order $order)
+    {
+        if ($order->status === 'completed') {
+            return back()->with('info', 'Pesanan ini sudah selesai.');
+        }
+
+        $validated = $request->validate([
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            'notes' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        return DB::transaction(function () use ($request, $order, $validated) {
+            $delivery = $order->delivery;
+            if (! $delivery) {
+                $delivery = Delivery::create([
+                    'delivery_number' => 'DEL-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
+                    'order_id' => $order->id,
+                    'status' => 'in_transit',
+                    'departed_at' => now(),
+                ]);
+            } else {
+                $delivery->update([
+                    'status' => 'in_transit',
+                    'departed_at' => now(),
+                ]);
+            }
+
+            // Fallback initial location: use request lat/lng, or depot store coordinates
+            $depotLat = (float) BusinessSetting::get('store_latitude', -7.303488);
+            $depotLng = (float) BusinessSetting::get('store_longitude', 112.753373);
+
+            $initLat = !empty($validated['latitude']) ? (float) $validated['latitude'] : $depotLat;
+            $initLng = !empty($validated['longitude']) ? (float) $validated['longitude'] : $depotLng;
+
+            DeliveryLocation::create([
+                'delivery_id' => $delivery->id,
+                'latitude' => $initLat,
+                'longitude' => $initLng,
+                'recorded_at' => now(),
+            ]);
+
+            DeliveryStatusHistory::create([
+                'delivery_id' => $delivery->id,
+                'status' => 'in_transit',
+                'notes' => 'Pengantaran dimulai oleh admin dan pelacakan GPS aktif.',
+                'changed_by' => Auth::id(),
+            ]);
+
+            $order->update([
+                'status' => 'ready_for_delivery',
+            ]);
+
+            OrderStatusHistory::create([
+                'order_id' => $order->id,
+                'status' => 'ready_for_delivery',
+                'notes' => $validated['notes'] ?? 'Admin sedang dalam perjalanan mengantarkan pesanan air ke alamat pelanggan.',
+                'changed_by' => Auth::id(),
+            ]);
+
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Pengantaran dimulai! GPS pelacakan aktif membagikan lokasi ke pelanggan.',
+                    'delivery_id' => $delivery->id,
+                    'status' => 'in_transit',
+                    'initial_lat' => $initLat,
+                    'initial_lng' => $initLng,
+                    'update_location_url' => route('admin.deliveries.location', $delivery),
+                ]);
+            }
+
+            return back()->with('success', 'Pengantaran dimulai! Pelanggan kini dapat melacak pergerakan pengantaran secara live.');
+        });
     }
 
     public function completeDelivery(Request $request, Order $order)

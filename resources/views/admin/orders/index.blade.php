@@ -157,9 +157,20 @@
                                 </td>
 
                                 <td class="px-5 py-3.5 text-right whitespace-nowrap">
-                                    <x-button :href="route('admin.orders.show', $order)" variant="secondary" size="sm" iconRight="fa-solid fa-arrow-right">
-                                        {{ __('Kelola') }}
-                                    </x-button>
+                                    <div class="flex items-center justify-end space-x-1.5">
+                                        @php
+                                            $navUrl = ($order->delivery_latitude && $order->delivery_longitude)
+                                                ? "https://www.google.com/maps/dir/?api=1&destination={$order->delivery_latitude},{$order->delivery_longitude}&travelmode=driving"
+                                                : "https://www.google.com/maps/search/?api=1&query=" . urlencode($order->delivery_address_text . ' Surabaya');
+                                        @endphp
+                                        <a href="{{ $navUrl }}" target="_blank" title="{{ __('Buka Navigasi Google Maps') }}"
+                                           class="p-2 rounded-xl text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900 border border-emerald-200 dark:border-emerald-800 transition">
+                                            <i class="fa-solid fa-diamond-turn-right text-xs"></i>
+                                        </a>
+                                        <x-button :href="route('admin.orders.show', $order)" variant="secondary" size="sm" iconRight="fa-solid fa-arrow-right">
+                                            {{ __('Kelola') }}
+                                        </x-button>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
@@ -240,7 +251,16 @@
                     @endif
                 </div>
 
-                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end items-center space-x-2">
+                    @php
+                        $navUrl = ($order->delivery_latitude && $order->delivery_longitude)
+                            ? "https://www.google.com/maps/dir/?api=1&destination={$order->delivery_latitude},{$order->delivery_longitude}&travelmode=driving"
+                            : "https://www.google.com/maps/search/?api=1&query=" . urlencode($order->delivery_address_text . ' Surabaya');
+                    @endphp
+                    <a href="{{ $navUrl }}" target="_blank" title="{{ __('Buka Navigasi Google Maps') }}"
+                       class="p-2 rounded-xl text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900 border border-emerald-200 dark:border-emerald-800 transition">
+                        <i class="fa-solid fa-diamond-turn-right text-xs"></i>
+                    </a>
                     <x-button :href="route('admin.orders.show', $order)" variant="secondary" size="sm" iconRight="fa-solid fa-arrow-right">
                         {{ __('Kelola Pesanan') }}
                     </x-button>

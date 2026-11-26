@@ -548,4 +548,97 @@ class OrderWorkflowTest extends TestCase
         $response->assertDontSee('Pilih Alamat Pengantaran:');
         $response->assertDontSee('<select x-model.number="selectedAddressId"', false);
     }
+
+    public function test_admin_can_start_delivery_and_records_initial_location(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Pengantar',
+            'email' => 'admin_antar@test.com',
+            'phone' => '081299990000',
+            'role' => 'admin',
+            'is_active' => true,
+            'password' => Hash::make('password'),
+        ]);
+
+        $order = Order::create([
+            'order_number' => 'ORD-TEST-START-1',
+            'user_id' => $this->customer->id,
+            'customer_address_id' => $this->address->id,
+            'recipient_name' => $this->address->recipient_name,
+            'recipient_phone' => $this->address->recipient_phone,
+            'delivery_address_text' => $this->address->address_line,
+            'delivery_latitude' => $this->address->latitude,
+            'delivery_longitude' => $this->address->longitude,
+            'status' => 'pending',
+            'payment_method' => 'cod',
+            'payment_status' => 'unpaid',
+            'subtotal' => 14000,
+            'delivery_fee' => 0,
+            'total_amount' => 14000,
+        ]);
+
+        $response = $this->actingAs($admin)->postJson(route('admin.orders.start-delivery', $order), [
+            'latitude' => -7.300000,
+            'longitude' => 112.750000,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'status' => 'in_transit',
+        ]);
+
+        $order->refresh();
+        $this->assertEquals('ready_for_delivery', $order->status);
+        $this->assertNotNull($order->delivery);
+        $this->assertEquals('in_transit', $order->delivery->status);
+
+        $this->assertDatabaseHas('delivery_locations', [
+            'delivery_id' => $order->delivery->id,
+            'latitude' => -7.300000,
+            'longitude' => 112.750000,
+        ]);
+    }
+
+    public function test_customer_can_track_driver_live_coordinates(): void
+    {
+        $order = Order::create([
+            'order_number' => 'ORD-TEST-TRACK-1',
+            'user_id' => $this->customer->id,
+            'customer_address_id' => $this->address->id,
+            'recipient_name' => $this->address->recipient_name,
+            'recipient_phone' => $this->address->recipient_phone,
+            'delivery_address_text' => $this->address->address_line,
+            'delivery_latitude' => -7.280000,
+            'delivery_longitude' => 112.760000,
+            'status' => 'ready_for_delivery',
+            'payment_method' => 'cod',
+            'payment_status' => 'unpaid',
+            'subtotal' => 14000,
+            'delivery_fee' => 0,
+            'total_amount' => 14000,
+        ]);
+
+        $delivery = \App\Models\Delivery::create([
+            'delivery_number' => 'DEL-TRACK-1',
+            'order_id' => $order->id,
+            'status' => 'in_transit',
+        ]);
+
+        \App\Models\DeliveryLocation::create([
+            'delivery_id' => $delivery->id,
+            'latitude' => -7.295000,
+            'longitude' => 112.755000,
+            'recorded_at' => now(),
+        ]);
+
+        $response = $this->actingAs($this->customer)->getJson(route('customer.orders.api-location', $order));
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'delivery_status' => 'in_transit',
+            'driver_lat' => -7.295,
+            'driver_lng' => 112.755,
+        ]);
+    }
 }

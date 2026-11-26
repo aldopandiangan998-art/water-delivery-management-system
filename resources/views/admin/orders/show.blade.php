@@ -111,6 +111,10 @@
                         googleMapsApiKey: '{{ addslashes($googleMapsApiKey) }}',
                         saveCoordinatesUrl: '{{ route('admin.orders.coordinates', $order) }}',
                         saveApiKeyUrl: '{{ route('admin.orders.save-google-maps-key') }}',
+                        startDeliveryUrl: '{{ route('admin.orders.start-delivery', $order) }}',
+                        updateLocationUrl: '{{ $order->delivery ? route('admin.deliveries.location', $order->delivery) : '' }}',
+                        orderStatus: '{{ $order->status }}',
+                        deliveryStatus: '{{ $order->delivery?->status ?? 'assigned' }}',
                         csrfToken: '{{ csrf_token() }}'
                     })">
 
@@ -213,12 +217,29 @@
                     </div>
 
                     <div class="flex items-center space-x-2 flex-wrap gap-y-2">
+                        <!-- Tombol Mulai Pengantaran (Jika belum jalan) -->
+                        <template x-if="deliveryStatus !== 'in_transit' && orderStatus !== 'completed'">
+                            <button type="button" @click="startDeliveryNow()" :disabled="isStartingDelivery"
+                                    class="px-4 py-2 rounded-xl text-xs font-black bg-cyan-600 hover:bg-cyan-700 text-white shadow-xs transition flex items-center cursor-pointer">
+                                <i class="fa-solid fa-truck-fast mr-1.5" :class="isStartingDelivery ? 'animate-spin' : ''"></i>
+                                <span x-text="isStartingDelivery ? '{{ __('Menyiapkan GPS...') }}' : '{{ __('Mulai Pengantaran Air') }}'"></span>
+                            </button>
+                        </template>
+
+                        <!-- Indikator Sedang Dalam Perjalanan -->
+                        <template x-if="deliveryStatus === 'in_transit'">
+                            <div class="inline-flex items-center px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-xs font-bold shadow-2xs">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-2 animate-ping"></span>
+                                <span>{{ __('Sedang Diantar (Live GPS)') }}</span>
+                            </div>
+                        </template>
+
                         <!-- Toggle Live GPS tracking -->
                         <button type="button" @click="toggleLiveTracking()" 
                                 :class="isLiveTracking ? 'bg-rose-600 hover:bg-rose-700 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'"
                                 class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center shadow-xs cursor-pointer">
                             <i class="fa-solid fa-location-crosshairs mr-1.5" :class="isLiveTracking ? 'animate-spin' : ''"></i>
-                            <span x-text="isLiveTracking ? '{{ __('Matikan Live GPS') }}' : '{{ __('Gunakan GPS Saya Saat Ini') }}'"></span>
+                            <span x-text="isLiveTracking ? '{{ __('Matikan Live GPS') }}' : '{{ __('Nyalakan Live GPS') }}'"></span>
                         </button>
 
                         <!-- Open Turn-by-Turn in Google Maps -->
@@ -509,17 +530,23 @@ function orderRouteTracker(config) {
         inputApiKey: config.googleMapsApiKey || '',
         saveCoordinatesUrl: config.saveCoordinatesUrl,
         saveApiKeyUrl: config.saveApiKeyUrl,
+        startDeliveryUrl: config.startDeliveryUrl,
+        updateLocationUrl: config.updateLocationUrl,
+        orderStatus: config.orderStatus,
+        deliveryStatus: config.deliveryStatus,
         csrfToken: config.csrfToken,
 
         isUsingGoogleMaps: false,
         isGeocoding: false,
         isLiveTracking: false,
+        isStartingDelivery: false,
         isSavingKey: false,
         showKeyModal: false,
         toastNotice: '',
         routeDistance: '',
         routeDuration: '',
         watchId: null,
+        lastLocationSentTime: 0,
 
         // Map instances
         gMap: null,
@@ -548,6 +575,10 @@ function orderRouteTracker(config) {
                     this.loadGoogleMaps();
                 } else {
                     this.initLeaflet();
+                }
+
+                if (this.deliveryStatus === 'in_transit' && this.orderStatus !== 'completed') {
+                    this.toggleLiveTracking(true);
                 }
             });
         },
@@ -828,8 +859,91 @@ function orderRouteTracker(config) {
             });
         },
 
-        toggleLiveTracking() {
-            if (this.isLiveTracking) {
+        async startDeliveryNow() {
+            this.isStartingDelivery = true;
+            this.toastNotice = 'Mengaktifkan pengantaran & membaca sensor GPS...';
+
+            let curLat = null;
+            let curLng = null;
+
+            if (navigator.geolocation) {
+                try {
+                    const pos = await new Promise((resolve, reject) => {
+                        navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 3500, enableHighAccuracy: true });
+                    });
+                    curLat = pos.coords.latitude;
+                    curLng = pos.coords.longitude;
+                } catch (e) {
+                    console.log('GPS awal belum siap, menggunakan koordinat depot.');
+                }
+            }
+
+            try {
+                const res = await fetch(this.startDeliveryUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        latitude: curLat,
+                        longitude: curLng
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    this.deliveryStatus = 'in_transit';
+                    this.orderStatus = 'ready_for_delivery';
+                    this.updateLocationUrl = data.update_location_url;
+                    this.toastNotice = 'Pengantaran dimulai! GPS pelacakan aktif membagikan lokasi ke pelanggan.';
+
+                    if (data.initial_lat && data.initial_lng) {
+                        this.updateAdminLiveLocation(data.initial_lat, data.initial_lng, null);
+                    }
+
+                    this.toggleLiveTracking(true);
+                } else {
+                    alert(data.message || 'Gagal memulai pengantaran.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Terjadi kesalahan saat memulai pengantaran.');
+            } finally {
+                this.isStartingDelivery = false;
+            }
+        },
+
+        async sendLocationToServer(lat, lng, pos = null) {
+            if (!this.updateLocationUrl) return;
+            const now = Date.now();
+            if (now - this.lastLocationSentTime < 3000) return; // throttle 3 seconds
+            this.lastLocationSentTime = now;
+
+            try {
+                await fetch(this.updateLocationUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': this.csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        latitude: lat,
+                        longitude: lng,
+                        heading: pos && pos.coords ? pos.coords.heading : null,
+                        speed: pos && pos.coords ? pos.coords.speed : null,
+                        accuracy: pos && pos.coords ? pos.coords.accuracy : null
+                    })
+                });
+            } catch (e) {
+                console.warn('Gagal memperbarui posisi ke server:', e);
+            }
+        },
+
+        toggleLiveTracking(forceOn = null) {
+            if (forceOn === false || (forceOn === null && this.isLiveTracking)) {
                 if (this.watchId !== null) {
                     navigator.geolocation.clearWatch(this.watchId);
                     this.watchId = null;
@@ -845,25 +959,28 @@ function orderRouteTracker(config) {
             }
 
             this.isLiveTracking = true;
-            this.toastNotice = 'Mengaktifkan sensor GPS Admin...';
+            this.toastNotice = 'Sensor GPS Admin aktif & membagikan posisi ke pelanggan.';
 
             this.watchId = navigator.geolocation.watchPosition(
                 (pos) => {
                     const lat = pos.coords.latitude;
                     const lng = pos.coords.longitude;
-                    this.updateAdminLiveLocation(lat, lng);
+                    this.updateAdminLiveLocation(lat, lng, pos);
                 },
                 (err) => {
                     console.warn('Geolocation error:', err);
-                    this.isLiveTracking = false;
-                    alert('Gagal mengakses GPS: ' + err.message);
+                    if (err.code === 1) {
+                        this.isLiveTracking = false;
+                        this.toastNotice = 'Akses GPS ditolak. Posisi awal depot digunakan.';
+                    }
                 },
                 { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
             );
         },
 
-        updateAdminLiveLocation(lat, lng) {
+        updateAdminLiveLocation(lat, lng, pos = null) {
             this.toastNotice = `Posisi Admin terdeteksi: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
+            this.sendLocationToServer(lat, lng, pos);
 
             if (this.isUsingGoogleMaps && this.gMap) {
                 if (!this.gAdminLiveMarker) {

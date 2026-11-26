@@ -214,6 +214,16 @@ function liveTracking(config) {
                 if (!response.ok) return;
 
                 const data = await response.json();
+                if (data.delivery_status) {
+                    if (data.delivery_status === 'in_transit') {
+                        this.deliveryStatusLabel = 'Sedang Dalam Perjalanan Menuju Lokasi Anda';
+                    } else if (data.delivery_status === 'arrived') {
+                        this.deliveryStatusLabel = 'Pengantar Telah Tiba di Lokasi Anda';
+                    } else if (data.delivery_status === 'delivered') {
+                        this.deliveryStatusLabel = 'Pesanan Telah Berhasil Diantar!';
+                    }
+                }
+
                 if (data.driver_lat && data.driver_lng) {
                     this.driverLat = data.driver_lat;
                     this.driverLng = data.driver_lng;
@@ -224,6 +234,18 @@ function liveTracking(config) {
 
                     if (this.driverMarker) {
                         this.driverMarker.setLatLng([this.driverLat, this.driverLng]);
+                    } else if (this.map && window.L) {
+                        const driverIcon = L.divIcon({
+                            className: 'custom-driver-icon',
+                            html: `<div style="background-color: #10b981; color: white; border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.4); border: 3px solid white;">
+                                    <i class="fa-solid fa-motorcycle" style="font-size: 20px;"></i>
+                                   </div>`,
+                            iconSize: [42, 42],
+                            iconAnchor: [21, 21]
+                        });
+                        this.driverMarker = L.marker([this.driverLat, this.driverLng], { icon: driverIcon })
+                            .addTo(this.map)
+                            .bindPopup(`<b>Armada Pengantaran</b><br>Sedang dalam perjalanan`);
                     }
                 }
             } catch (err) {
