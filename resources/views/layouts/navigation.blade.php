@@ -42,6 +42,9 @@
 
                         <div x-show="dropdownOpen" @click.away="dropdownOpen = false" x-cloak
                              class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-100 dark:border-slate-700 py-1.5 z-50">
+                            <a href="{{ route('customer.orders.create') }}" class="flex items-center px-4 py-2 text-sm text-cyan-600 dark:text-cyan-400 font-bold hover:bg-slate-50 dark:hover:bg-slate-700">
+                                <i class="fa-solid fa-cart-plus mr-2.5 text-cyan-600 w-4"></i> {{ __('Pesan Air Sekarang') }}
+                            </a>
                             <a href="{{ route('customer.dashboard') }}" class="flex items-center px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">
                                 <i class="fa-solid fa-house mr-2.5 text-slate-400 w-4"></i> {{ __('Dashboard Saya') }}
                             </a>

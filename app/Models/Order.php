@@ -99,7 +99,7 @@ class Order extends Model
             'confirmed' => ['label' => 'Terkonfirmasi', 'color' => 'bg-blue-100 text-blue-800 border-blue-200'],
             'processing' => ['label' => 'Diproses', 'color' => 'bg-indigo-100 text-indigo-800 border-indigo-200'],
             'ready_for_delivery' => ['label' => 'Siap Dikirim', 'color' => 'bg-cyan-100 text-cyan-800 border-cyan-200'],
-            'completed' => ['label' => 'Selesai', 'color' => 'bg-emerald-100 text-emerald-800 border-emerald-200'],
+            'completed' => ['label' => 'Berhasil Terkirim', 'color' => 'bg-emerald-100 text-emerald-800 border-emerald-200'],
             'cancelled' => ['label' => 'Dibatalkan', 'color' => 'bg-gray-100 text-gray-800 border-gray-200'],
             'rejected' => ['label' => 'Ditolak', 'color' => 'bg-rose-100 text-rose-800 border-rose-200'],
             default => ['label' => $this->status, 'color' => 'bg-gray-100 text-gray-800 border-gray-200'],

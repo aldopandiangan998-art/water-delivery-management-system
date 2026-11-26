@@ -186,6 +186,22 @@
                     <div class="text-slate-500">Selesai pada: {{ $delivery->completed_at?->format('d M Y, H:i') }} WIB</div>
                 </div>
             @endif
+
+            <!-- Customer Comment Section -->
+            @if ($delivery->order?->review)
+                <div class="p-4 bg-cyan-50/60 rounded-2xl border border-cyan-200 space-y-2.5 text-xs">
+                    <div class="flex items-center space-x-2 text-slate-900 font-extrabold pb-2 border-b border-cyan-100">
+                        <i class="fa-solid fa-comment-dots text-cyan-600 text-sm"></i>
+                        <span>Komentar dari Pelanggan:</span>
+                    </div>
+                    <p class="p-3 bg-white rounded-xl border border-slate-200 text-slate-700 italic leading-relaxed">
+                        "{{ $delivery->order->review->comment }}"
+                    </p>
+                    <div class="text-[10px] text-slate-400 text-right">
+                        Diberikan pada {{ $delivery->order->review->created_at->format('d M Y, H:i') }} WIB
+                    </div>
+                </div>
+            @endif
         </div>
     </div>
 

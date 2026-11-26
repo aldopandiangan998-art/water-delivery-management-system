@@ -373,26 +373,77 @@
                 </form>
             </x-card>
 
-            <!-- 2. Delivery Control -->
-            @if ($order->delivery)
-                <x-card class="p-5 space-y-3">
-                    <h3 class="font-black text-sm text-slate-900 dark:text-white uppercase tracking-wider">{{ __('Pengantaran Pesanan') }}</h3>
+            <!-- 2. Delivery Control & Photo Report -->
+            <x-card class="p-5 space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+                    <h3 class="font-black text-sm text-slate-900 dark:text-white uppercase tracking-wider flex items-center">
+                        <i class="fa-solid fa-camera text-cyan-600 mr-2"></i> {{ __('Laporan Kirim Air') }}
+                    </h3>
+                    @if ($order->delivery)
+                        <a href="{{ route('admin.deliveries.show', $order->delivery) }}" class="text-[11px] font-bold text-cyan-600 dark:text-cyan-400 hover:underline">
+                            {{ $order->delivery->delivery_number }} &rarr;
+                        </a>
+                    @endif
+                </div>
 
-                    <div class="p-3.5 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl text-xs space-y-2">
+                @if ($order->status !== 'completed' && !in_array($order->status, ['cancelled', 'rejected']))
+                    <form method="POST" action="{{ route('admin.orders.complete-delivery', $order) }}" enctype="multipart/form-data" class="space-y-3.5">
+                        @csrf
                         <div>
-                            <div class="font-bold text-emerald-900 dark:text-emerald-300">{{ __('No. Pengantaran') }}:</div>
-                            <div class="text-sm font-black text-slate-800 dark:text-slate-100 font-mono">{{ $order->delivery->delivery_number }}</div>
-                            <div class="text-slate-500 dark:text-slate-400 mt-1">{{ __('Status') }}: <span class="capitalize font-semibold text-emerald-700 dark:text-emerald-400">{{ __($order->delivery->status_badge['label'] ?? $order->delivery->status) }}</span></div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                <i class="fa-solid fa-camera mr-1 text-cyan-600"></i> {{ __('Foto Bukti Serah Terima Air') }}
+                            </label>
+                            <input type="file" name="photo" accept="image/*" capture="environment"
+                                   class="w-full text-xs border border-slate-300 dark:border-slate-700 rounded-xl p-2 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-cyan-50 file:text-cyan-700 hover:file:bg-cyan-100 cursor-pointer">
+                            <p class="text-[10px] text-slate-400 mt-1">{{ __('Bisa ambil langsung dari kamera HP atau galeri foto.') }}</p>
                         </div>
 
-                        <x-button :href="route('admin.deliveries.show', $order->delivery)" variant="success" size="sm" class="w-full" icon="fa-solid fa-truck-fast">
-                            {{ __('Buka Kontrol Pengantaran & Bukti') }}
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">{{ __('Jumlah Galon Kosong Ditarik:') }}</label>
+                            <input type="number" name="empty_gallons_returned" value="{{ $order->empty_gallons_returned ?? 0 }}" min="0"
+                                   class="w-full text-xs font-bold border border-slate-200 dark:border-slate-700 rounded-xl p-2.5 bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white">
+                        </div>
+
+                        @if ($order->payment_method === 'cod' && $order->payment_status !== 'paid')
+                            <div class="p-3 bg-amber-50 dark:bg-amber-950/40 rounded-xl border border-amber-200 dark:border-amber-800 text-xs">
+                                <label class="block font-bold text-amber-900 dark:text-amber-200 mb-1">{{ __('Tagihan Tunai (COD):') }} Rp {{ number_format($order->total_amount, 0, ',', '.') }}</label>
+                                <input type="number" name="payment_received" value="{{ $order->total_amount }}"
+                                       class="w-full text-xs border border-amber-300 dark:border-amber-700 rounded-xl p-2 bg-white dark:bg-slate-900 font-bold text-emerald-600 dark:text-emerald-400">
+                                <p class="text-[10px] text-amber-700 dark:text-amber-400 mt-1">{{ __('Status pembayaran otomatis tercatat Lunas.') }}</p>
+                            </div>
+                        @endif
+
+                        <x-button type="submit" variant="success" class="w-full py-3" icon="fa-solid fa-check-double">
+                            {{ __('Konfirmasi Kirim & Selesai') }}
                         </x-button>
+                    </form>
+                @else
+                    <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-xl text-center text-xs">
+                        <i class="fa-solid fa-circle-check text-emerald-600 text-base mb-1 block"></i>
+                        <span class="font-bold text-emerald-900 dark:text-emerald-200">{{ __('Pesanan telah berstatus Berhasil Terkirim') }}</span>
+                    </div>
+                @endif
+            </x-card>
+
+            <!-- 3. Customer Review / Comment Card -->
+            @if ($order->review)
+                <x-card class="p-5 space-y-3 border-2 border-cyan-200 dark:border-cyan-800 bg-cyan-50/30 dark:bg-cyan-950/20">
+                    <div class="flex items-center space-x-2 pb-2 border-b border-cyan-100 dark:border-cyan-900">
+                        <div class="w-8 h-8 rounded-lg bg-cyan-100 dark:bg-cyan-900 text-cyan-600 dark:text-cyan-300 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-comment-dots"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-black text-xs uppercase tracking-wider text-slate-900 dark:text-white">{{ __('Komentar Pelanggan') }}</h3>
+                            <div class="text-[10px] text-slate-400">{{ $order->review->created_at->format('d M Y, H:i') }} WIB</div>
+                        </div>
+                    </div>
+                    <div class="p-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 leading-relaxed italic">
+                        "{{ $order->review->comment }}"
                     </div>
                 </x-card>
             @endif
 
-            <!-- 3. Payment Status Control -->
+            <!-- 4. Payment Status Control -->
             <x-card class="p-5 space-y-3">
                 <h3 class="font-black text-sm text-slate-900 dark:text-white uppercase tracking-wider">{{ __('Status Pembayaran') }}</h3>
 

@@ -77,15 +77,131 @@ class OrderWorkflowTest extends TestCase
         ]);
     }
 
-    public function test_order_create_and_store_routes_are_removed_for_customer(): void
+    public function test_customer_can_view_order_create_page(): void
     {
         $this->actingAs($this->customer);
 
-        $responseCreate = $this->get('/customer/orders/create');
-        $responseCreate->assertStatus(404);
+        $response = $this->get(route('customer.orders.create'));
+        $response->assertStatus(200);
+        $response->assertSee('Formulir Pemesanan Air Minum');
+        $response->assertSee('Air RO Murni Galon');
+        $response->assertSee('Rumah Utama');
+    }
 
-        $responseStore = $this->post('/customer/orders', []);
-        $responseStore->assertStatus(405);
+    public function test_customer_can_place_order_with_delivery_auto_created(): void
+    {
+        $this->actingAs($this->customer);
+
+        $response = $this->post(route('customer.orders.store'), [
+            'customer_address_id' => $this->address->id,
+            'items' => [
+                [
+                    'product_id' => $this->product->id,
+                    'quantity' => 2,
+                    'is_exchange' => 1,
+                ]
+            ],
+            'payment_method' => 'cod',
+            'customer_notes' => 'Pagar hitam depan masjid',
+        ]);
+
+        $order = Order::where('user_id', $this->customer->id)->latest()->first();
+        $this->assertNotNull($order);
+        $response->assertRedirect(route('customer.orders.show', $order));
+
+        $this->assertEquals('pending', $order->status);
+        $this->assertEquals(14000, $order->subtotal);
+        $this->assertEquals(3000, $order->delivery_fee);
+        $this->assertEquals(17000, $order->total_amount);
+
+        // Verify Delivery is auto-created
+        $this->assertNotNull($order->delivery);
+        $this->assertEquals('assigned', $order->delivery->status);
+
+        // Verify stock decremented
+        $this->assertEquals(98, $this->product->fresh()->stock_quantity);
+    }
+
+    public function test_admin_can_complete_delivery_with_proof_photo_from_order_show(): void
+    {
+        Storage::fake('public');
+
+        $admin = User::create([
+            'name' => 'Admin Depo',
+            'email' => 'admin_delivery_test@test.com',
+            'phone' => '081299998888',
+            'role' => 'admin',
+            'is_active' => true,
+            'password' => Hash::make('password'),
+        ]);
+
+        $order = Order::create([
+            'order_number' => 'ORD-PROOF-TEST',
+            'user_id' => $this->customer->id,
+            'customer_address_id' => $this->address->id,
+            'recipient_name' => 'Budi Pelanggan',
+            'recipient_phone' => '08123456789',
+            'delivery_address_text' => 'Jl. Sukajadi No. 50',
+            'status' => 'confirmed',
+            'payment_status' => 'unpaid',
+            'payment_method' => 'cod',
+            'subtotal' => 14000,
+            'delivery_fee' => 3000,
+            'total_amount' => 17000,
+        ]);
+
+        $photo = UploadedFile::fake()->image('laporan_kirim.jpg');
+
+        $response = $this->actingAs($admin)->post(route('admin.orders.complete-delivery', $order), [
+            'photo' => $photo,
+            'empty_gallons_returned' => 2,
+            'payment_received' => 17000,
+            'notes' => 'Air galon telah diterima di lokasi.',
+        ]);
+
+        $response->assertSessionHas('success');
+
+        $order->refresh();
+        $this->assertEquals('completed', $order->status);
+        $this->assertEquals('paid', $order->payment_status);
+        $this->assertEquals(2, $order->empty_gallons_returned);
+
+        // Verify delivery photo stored
+        $this->assertNotNull($order->delivery);
+        $this->assertEquals('delivered', $order->delivery->status);
+        $this->assertCount(1, $order->delivery->photos);
+        Storage::disk('public')->assertExists($order->delivery->photos->first()->photo_path);
+    }
+
+    public function test_customer_can_submit_text_comment_on_completed_order(): void
+    {
+        $order = Order::create([
+            'order_number' => 'ORD-REVIEW-TEST',
+            'user_id' => $this->customer->id,
+            'customer_address_id' => $this->address->id,
+            'recipient_name' => 'Budi Pelanggan',
+            'recipient_phone' => '08123456789',
+            'delivery_address_text' => 'Jl. Sukajadi No. 50',
+            'status' => 'completed',
+            'payment_status' => 'paid',
+            'payment_method' => 'cod',
+            'subtotal' => 14000,
+            'delivery_fee' => 3000,
+            'total_amount' => 17000,
+        ]);
+
+        $response = $this->actingAs($this->customer)->post(route('customer.orders.review', $order), [
+            'comment' => 'Pengantaran sangat cepat dan air sangat segar!',
+        ]);
+
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('reviews', [
+            'order_id' => $order->id,
+            'user_id' => $this->customer->id,
+            'comment' => 'Pengantaran sangat cepat dan air sangat segar!',
+            'is_approved' => true,
+        ]);
     }
 
     public function test_customer_can_cancel_pending_order_and_stock_is_returned(): void

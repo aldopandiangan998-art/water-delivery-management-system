@@ -44,23 +44,43 @@
         </div>
     </x-card>
 
-    <!-- COD Notice Banner -->
-    <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-950/40 dark:via-teal-950/40 dark:to-cyan-950/40 border border-emerald-300 dark:border-emerald-700 rounded-3xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="flex items-start space-x-3.5">
-            <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm text-2xl">
-                <i class="fa-solid fa-hand-holding-dollar"></i>
-            </div>
-            <div>
-                <div class="flex items-center space-x-2">
-                    <h2 class="text-sm sm:text-base font-black text-slate-900 dark:text-white">{{ __('Pesanan Tunai Siap Diproses') }}</h2>
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-700">{{ __('Bayar di Tempat') }}</span>
+    @if ($order->status === 'completed')
+        <!-- Completed Delivery Banner -->
+        <div class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-3xl p-5 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start space-x-3.5">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-xs text-white flex items-center justify-center shrink-0 shadow-sm text-2xl">
+                    <i class="fa-solid fa-circle-check"></i>
                 </div>
-                <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
-                    {{ __('Pesanan Anda telah tercatat! Pesanan akan segera disiapkan dan diantar ke alamat Anda.') }}
-                </p>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h2 class="text-sm sm:text-base font-black">{{ __('Pesanan Berhasil Terkirim!') }}</h2>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white text-emerald-800">{{ __('Selesai') }}</span>
+                    </div>
+                    <p class="text-xs text-emerald-50 mt-1 leading-relaxed">
+                        {{ __('Air minum Anda telah berhasil diantar dan diserahterimakan. Terima kasih telah memesan di toko kami!') }}
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
+    @else
+        <!-- COD Notice Banner -->
+        <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-950/40 dark:via-teal-950/40 dark:to-cyan-950/40 border border-emerald-300 dark:border-emerald-700 rounded-3xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="flex items-start space-x-3.5">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm text-2xl">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                </div>
+                <div>
+                    <div class="flex items-center space-x-2">
+                        <h2 class="text-sm sm:text-base font-black text-slate-900 dark:text-white">{{ __('Pesanan Tunai Siap Diproses') }}</h2>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-700">{{ __('Bayar di Tempat') }}</span>
+                    </div>
+                    <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
+                        {{ __('Pesanan Anda telah tercatat! Pesanan akan segera disiapkan dan diantar ke alamat Anda.') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <!-- Delivery & Status Card -->
     @if ($order->delivery)
@@ -155,6 +175,51 @@
             @endif
         </div>
     </x-card>
+
+    <!-- Customer Comment / Review Section when order is completed -->
+    @if ($order->status === 'completed')
+        <x-card class="p-6 space-y-4 border-2 border-cyan-100 dark:border-cyan-900 bg-white dark:bg-slate-900">
+            <div class="flex items-center space-x-3 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <div class="w-10 h-10 rounded-2xl bg-cyan-100 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-comment-dots"></i>
+                </div>
+                <div>
+                    <h2 class="font-black text-sm text-slate-900 dark:text-white uppercase tracking-wider">{{ __('Komentar & Masukan Pengantaran') }}</h2>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Bagikan tanggapan Anda mengenai pengantaran air minum ini.') }}</p>
+                </div>
+            </div>
+
+            @if ($order->review)
+                <div class="space-y-2">
+                    <div class="text-xs font-bold text-slate-700 dark:text-slate-300">{{ __('Komentar yang telah Anda kirimkan:') }}</div>
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 italic leading-relaxed">
+                        "{{ $order->review->comment }}"
+                    </div>
+                    <div class="text-[10px] text-slate-400">
+                        {{ __('Dikirim pada') }} {{ $order->review->created_at->format('d M Y, H:i') }} WIB
+                    </div>
+                </div>
+            @else
+                <form method="POST" action="{{ route('customer.orders.review', $order) }}" class="space-y-3">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                            {{ __('Tulis Komentar Anda:') }}
+                        </label>
+                        <textarea name="comment" required rows="3" 
+                                  placeholder="{{ __('Tuliskan komentar atau masukan Anda mengenai pengantaran air minum ini...') }}"
+                                  class="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white p-3 focus:ring-2 focus:ring-cyan-500"></textarea>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <x-button type="submit" variant="primary" icon="fa-solid fa-paper-plane" size="sm">
+                            {{ __('Kirim Komentar') }}
+                        </x-button>
+                    </div>
+                </form>
+            @endif
+        </x-card>
+    @endif
 
 </div>
 @endsection

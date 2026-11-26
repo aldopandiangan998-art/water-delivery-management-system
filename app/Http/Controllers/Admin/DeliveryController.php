@@ -40,6 +40,7 @@ class DeliveryController extends Controller
             'order.items.product',
             'order.user.profile',
             'order.address',
+            'order.review',
             'statusHistories.changer',
             'latestLocation',
             'photos',

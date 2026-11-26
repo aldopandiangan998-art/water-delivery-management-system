@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\BusinessSetting;
 use App\Models\Delivery;
+use App\Models\DeliveryPhoto;
 use App\Models\DeliveryStatusHistory;
 use App\Models\Order;
 use App\Models\OrderStatusHistory;
@@ -68,6 +69,95 @@ class OrderController extends Controller
         $googleMapsApiKey = config('services.google_maps.api_key') ?: BusinessSetting::get('google_maps_api_key', '');
 
         return view('admin.orders.show', compact('order', 'depotLat', 'depotLng', 'companyName', 'companyAddress', 'googleMapsApiKey'));
+    }
+
+    public function completeDelivery(Request $request, Order $order)
+    {
+        if ($order->status === 'completed') {
+            return back()->with('info', 'Pesanan ini sudah selesai.');
+        }
+
+        $validated = $request->validate([
+            'photo' => ['nullable', 'image', 'max:5120'], // 5MB
+            'empty_gallons_returned' => ['nullable', 'integer', 'min:0'],
+            'payment_received' => ['nullable', 'numeric', 'min:0'],
+            'notes' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        DB::transaction(function () use ($request, $order, $validated) {
+            // Ensure delivery exists
+            $delivery = $order->delivery;
+            if (! $delivery) {
+                $delivery = Delivery::create([
+                    'delivery_number' => 'DEL-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
+                    'order_id' => $order->id,
+                    'status' => 'delivered',
+                    'completed_at' => now(),
+                ]);
+            } else {
+                $delivery->update([
+                    'status' => 'delivered',
+                    'completed_at' => now(),
+                ]);
+            }
+
+            // Handle Proof Photo upload
+            if ($request->hasFile('photo')) {
+                $path = $request->file('photo')->store('deliveries/proofs', 'public');
+                DeliveryPhoto::create([
+                    'delivery_id' => $delivery->id,
+                    'photo_path' => $path,
+                    'caption' => 'Bukti serah terima pesanan #' . $order->order_number,
+                    'taken_at' => now(),
+                ]);
+            }
+
+            DeliveryStatusHistory::create([
+                'delivery_id' => $delivery->id,
+                'status' => 'delivered',
+                'notes' => 'Pesanan berhasil diserahkan kepada pelanggan dan foto bukti dicatat.',
+                'changed_by' => Auth::id(),
+            ]);
+
+            // Update order to completed
+            $order->update([
+                'status' => 'completed',
+                'completed_at' => now(),
+                'empty_gallons_returned' => $validated['empty_gallons_returned'] ?? $order->empty_gallons_returned,
+            ]);
+
+            OrderStatusHistory::create([
+                'order_id' => $order->id,
+                'status' => 'completed',
+                'notes' => $validated['notes'] ?? 'Pengantaran air berhasil diselesaikan oleh admin/depot.',
+                'changed_by' => Auth::id(),
+            ]);
+
+            // If COD and unpaid, record payment
+            if ($order->payment_method === 'cod' && $order->payment_status !== 'paid') {
+                $amountPaid = isset($validated['payment_received']) && $validated['payment_received'] > 0
+                    ? $validated['payment_received']
+                    : $order->total_amount;
+
+                Payment::create([
+                    'payment_number' => 'PAY-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
+                    'order_id' => $order->id,
+                    'user_id' => $order->user_id,
+                    'amount' => $amountPaid,
+                    'payment_method' => 'cod',
+                    'status' => 'paid',
+                    'paid_at' => now(),
+                    'received_by' => Auth::id(),
+                    'notes' => 'Pembayaran tunai COD diterima saat serah terima air.',
+                ]);
+
+                $order->update([
+                    'payment_status' => 'paid',
+                ]);
+            }
+        });
+
+        return back()->with('success', 'Pesanan berhasil diselesaikan dan foto laporan kirim air telah disimpan!');
     }
 
     public function updateStatus(Request $request, Order $order)

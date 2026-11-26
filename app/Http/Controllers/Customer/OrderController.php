@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Models\CustomerAddress;
+use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
@@ -33,6 +34,158 @@ class OrderController extends Controller
         $orders = $query->paginate(10)->withQueryString();
 
         return view('customer.orders.index', compact('orders'));
+    }
+
+    public function create()
+    {
+        $user = Auth::user();
+        $addresses = CustomerAddress::where('user_id', $user->id)->with('serviceArea')->get();
+        $categories = ProductCategory::where('is_active', true)->with(['products' => function ($q) {
+            $q->where('is_active', true);
+        }])->get();
+
+        $products = Product::where('is_active', true)->orderBy('category_id')->get();
+
+        return view('customer.orders.create', compact('user', 'addresses', 'categories', 'products'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'customer_address_id' => ['required', 'exists:customer_addresses,id'],
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.product_id' => ['required', 'exists:products,id'],
+            'items.*.quantity' => ['required', 'integer', 'min:1', 'max:100'],
+            'items.*.is_exchange' => ['nullable', 'boolean'],
+            'payment_method' => ['required', 'in:cod'],
+            'customer_notes' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $address = CustomerAddress::where('id', $validated['customer_address_id'])
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        return DB::transaction(function () use ($validated, $address) {
+            $subtotal = 0;
+            $itemsData = [];
+            $totalEmptyReturnable = 0;
+
+            foreach ($validated['items'] as $itemInput) {
+                $product = Product::lockForUpdate()->findOrFail($itemInput['product_id']);
+                $quantity = (int) $itemInput['quantity'];
+                $isExchange = !empty($itemInput['is_exchange']);
+
+                // Calculate unit price: if returnable gallon but NOT exchanging empty bottle, add deposit price
+                $unitPrice = $product->price;
+                if ($product->is_returnable_gallon && !$isExchange && $product->deposit_price > 0) {
+                    $unitPrice += $product->deposit_price;
+                }
+
+                $itemSubtotal = $unitPrice * $quantity;
+                $subtotal += $itemSubtotal;
+
+                if ($product->is_returnable_gallon && $isExchange) {
+                    $totalEmptyReturnable += $quantity;
+                }
+
+                // Check stock
+                if ($product->tracks_inventory && $product->stock_quantity < $quantity) {
+                    throw new \Exception("Stok {$product->name} tidak mencukupi (tersisa {$product->stock_quantity}).");
+                }
+
+                $itemsData[] = [
+                    'product' => $product,
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPrice,
+                    'cost_price' => $product->cost_price,
+                    'is_exchange' => $isExchange,
+                    'subtotal' => $itemSubtotal,
+                ];
+            }
+
+            // Calculate delivery fee
+            $deliveryFee = 0;
+            if ($address->serviceArea) {
+                $deliveryFee = (float) $address->serviceArea->delivery_fee;
+            }
+
+            $totalAmount = $subtotal + $deliveryFee;
+
+            // Generate unique order number
+            $orderNumber = 'ORD-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5));
+
+            $order = Order::create([
+                'order_number' => $orderNumber,
+                'user_id' => Auth::id(),
+                'customer_address_id' => $address->id,
+                'recipient_name' => $address->recipient_name,
+                'recipient_phone' => $address->recipient_phone,
+                'delivery_address_text' => $address->address_line,
+                'delivery_benchmark' => $address->benchmark,
+                'delivery_latitude' => $address->latitude,
+                'delivery_longitude' => $address->longitude,
+                'service_area_id' => $address->service_area_id,
+                'delivery_fee' => $deliveryFee,
+                'subtotal' => $subtotal,
+                'total_amount' => $totalAmount,
+                'status' => 'pending',
+                'payment_method' => $validated['payment_method'],
+                'payment_status' => 'unpaid',
+                'customer_notes' => $validated['customer_notes'] ?? null,
+                'empty_gallons_due' => $totalEmptyReturnable,
+            ]);
+
+            // Save order items & decrement inventory
+            foreach ($itemsData as $data) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $data['product']->id,
+                    'product_name' => $data['product']->name,
+                    'product_sku' => $data['product']->sku,
+                    'price' => $data['unit_price'],
+                    'cost_price' => $data['cost_price'],
+                    'quantity' => $data['quantity'],
+                    'unit' => $data['product']->unit ?? 'galon',
+                    'subtotal' => $data['subtotal'],
+                    'is_exchange' => $data['is_exchange'],
+                ]);
+
+                if ($data['product']->tracks_inventory) {
+                    $stockBefore = $data['product']->stock_quantity;
+                    $data['product']->decrement('stock_quantity', $data['quantity']);
+                    $stockAfter = $data['product']->stock_quantity;
+
+                    StockMovement::create([
+                        'product_id' => $data['product']->id,
+                        'type' => 'sale',
+                        'quantity' => -$data['quantity'],
+                        'stock_before' => $stockBefore,
+                        'stock_after' => $stockAfter,
+                        'reference_type' => 'Customer Order',
+                        'reference_id' => $order->id,
+                        'notes' => "Pengurangan stok dari pesanan #{$order->order_number}",
+                        'created_by' => Auth::id(),
+                    ]);
+                }
+            }
+
+            // Create initial Delivery record so admin has delivery tracking and route immediately ready
+            Delivery::create([
+                'delivery_number' => 'DEL-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
+                'order_id' => $order->id,
+                'status' => 'assigned',
+            ]);
+
+            OrderStatusHistory::create([
+                'order_id' => $order->id,
+                'status' => 'pending',
+                'notes' => 'Pesanan baru dibuat oleh pelanggan.',
+                'changed_by' => Auth::id(),
+            ]);
+
+            return redirect()->route('customer.orders.show', $order)
+                ->with('success', 'Pesanan air galon Anda berhasil dibuat! Admin segera memproses dan mengantarkan.');
+        });
     }
 
     public function confirmPayment(Request $request, Order $order)
@@ -209,23 +362,22 @@ class OrderController extends Controller
         }
 
         if ($order->review) {
-            return back()->with('error', 'Anda sudah memberikan ulasan untuk pesanan ini.');
+            return back()->with('error', 'Anda sudah memberikan komentar untuk pesanan ini.');
         }
 
         $validated = $request->validate([
-            'rating' => ['required', 'integer', 'between:1,5'],
-            'comment' => ['nullable', 'string', 'max:500'],
+            'comment' => ['required', 'string', 'max:1000'],
         ]);
 
         Review::create([
             'order_id' => $order->id,
             'user_id' => Auth::id(),
-            'rating' => $validated['rating'],
-            'comment' => $validated['comment'] ?? null,
+            'rating' => 5,
+            'comment' => $validated['comment'],
             'is_approved' => true,
         ]);
 
-        return back()->with('success', 'Terima kasih atas ulasan dan penilaian Anda!');
+        return back()->with('success', 'Terima kasih atas komentar dan masukan Anda!');
     }
 
     /**

@@ -25,7 +25,10 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
-            <x-button :href="route('customer.store-profile')" variant="primary" icon="fa-solid fa-store">
+            <x-button :href="route('customer.orders.create')" variant="primary" icon="fa-solid fa-cart-plus">
+                {{ __('Pesan Air Sekarang') }}
+            </x-button>
+            <x-button :href="route('customer.store-profile')" variant="secondary" icon="fa-solid fa-store">
                 {{ __('Lokasi Depot & Maps') }}
             </x-button>
             <x-button :href="route('customer.addresses.index')" variant="secondary" icon="fa-solid fa-location-dot">

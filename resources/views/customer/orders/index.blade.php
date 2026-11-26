@@ -14,6 +14,9 @@
         </div>
         <div class="flex items-center space-x-2">
             <x-grid-list-toggle model="viewMode" />
+            <x-button :href="route('customer.orders.create')" variant="primary" size="sm" icon="fa-solid fa-plus">
+                {{ __('Pesan Air Baru') }}
+            </x-button>
         </div>
     </div>
 

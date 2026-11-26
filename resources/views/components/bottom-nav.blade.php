@@ -30,6 +30,11 @@
             <i class="fa-solid fa-house text-base"></i>
             <span class="text-[10px] mt-1">{{ __('Beranda') }}</span>
         </a>
+        <a href="{{ route('customer.orders.create') }}" 
+           class="flex flex-col items-center justify-center p-1 text-center transition {{ request()->routeIs('customer.orders.create') ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }}">
+            <i class="fa-solid fa-cart-plus text-base"></i>
+            <span class="text-[10px] mt-1">{{ __('Pesan Air') }}</span>
+        </a>
         <a href="{{ route('customer.orders.index') }}" 
            class="flex flex-col items-center justify-center p-1 text-center transition {{ request()->routeIs('customer.orders.index') || request()->routeIs('customer.orders.show') ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }}">
             <i class="fa-solid fa-box-archive text-base"></i>
