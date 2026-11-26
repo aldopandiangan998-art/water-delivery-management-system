@@ -478,12 +478,6 @@
 
                 <!-- Theme (Dark/Light) & Language Controls -->
                 @include('partials.theme-lang-controls')
-
-                <!-- Role Badge in Header -->
-                <div class="hidden sm:inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-bold {{ $theme['role_badge_bg'] }} border">
-                    <i class="fa-solid {{ $theme['role_icon'] }} mr-1.5 text-xs"></i>
-                    <span>{{ $theme['role_title'] }}</span>
-                </div>
             </div>
         </header>
 
