@@ -34,7 +34,7 @@
         <div class="flex items-center space-x-2">
             @if ($order->delivery && in_array($order->delivery->status, ['assigned', 'in_transit', 'arrived']))
                 <x-button :href="route('customer.orders.track', $order)" variant="success" size="sm" icon="fa-solid fa-map-location-dot">
-                    {{ __('Lacak Kurir Live') }}
+                    {{ __('Lacak Pengantaran Live') }}
                 </x-button>
             @endif
 
@@ -56,7 +56,7 @@
                     <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-700">{{ __('Bayar di Tempat') }}</span>
                 </div>
                 <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
-                    {{ __('Pesanan Anda telah tercatat! Kurir akan segera menyiapkan pesanan dan jalan ke alamat Anda.') }}
+                    {{ __('Pesanan Anda telah tercatat! Pesanan akan segera disiapkan dan diantar ke alamat Anda.') }}
                 </p>
             </div>
         </div>

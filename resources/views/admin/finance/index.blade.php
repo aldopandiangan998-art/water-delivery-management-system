@@ -196,7 +196,7 @@
                                 Diterima via <span class="uppercase font-semibold">{{ $pay->payment_method }}</span> &bull; 
                                 {{ $pay->paid_at?->format('H:i, d M') ?? $pay->created_at->format('H:i, d M') }}
                             </div>
-                            <div class="text-[10px] text-slate-400">Penerima: {{ $pay->receiver?->name ?? 'Kasir / Kurir' }}</div>
+                            <div class="text-[10px] text-slate-400">Penerima: {{ $pay->receiver?->name ?? 'Admin / Kasir' }}</div>
                         </div>
                         <div class="text-right">
                             <span class="font-black text-emerald-600 text-sm">
@@ -231,10 +231,10 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Kategori Pengeluaran</label>
                     <select name="category" required class="w-full text-xs border border-slate-300 rounded-xl p-2.5 bg-white">
-                        <option value="fuel">BBM & Transportasi (Bensin Motor Kurir)</option>
+                        <option value="fuel">BBM & Transportasi (Bensin Motor Operasional)</option>
                         <option value="stock">Pembelian Perlengkapan (Tutup Galon, Tisu, Segel)</option>
                         <option value="vehicle_maintenance">Perawatan Motor & Servis Berkala</option>
-                        <option value="salary">Gaji & Upah Kurir / Karyawan</option>
+                        <option value="salary">Gaji & Upah Karyawan</option>
                         <option value="utilities">Listrik, Air & Biaya Utilitas Depot</option>
                         <option value="other">Pengeluaran Lain-lain</option>
                     </select>
@@ -242,7 +242,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">Judul / Keperluan</label>
-                    <input type="text" name="title" required placeholder="Contoh: Bensin Motor Beat Kurir Asep..."
+                    <input type="text" name="title" required placeholder="Contoh: Bensin Motor Operasional Depot..."
                            class="w-full text-xs border border-slate-300 rounded-xl p-2.5">
                 </div>
 

@@ -69,12 +69,12 @@
                 break;
 
             case 'admin.deliveries.index':
-                $computedItems[] = ['title' => __('Pengantaran Kurir')];
+                $computedItems[] = ['title' => __('Tugas Pengantaran')];
                 break;
 
             case 'admin.deliveries.map':
                 $computedItems[] = ['title' => __('Pengantaran'), 'url' => route('admin.deliveries.index')];
-                $computedItems[] = ['title' => __('Peta Kurir & GPS')];
+                $computedItems[] = ['title' => __('Peta Pengantaran & GPS')];
                 break;
 
             case 'admin.deliveries.show':

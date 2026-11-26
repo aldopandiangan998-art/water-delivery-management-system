@@ -84,7 +84,7 @@
                         <span class="text-xl font-bold text-white tracking-tight">Aqua<span class="text-cyan-400">Flow</span></span>
                     </div>
                     <p class="text-sm text-slate-400 leading-relaxed">
-                        Layanan pesan antar air minum higienis, murni & berkualitas langsung ke pintu rumah, toko, dan kantor Anda dengan pelacakan kurir real-time.
+                        Layanan pesan antar air minum higienis, murni & berkualitas langsung ke pintu rumah, toko, dan kantor Anda dengan pelacakan pengantaran real-time.
                     </p>
                     <div class="flex space-x-3 text-slate-400">
                         <a href="#" class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center hover:text-cyan-400 hover:bg-slate-700 transition"><i class="fa-brands fa-whatsapp"></i></a>

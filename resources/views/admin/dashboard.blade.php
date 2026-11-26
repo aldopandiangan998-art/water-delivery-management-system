@@ -210,7 +210,7 @@
                 <div class="grid grid-cols-2 gap-2 text-xs">
                     <a href="{{ route('admin.deliveries.map') }}" class="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-center transition backdrop-blur-xs">
                         <i class="fa-solid fa-map-location-dot text-emerald-400 text-base block mb-1"></i>
-                        <span>{{ __('Peta Kurir') }}</span>
+                        <span>{{ __('Peta Pengantaran') }}</span>
                     </a>
                     <a href="{{ route('admin.products.create') }}" class="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-center transition backdrop-blur-xs">
                         <i class="fa-solid fa-plus text-cyan-400 text-base block mb-1"></i>

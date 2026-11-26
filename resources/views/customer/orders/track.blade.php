@@ -5,7 +5,7 @@
 @section('breadcrumbs')
     <x-breadcrumbs :items="[
         ['title' => __('Riwayat Pesanan'), 'url' => route('customer.orders.index')],
-        ['title' => __('Lacak Kurir #') . $order->order_number]
+        ['title' => __('Lacak Pengantaran #') . $order->order_number]
     ]" />
 @endsection
 

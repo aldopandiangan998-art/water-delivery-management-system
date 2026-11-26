@@ -8,7 +8,7 @@
             @if(auth()->check() && auth()->user()->role === 'admin')
                 { title: '{{ __('Dashboard Admin') }}', category: '{{ __('Navigasi') }}', icon: 'fa-solid fa-chart-pie', url: '{{ route('admin.dashboard') }}' },
                 { title: '{{ __('Daftar Pesanan') }}', category: '{{ __('Pesanan') }}', icon: 'fa-solid fa-cart-shopping', url: '{{ route('admin.orders.index') }}' },
-                { title: '{{ __('Peta Pengantaran Kurir') }}', category: '{{ __('Pengantaran') }}', icon: 'fa-solid fa-map-location-dot', url: '{{ route('admin.deliveries.map') }}' },
+                { title: '{{ __('Peta Pengantaran') }}', category: '{{ __('Pengantaran') }}', icon: 'fa-solid fa-map-location-dot', url: '{{ route('admin.deliveries.map') }}' },
                 { title: '{{ __('Katalog Produk & Stok') }}', category: '{{ __('Produk') }}', icon: 'fa-solid fa-bottle-water', url: '{{ route('admin.products.index') }}' },
                 { title: '{{ __('Tambah Produk Baru') }}', category: '{{ __('Produk') }}', icon: 'fa-solid fa-plus', url: '{{ route('admin.products.create') }}' },
                 { title: '{{ __('Laporan Keuangan & Biaya') }}', category: '{{ __('Keuangan') }}', icon: 'fa-solid fa-receipt', url: '{{ route('admin.finance.index') }}' },

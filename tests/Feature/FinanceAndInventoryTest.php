@@ -56,7 +56,7 @@ class FinanceAndInventoryTest extends TestCase
 
         $response = $this->post(route('admin.finance.store-expense'), [
             'category' => 'fuel',
-            'title' => 'BBM Motor Kurir Asep (Pertalite)',
+            'title' => 'BBM Motor Operasional Depot (Pertalite)',
             'amount' => 35000,
             'date' => date('Y-m-d'),
             'notes' => 'Isi bensin operasional',
@@ -66,7 +66,7 @@ class FinanceAndInventoryTest extends TestCase
 
         $this->assertDatabaseHas('expenses', [
             'category' => 'fuel',
-            'title' => 'BBM Motor Kurir Asep (Pertalite)',
+            'title' => 'BBM Motor Operasional Depot (Pertalite)',
             'amount' => 35000,
             'recorded_by' => $this->admin->id,
         ]);

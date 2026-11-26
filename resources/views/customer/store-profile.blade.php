@@ -181,7 +181,7 @@
                         <div class="font-bold text-slate-700 flex items-center">
                             <i class="fa-solid fa-bolt text-amber-500 mr-1.5"></i> Layanan Antar Cepat
                         </div>
-                        <p>Pesanan yang masuk pada jam operasional akan langsung diproses dan dikirim kurir lapangan rata-rata 20-40 menit.</p>
+                        <p>Pesanan yang masuk pada jam operasional akan langsung diproses dan diantar rata-rata 20-40 menit.</p>
                     </div>
                 </div>
             </div>

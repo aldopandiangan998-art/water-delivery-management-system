@@ -82,7 +82,7 @@
                 <div class="flex flex-wrap items-center gap-2 shrink-0 pt-2 md:pt-0">
                     @if ($order->delivery && in_array($order->delivery->status, ['assigned', 'in_transit', 'arrived']))
                         <x-button :href="route('customer.orders.track', $order)" variant="success" size="sm" icon="fa-solid fa-map-location-dot">
-                            {{ __('Lacak Kurir') }}
+                            {{ __('Lacak Pengantaran') }}
                         </x-button>
                     @endif
 
@@ -140,7 +140,7 @@
                 <div class="flex flex-wrap items-center justify-end gap-2 shrink-0 pt-3 border-t border-slate-100 dark:border-slate-800">
                     @if ($order->delivery && in_array($order->delivery->status, ['assigned', 'in_transit', 'arrived']))
                         <x-button :href="route('customer.orders.track', $order)" variant="success" size="sm" icon="fa-solid fa-map-location-dot">
-                            {{ __('Lacak Kurir') }}
+                            {{ __('Lacak Pengantaran') }}
                         </x-button>
                     @endif
 

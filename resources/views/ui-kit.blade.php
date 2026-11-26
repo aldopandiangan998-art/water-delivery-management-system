@@ -78,7 +78,7 @@
     <!-- 4. Alerts & Toast Trigger -->
     <x-card title="Alerts & Toasts (<x-alert>, <x-toast>)">
         <div class="space-y-3">
-            <x-alert variant="success" title="Pesanan Berhasil">Pesanan air minum Anda telah terdaftar dan kurir sedang menuju lokasi.</x-alert>
+            <x-alert variant="success" title="Pesanan Berhasil">Pesanan air minum Anda telah terdaftar dan pesanan sedang diantar menuju lokasi.</x-alert>
             <x-alert variant="warning" title="Stok Menipis">Stok galon Le Minerale tersisa 5 unit di gudang.</x-alert>
             <x-alert variant="danger" title="Gagal Memproses">Alamat belum lengkap, silakan pilih titik peta.</x-alert>
             <div class="pt-2 flex gap-2">

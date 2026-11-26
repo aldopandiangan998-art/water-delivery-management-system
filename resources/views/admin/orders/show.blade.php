@@ -294,7 +294,7 @@
             <!-- Delivery Proof Photos if completed -->
             @if ($order->delivery && $order->delivery->photos->isNotEmpty())
                 <x-card class="p-6 space-y-3">
-                    <h2 class="font-black text-sm text-slate-900 dark:text-white uppercase tracking-wider">{{ __('Foto Bukti Serah Terima Kurir') }}</h2>
+                    <h2 class="font-black text-sm text-slate-900 dark:text-white uppercase tracking-wider">{{ __('Foto Bukti Serah Terima Pengantaran') }}</h2>
                     <div class="flex flex-wrap gap-4">
                         @foreach ($order->delivery->photos as $ph)
                             <div class="border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-2xs">

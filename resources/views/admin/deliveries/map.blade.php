@@ -1,11 +1,11 @@
 @extends('layouts.admin')
 
-@section('page_title', 'Radar Peta Kurir Real-Time')
+@section('page_title', __('Radar Peta Pengantaran Real-Time'))
 
 @section('breadcrumbs')
     <x-breadcrumbs :items="[
         ['title' => __('Pengantaran'), 'url' => route('admin.deliveries.index')],
-        ['title' => __('Peta Kurir & Radar GPS')]
+        ['title' => __('Radar Peta Pengantaran')]
     ]" />
 @endsection
 
@@ -88,7 +88,7 @@
                 <span x-text="googleMapsApiKey ? 'Google Maps: Aktif' : 'Google Maps API'"></span>
             </button>
 
-            <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold" x-text="'Kurir: ' + activeDriversCount"></span>
+            <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-semibold" x-text="'Pengantaran Aktif: ' + activeDriversCount"></span>
             
             <button type="button" @click="fetchDrivers()" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl cursor-pointer" title="Refresh Peta">
                 <i class="fa-solid fa-arrows-rotate"></i>

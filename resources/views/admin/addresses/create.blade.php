@@ -102,7 +102,7 @@
                     </div>
 
                     <div>
-                        <label class="block font-bold text-slate-700 mb-1">Patokan Lokasi (Memudahkan Kurir/Pengantar)</label>
+                        <label class="block font-bold text-slate-700 dark:text-slate-300 mb-1">Patokan Lokasi (Memudahkan Pengantaran)</label>
                         <input type="text" name="benchmark" placeholder="Contoh: Pagar abu-abu, persis seberang masjid Al-Ikhlas, rumah pojok cat putih..."
                                value="{{ old('benchmark') }}"
                                class="w-full border border-slate-300 rounded-xl p-2.5 focus:ring-2 focus:ring-cyan-500">
