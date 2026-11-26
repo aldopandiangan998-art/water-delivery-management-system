@@ -104,12 +104,12 @@
                                         Rp {{ number_format($exp->amount, 0, ',', '.') }}
                                     </td>
                                     <td class="px-5 py-3 text-right whitespace-nowrap">
-                                        <form method="POST" action="{{ route('admin.finance.destroy-expense', $exp) }}">
+                                        <form id="delete-expense-{{ $exp->id }}" method="POST" action="{{ route('admin.finance.destroy-expense', $exp) }}">
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" 
                                                     @click="$dispatch('open-confirm-modal', {
-                                                        form: $el.closest('form'),
+                                                        form: 'delete-expense-{{ $exp->id }}',
                                                         title: '{{ __('Hapus Catatan Pengeluaran') }}',
                                                         message: '{{ __('Apakah Anda yakin ingin menghapus pengeluaran') }} \'{{ addslashes($exp->title) }}\' {{ __('sebesar') }} Rp {{ number_format($exp->amount, 0, ',', '.') }}?'
                                                     })"
@@ -152,12 +152,12 @@
                             <div class="font-black text-rose-600 dark:text-rose-400 text-sm">
                                 Rp {{ number_format($exp->amount, 0, ',', '.') }}
                             </div>
-                            <form method="POST" action="{{ route('admin.finance.destroy-expense', $exp) }}">
+                            <form id="delete-expense-grid-{{ $exp->id }}" method="POST" action="{{ route('admin.finance.destroy-expense', $exp) }}">
                                 @csrf
                                 @method('DELETE')
                                 <button type="button" 
                                         @click="$dispatch('open-confirm-modal', {
-                                            form: $el.closest('form'),
+                                            form: 'delete-expense-grid-{{ $exp->id }}',
                                             title: '{{ __('Hapus Catatan Pengeluaran') }}',
                                             message: '{{ __('Apakah Anda yakin ingin menghapus pengeluaran') }} \'{{ addslashes($exp->title) }}\' {{ __('sebesar') }} Rp {{ number_format($exp->amount, 0, ',', '.') }}?'
                                         })"

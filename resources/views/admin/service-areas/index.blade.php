@@ -74,12 +74,12 @@
                                 </td>
 
                                 <td class="px-5 py-3.5 text-right whitespace-nowrap space-x-2">
-                                    <form method="POST" action="{{ route('admin.service-areas.destroy', $area) }}" class="inline">
+                                    <form id="delete-service-area-{{ $area->id }}" method="POST" action="{{ route('admin.service-areas.destroy', $area) }}" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" 
                                                 @click="$dispatch('open-confirm-modal', {
-                                                    form: $el.closest('form'),
+                                                    form: 'delete-service-area-{{ $area->id }}',
                                                     title: '{{ __('Hapus Wilayah Layanan') }}',
                                                     message: '{{ __('Apakah Anda yakin ingin menghapus wilayah layanan') }} \'{{ addslashes($area->name) }}\'?'
                                                 })"
@@ -153,12 +153,12 @@
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
-                    <form method="POST" action="{{ route('admin.service-areas.destroy', $area) }}" class="inline">
+                    <form id="delete-service-area-grid-{{ $area->id }}" method="POST" action="{{ route('admin.service-areas.destroy', $area) }}" class="inline">
                         @csrf
                         @method('DELETE')
                         <button type="button" 
                                 @click="$dispatch('open-confirm-modal', {
-                                    form: $el.closest('form'),
+                                    form: 'delete-service-area-grid-{{ $area->id }}',
                                     title: '{{ __('Hapus Wilayah Layanan') }}',
                                     message: '{{ __('Apakah Anda yakin ingin menghapus wilayah layanan') }} \'{{ addslashes($area->name) }}\'?'
                                 })"

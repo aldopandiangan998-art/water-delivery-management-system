@@ -158,12 +158,12 @@
                                         <i class="fa-solid fa-pen-to-square"></i> {{ __('Edit') }}
                                     </a>
 
-                                    <form method="POST" action="{{ route('admin.addresses.destroy', $addr) }}" class="inline-block">
+                                    <form id="delete-admin-address-{{ $addr->id }}" method="POST" action="{{ route('admin.addresses.destroy', $addr) }}" class="inline-block">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" 
                                                 @click="$dispatch('open-confirm-modal', {
-                                                    form: $el.closest('form'),
+                                                    form: 'delete-admin-address-{{ $addr->id }}',
                                                     title: '{{ __('Hapus Alamat Pelanggan') }}',
                                                     message: '{{ __('Apakah Anda yakin ingin menghapus alamat ini?') }}'
                                                 })"
@@ -284,12 +284,12 @@
                             <i class="fa-solid fa-pen-to-square"></i>
                         </a>
 
-                        <form method="POST" action="{{ route('admin.addresses.destroy', $addr) }}" class="inline-block">
+                        <form id="delete-admin-address-grid-{{ $addr->id }}" method="POST" action="{{ route('admin.addresses.destroy', $addr) }}" class="inline-block">
                             @csrf
                             @method('DELETE')
                             <button type="button" 
                                     @click="$dispatch('open-confirm-modal', {
-                                        form: $el.closest('form'),
+                                        form: 'delete-admin-address-grid-{{ $addr->id }}',
                                         title: '{{ __('Hapus Alamat Pelanggan') }}',
                                         message: '{{ __('Apakah Anda yakin ingin menghapus alamat ini?') }}'
                                     })"

@@ -663,4 +663,59 @@ class OrderWorkflowTest extends TestCase
             'longitude' => 112.751234,
         ]);
     }
+
+    public function test_customer_can_cancel_pending_order_with_default_reason(): void
+    {
+        $order = Order::create([
+            'order_number' => 'ORD-TEST-CANCEL-1',
+            'user_id' => $this->customer->id,
+            'customer_address_id' => $this->address->id,
+            'recipient_name' => $this->address->recipient_name,
+            'recipient_phone' => $this->address->recipient_phone,
+            'delivery_address_text' => $this->address->address_line,
+            'status' => 'pending',
+            'payment_method' => 'cod',
+            'payment_status' => 'unpaid',
+            'subtotal' => 14000,
+            'delivery_fee' => 0,
+            'total_amount' => 14000,
+        ]);
+
+        $response = $this->actingAs($this->customer)->post(route('customer.orders.cancel', $order));
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('orders', [
+            'id' => $order->id,
+            'status' => 'cancelled',
+            'cancellation_reason' => 'Dibatalkan oleh pelanggan',
+        ]);
+    }
+
+    public function test_admin_can_delete_unused_product(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin-test@test.com',
+            'role' => 'admin',
+            'is_active' => true,
+            'password' => Hash::make('password'),
+        ]);
+
+        $newProduct = Product::create([
+            'name' => 'Produk Baru Tanpa Order',
+            'slug' => 'produk-baru-tanpa-order',
+            'unit' => 'botol',
+            'price' => 5000,
+            'stock_quantity' => 10,
+            'low_stock_threshold' => 2,
+            'is_active' => true,
+        ]);
+
+        $response = $this->actingAs($admin)->delete(route('admin.products.destroy', $newProduct));
+
+        $response->assertRedirect(route('admin.products.index'));
+        $this->assertDatabaseMissing('products', [
+            'id' => $newProduct->id,
+        ]);
+    }
 }

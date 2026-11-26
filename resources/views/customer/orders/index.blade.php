@@ -155,6 +155,23 @@
                 </div>
 
                 <div class="flex flex-wrap items-center justify-end gap-2 shrink-0 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    @if ($order->status === 'pending')
+                        <form id="cancel-order-{{ $order->id }}" method="POST" action="{{ route('customer.orders.cancel', $order) }}" class="inline">
+                            @csrf
+                            <button type="button" 
+                                    @click="$dispatch('open-confirm-modal', {
+                                        form: 'cancel-order-{{ $order->id }}',
+                                        title: '{{ __('Batalkan Pesanan') }}',
+                                        message: '{{ __('Apakah Anda yakin ingin membatalkan pesanan #') }}{{ $order->order_number }}? {{ __('Stok pesanan akan dikembalikan.') }}',
+                                        confirmText: '{{ __('Ya, Batalkan Pesanan') }}',
+                                        confirmButtonClass: 'bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20'
+                                    })"
+                                    class="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline px-2.5 py-1.5 cursor-pointer flex items-center">
+                                <i class="fa-solid fa-ban mr-1.5"></i> {{ __('Batalkan') }}
+                            </button>
+                        </form>
+                    @endif
+
                     @if ($order->delivery && in_array($order->delivery->status, ['assigned', 'in_transit', 'arrived']))
                         <x-button :href="route('customer.orders.track', $order)" variant="success" size="sm" icon="fa-solid fa-map-location-dot">
                             {{ __('Lacak Pengantaran') }}

@@ -88,12 +88,26 @@
 
                                         <!-- Toggle Active status -->
                                         @if ($u->id !== Auth::id())
-                                            <form method="POST" action="{{ route('admin.users.toggle-active', $u) }}" class="inline">
+                                            <form id="toggle-user-{{ $u->id }}" method="POST" action="{{ route('admin.users.toggle-active', $u) }}" class="inline">
                                                 @csrf
-                                                <button type="submit" 
-                                                        class="text-xs font-semibold px-2 py-1 rounded-lg {{ $u->is_active ? 'text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40' : 'text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40' }} cursor-pointer">
-                                                    {{ $u->is_active ? __('Nonaktifkan') : __('Aktifkan') }}
-                                                </button>
+                                                @if ($u->is_active)
+                                                    <button type="button" 
+                                                            @click="$dispatch('open-confirm-modal', {
+                                                                form: 'toggle-user-{{ $u->id }}',
+                                                                title: '{{ __('Nonaktifkan Pengguna') }}',
+                                                                message: '{{ __('Apakah Anda yakin ingin menonaktifkan akun') }} \'{{ addslashes($u->name) }}\'? {{ __('Pengguna tidak akan dapat login ke sistem.') }}',
+                                                                confirmText: '{{ __('Ya, Nonaktifkan') }}',
+                                                                confirmButtonClass: 'bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20'
+                                                            })"
+                                                            class="text-xs font-semibold px-2 py-1 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 cursor-pointer">
+                                                        {{ __('Nonaktifkan') }}
+                                                    </button>
+                                                @else
+                                                    <button type="submit" 
+                                                            class="text-xs font-semibold px-2 py-1 rounded-lg text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 cursor-pointer">
+                                                        {{ __('Aktifkan') }}
+                                                    </button>
+                                                @endif
                                             </form>
                                         @endif
                                     </div>
@@ -177,12 +191,26 @@
                         </form>
 
                         @if ($u->id !== Auth::id())
-                            <form method="POST" action="{{ route('admin.users.toggle-active', $u) }}" class="inline">
+                            <form id="toggle-user-grid-{{ $u->id }}" method="POST" action="{{ route('admin.users.toggle-active', $u) }}" class="inline">
                                 @csrf
-                                <button type="submit" 
-                                        class="text-xs font-semibold px-2.5 py-1.5 rounded-xl {{ $u->is_active ? 'text-rose-600 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100' : 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100' }} cursor-pointer">
-                                    {{ $u->is_active ? __('Nonaktifkan') : __('Aktifkan') }}
-                                </button>
+                                @if ($u->is_active)
+                                    <button type="button" 
+                                            @click="$dispatch('open-confirm-modal', {
+                                                form: 'toggle-user-grid-{{ $u->id }}',
+                                                title: '{{ __('Nonaktifkan Pengguna') }}',
+                                                message: '{{ __('Apakah Anda yakin ingin menonaktifkan akun') }} \'{{ addslashes($u->name) }}\'? {{ __('Pengguna tidak akan dapat login ke sistem.') }}',
+                                                confirmText: '{{ __('Ya, Nonaktifkan') }}',
+                                                confirmButtonClass: 'bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20'
+                                            })"
+                                            class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-rose-600 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 cursor-pointer">
+                                        {{ __('Nonaktifkan') }}
+                                    </button>
+                                @else
+                                    <button type="submit" 
+                                            class="text-xs font-semibold px-2.5 py-1.5 rounded-xl text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 cursor-pointer">
+                                        {{ __('Aktifkan') }}
+                                    </button>
+                                @endif
                             </form>
                         @endif
                     </div>

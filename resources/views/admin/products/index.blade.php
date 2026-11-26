@@ -190,7 +190,21 @@
                     </div>
                 </div>
 
-                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex justify-end">
+                <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <form id="delete-product-{{ $p->id }}" method="POST" action="{{ route('admin.products.destroy', $p) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" 
+                                @click="$dispatch('open-confirm-modal', {
+                                    form: 'delete-product-{{ $p->id }}',
+                                    title: '{{ __('Hapus Produk') }}',
+                                    message: '{{ __('Apakah Anda yakin ingin menghapus produk') }} \'{{ addslashes($p->name) }}\'? {{ __('Tindakan ini bersifat permanen.') }}'
+                                })"
+                                class="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline p-1.5 cursor-pointer flex items-center">
+                            <i class="fa-solid fa-trash mr-1.5"></i> {{ __('Hapus') }}
+                        </button>
+                    </form>
+
                     <x-button :href="route('admin.products.edit', $p)" variant="secondary" size="sm" icon="fa-solid fa-pen-to-square">
                         {{ __('Edit Produk') }}
                     </x-button>

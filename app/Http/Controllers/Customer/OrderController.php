@@ -359,13 +359,15 @@ class OrderController extends Controller
         }
 
         $validated = $request->validate([
-            'cancellation_reason' => ['required', 'string', 'max:255'],
+            'cancellation_reason' => ['nullable', 'string', 'max:255'],
         ]);
 
-        DB::transaction(function () use ($order, $validated) {
+        $reason = !empty($validated['cancellation_reason']) ? $validated['cancellation_reason'] : 'Dibatalkan oleh pelanggan';
+
+        DB::transaction(function () use ($order, $reason) {
             $order->update([
                 'status' => 'cancelled',
-                'cancellation_reason' => $validated['cancellation_reason'],
+                'cancellation_reason' => $reason,
                 'cancelled_at' => now(),
             ]);
 
@@ -393,7 +395,7 @@ class OrderController extends Controller
             OrderStatusHistory::create([
                 'order_id' => $order->id,
                 'status' => 'cancelled',
-                'notes' => 'Dibatalkan oleh pelanggan: ' . $validated['cancellation_reason'],
+                'notes' => 'Dibatalkan oleh pelanggan: ' . $reason,
                 'changed_by' => Auth::id(),
             ]);
         });

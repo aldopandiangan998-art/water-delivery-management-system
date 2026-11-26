@@ -35,6 +35,20 @@
                 </a>
             @endif
 
+            <form id="delete-address-show-form" method="POST" action="{{ route('admin.addresses.destroy', $address) }}" class="inline">
+                @csrf
+                @method('DELETE')
+                <button type="button" 
+                        @click="$dispatch('open-confirm-modal', {
+                            form: 'delete-address-show-form',
+                            title: '{{ __('Hapus Alamat Pelanggan') }}',
+                            message: '{{ __('Apakah Anda yakin ingin menghapus alamat ini?') }}'
+                        })"
+                        class="px-3.5 py-2 rounded-xl text-xs font-bold bg-rose-50 text-rose-600 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-400 border border-rose-200 dark:border-rose-800 transition flex items-center cursor-pointer">
+                    <i class="fa-solid fa-trash mr-1.5"></i> Hapus
+                </button>
+            </form>
+
             <a href="{{ route('admin.addresses.index') }}" class="px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
                 &larr; Kembali
             </a>

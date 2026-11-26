@@ -181,19 +181,35 @@
 
             <!-- Action buttons -->
             <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
-                <a href="{{ route('admin.addresses.show', $address) }}" class="text-xs font-bold text-slate-500 hover:text-slate-800">
-                    <i class="fa-solid fa-eye mr-1"></i> Lihat Rincian Alamat
-                </a>
+                <div class="flex items-center space-x-3">
+                    <a href="{{ route('admin.addresses.show', $address) }}" class="text-xs font-bold text-slate-500 hover:text-slate-800">
+                        <i class="fa-solid fa-eye mr-1"></i> Lihat Rincian Alamat
+                    </a>
+                    <button type="button" 
+                            @click="$dispatch('open-confirm-modal', {
+                                form: 'delete-address-edit-form',
+                                title: '{{ __('Hapus Alamat Pelanggan') }}',
+                                message: '{{ __('Apakah Anda yakin ingin menghapus alamat ini?') }}'
+                            })"
+                            class="text-xs font-bold text-rose-600 hover:text-rose-700 cursor-pointer flex items-center ml-2">
+                        <i class="fa-solid fa-trash mr-1"></i> Hapus Alamat
+                    </button>
+                </div>
 
                 <div class="flex items-center space-x-3">
                     <a href="{{ route('admin.addresses.index') }}" class="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 hover:bg-slate-100 transition">
                         Batal
                     </a>
-                    <button type="submit" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-700 text-white shadow-md hover:shadow-lg transition flex items-center">
+                    <button type="submit" class="px-6 py-2.5 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-700 text-white shadow-md hover:shadow-lg transition flex items-center cursor-pointer">
                         <i class="fa-solid fa-check mr-2"></i> Simpan Perubahan Alamat
                     </button>
                 </div>
             </div>
+        </form>
+
+        <form id="delete-address-edit-form" method="POST" action="{{ route('admin.addresses.destroy', $address) }}" class="hidden">
+            @csrf
+            @method('DELETE')
         </form>
     </div>
 

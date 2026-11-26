@@ -73,12 +73,12 @@
                                         </button>
                                     </form>
 
-                                    <form method="POST" action="{{ route('admin.reviews.destroy', $rev) }}" class="inline">
+                                    <form id="delete-review-{{ $rev->id }}" method="POST" action="{{ route('admin.reviews.destroy', $rev) }}" class="inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="button" 
                                                 @click="$dispatch('open-confirm-modal', {
-                                                    form: $el.closest('form'),
+                                                    form: 'delete-review-{{ $rev->id }}',
                                                     title: '{{ __('Hapus Ulasan Pelanggan') }}',
                                                     message: '{{ __('Apakah Anda yakin ingin menghapus ulasan dari pelanggan') }} {{ addslashes($rev->order?->recipient_name ?? 'Pelanggan') }}?'
                                                 })"
@@ -146,12 +146,12 @@
                         </button>
                     </form>
 
-                    <form method="POST" action="{{ route('admin.reviews.destroy', $rev) }}" class="inline">
+                    <form id="delete-review-grid-{{ $rev->id }}" method="POST" action="{{ route('admin.reviews.destroy', $rev) }}" class="inline">
                         @csrf
                         @method('DELETE')
                         <button type="button" 
                                 @click="$dispatch('open-confirm-modal', {
-                                    form: $el.closest('form'),
+                                    form: 'delete-review-grid-{{ $rev->id }}',
                                     title: '{{ __('Hapus Ulasan Pelanggan') }}',
                                     message: '{{ __('Apakah Anda yakin ingin menghapus ulasan dari pelanggan') }} {{ addslashes($rev->order?->recipient_name ?? 'Pelanggan') }}?'
                                 })"

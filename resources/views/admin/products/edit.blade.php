@@ -121,14 +121,31 @@
                 :value="old('description', $product->description)"
             />
 
-            <div class="pt-4 flex justify-end space-x-2 border-t border-slate-100 dark:border-slate-800">
-                <x-button :href="route('admin.products.index')" variant="ghost">
-                    {{ __('Batal') }}
-                </x-button>
-                <x-button type="submit" variant="primary" icon="fa-solid fa-save">
-                    {{ __('Simpan Perubahan') }}
-                </x-button>
+            <div class="pt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+                <button type="button" 
+                        @click="$dispatch('open-confirm-modal', {
+                            form: 'delete-product-edit-form',
+                            title: '{{ __('Hapus Produk') }}',
+                            message: '{{ __('Apakah Anda yakin ingin menghapus produk') }} \'{{ addslashes($product->name) }}\'? {{ __('Tindakan ini bersifat permanen.') }}'
+                        })"
+                        class="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 p-2 cursor-pointer inline-flex items-center">
+                    <i class="fa-solid fa-trash mr-1.5"></i> {{ __('Hapus Produk Ini') }}
+                </button>
+
+                <div class="flex items-center space-x-2">
+                    <x-button :href="route('admin.products.index')" variant="ghost">
+                        {{ __('Batal') }}
+                    </x-button>
+                    <x-button type="submit" variant="primary" icon="fa-solid fa-save">
+                        {{ __('Simpan Perubahan') }}
+                    </x-button>
+                </div>
             </div>
+        </form>
+
+        <form id="delete-product-edit-form" method="POST" action="{{ route('admin.products.destroy', $product) }}" class="hidden">
+            @csrf
+            @method('DELETE')
         </form>
     </x-card>
 

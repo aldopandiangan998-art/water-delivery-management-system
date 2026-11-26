@@ -7,7 +7,7 @@
     cancelText: 'Batal',
     confirmButtonClass: 'bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20',
     iconClass: 'fa-solid fa-trash-can text-rose-600',
-    iconBgClass: 'bg-rose-100 ring-8 ring-rose-50',
+    iconBgClass: 'bg-rose-100 dark:bg-rose-950/60 ring-8 ring-rose-50 dark:ring-rose-900/30',
     targetForm: null,
     callback: null,
     showConfirm(options) {
@@ -17,7 +17,7 @@
         this.cancelText = options.cancelText || 'Batal';
         this.confirmButtonClass = options.confirmButtonClass || 'bg-rose-600 hover:bg-rose-700 text-white shadow-md shadow-rose-600/20';
         this.iconClass = options.iconClass || 'fa-solid fa-trash-can text-rose-600';
-        this.iconBgClass = options.iconBgClass || 'bg-rose-100 ring-8 ring-rose-50';
+        this.iconBgClass = options.iconBgClass || 'bg-rose-100 dark:bg-rose-950/60 ring-8 ring-rose-50 dark:ring-rose-900/30';
         this.targetForm = options.form || null;
         this.callback = options.callback || null;
         this.open = true;
@@ -28,11 +28,20 @@
         this.callback = null;
     },
     doConfirm() {
-        const form = this.targetForm;
+        let form = this.targetForm;
         const cb = this.callback;
         this.closeModal();
-        if (form) {
-            form.submit();
+        if (typeof form === 'string') {
+            form = document.getElementById(form);
+        }
+        if (form && typeof form.submit === 'function') {
+            try {
+                form.submit();
+            } catch (e) {
+                HTMLFormElement.prototype.submit.call(form);
+            }
+        } else if (form) {
+            HTMLFormElement.prototype.submit.call(form);
         } else if (typeof cb === 'function') {
             cb();
         }
@@ -42,7 +51,7 @@
 x-show="open"
 x-cloak
 @keydown.escape.window="closeModal()"
-class="fixed inset-0 z-50 overflow-y-auto"
+class="fixed inset-0 z-[9999] overflow-y-auto"
 style="display: none;">
     <!-- Backdrop -->
     <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"

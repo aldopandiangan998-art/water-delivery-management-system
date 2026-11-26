@@ -72,12 +72,12 @@
                         <span class="text-slate-400 dark:text-slate-500 text-[11px] font-medium">{{ __('Alamat Pilihan') }}</span>
                     @endif
 
-                    <form method="POST" action="{{ route('customer.addresses.destroy', $address) }}">
+                    <form id="delete-customer-address-{{ $address->id }}" method="POST" action="{{ route('customer.addresses.destroy', $address) }}">
                         @csrf
                         @method('DELETE')
                         <button type="button" 
                                 @click="$dispatch('open-confirm-modal', {
-                                    form: $el.closest('form'),
+                                    form: 'delete-customer-address-{{ $address->id }}',
                                     title: '{{ __('Hapus Alamat Pengantaran') }}',
                                     message: '{{ __('Apakah Anda yakin ingin menghapus alamat ini?') }}'
                                 })"
@@ -153,12 +153,12 @@
                         <span class="text-slate-400 dark:text-slate-500 text-[11px] font-medium">{{ __('Alamat Pilihan') }}</span>
                     @endif
 
-                    <form method="POST" action="{{ route('customer.addresses.destroy', $address) }}">
+                    <form id="delete-customer-address-{{ $address->id }}" method="POST" action="{{ route('customer.addresses.destroy', $address) }}">
                         @csrf
                         @method('DELETE')
                         <button type="button" 
                                 @click="$dispatch('open-confirm-modal', {
-                                    form: $el.closest('form'),
+                                    form: 'delete-customer-address-{{ $address->id }}',
                                     title: '{{ __('Hapus Alamat Pengantaran') }}',
                                     message: '{{ __('Apakah Anda yakin ingin menghapus alamat ini?') }}'
                                 })"

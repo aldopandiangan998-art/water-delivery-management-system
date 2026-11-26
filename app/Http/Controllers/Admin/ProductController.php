@@ -180,4 +180,16 @@ class ProductController extends Controller
 
         return back()->with('success', "Stok {$product->name} berhasil disesuaikan.");
     }
+
+    public function destroy(Product $product)
+    {
+        if ($product->orderItems()->exists()) {
+            return back()->with('error', "Produk {$product->name} tidak dapat dihapus karena sudah memiliki riwayat pesanan. Anda dapat menonaktifkan status produk ini.");
+        }
+
+        $productName = $product->name;
+        $product->delete();
+
+        return redirect()->route('admin.products.index')->with('success', "Produk {$productName} berhasil dihapus.");
+    }
 }
