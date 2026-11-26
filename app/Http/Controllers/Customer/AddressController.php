@@ -43,7 +43,7 @@ class AddressController extends Controller
             CustomerAddress::where('user_id', Auth::id())->update(['is_default' => false]);
         }
 
-        CustomerAddress::create([
+        $newAddress = CustomerAddress::create([
             'user_id' => Auth::id(),
             'label' => $validated['label'],
             'recipient_name' => $validated['recipient_name'],
@@ -55,6 +55,15 @@ class AddressController extends Controller
             'longitude' => $validated['longitude'] ?? null,
             'is_default' => $isDefault,
         ]);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            $newAddress->load('serviceArea');
+            return response()->json([
+                'success' => true,
+                'message' => 'Alamat pengiriman berhasil disimpan.',
+                'address' => $newAddress,
+            ]);
+        }
 
         return back()->with('success', 'Alamat pengiriman berhasil disimpan.');
     }

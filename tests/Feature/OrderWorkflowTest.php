@@ -510,4 +510,42 @@ class OrderWorkflowTest extends TestCase
         $order->refresh();
         $this->assertEquals($this->address->id, $order->customer_address_id);
     }
+
+    public function test_customer_can_create_address_via_ajax_on_order_page(): void
+    {
+        $this->actingAs($this->customer);
+
+        $response = $this->postJson(route('customer.addresses.store'), [
+            'label' => 'Toko Kelontong Baru',
+            'recipient_name' => 'Budi Toko',
+            'recipient_phone' => '087788990011',
+            'address_line' => 'Jl. Dipatiukur No. 20',
+            'benchmark' => 'Samping fotocopy',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'message' => 'Alamat pengiriman berhasil disimpan.',
+        ]);
+
+        $this->assertDatabaseHas('customer_addresses', [
+            'user_id' => $this->customer->id,
+            'label' => 'Toko Kelontong Baru',
+            'recipient_name' => 'Budi Toko',
+            'address_line' => 'Jl. Dipatiukur No. 20',
+        ]);
+    }
+
+    public function test_order_create_page_shows_visual_address_cards_and_no_select_dropdown(): void
+    {
+        $this->actingAs($this->customer);
+
+        $response = $this->get(route('customer.orders.create'));
+        $response->assertStatus(200);
+        $response->assertSee('Alamat Pengantaran');
+        $response->assertSee('Tambah Alamat');
+        $response->assertDontSee('Pilih Alamat Pengantaran:');
+        $response->assertDontSee('<select x-model.number="selectedAddressId"', false);
+    }
 }
