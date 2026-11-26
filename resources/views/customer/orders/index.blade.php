@@ -41,11 +41,10 @@
         </a>
     </div>
 
-    <!-- Orders Items (Grid / List View) -->
-    <div :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4' : 'space-y-3'">
+    <!-- List View -->
+    <div x-show="viewMode === 'list'" x-cloak class="space-y-3">
         @forelse ($orders as $order)
-            <x-card class="p-5 sm:p-6 hover:shadow-md transition flex flex-col justify-between"
-                    :class="viewMode === 'grid' ? 'gap-4' : 'md:flex-row md:items-center gap-4'">
+            <x-card class="p-5 sm:p-6 hover:shadow-md transition flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div class="space-y-2 flex-1 min-w-0">
                     <div class="flex items-center space-x-2 flex-wrap gap-y-1">
                         <span class="font-black text-base text-slate-900 dark:text-white font-mono">{{ $order->order_number }}</span>
@@ -80,8 +79,7 @@
                     </div>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-2 shrink-0 pt-2 md:pt-0"
-                     :class="viewMode === 'grid' ? 'border-t border-slate-100 dark:border-slate-800 pt-3 justify-end' : ''">
+                <div class="flex flex-wrap items-center gap-2 shrink-0 pt-2 md:pt-0">
                     @if ($order->delivery && in_array($order->delivery->status, ['assigned', 'in_transit', 'arrived']))
                         <x-button :href="route('customer.orders.track', $order)" variant="success" size="sm" icon="fa-solid fa-map-location-dot">
                             {{ __('Lacak Kurir') }}
@@ -94,7 +92,7 @@
                 </div>
             </x-card>
         @empty
-            <x-card class="p-12 text-center col-span-full">
+            <x-card class="p-12 text-center">
                 <x-empty-state 
                     icon="fa-regular fa-receipt" 
                     :title="__('Belum Ada Pesanan')" 
@@ -102,10 +100,71 @@
                 />
             </x-card>
         @endforelse
+    </div>
 
-        <div class="pt-2">
-            {{ $orders->links() }}
-        </div>
+    <!-- Grid View -->
+    <div x-show="viewMode === 'grid'" x-cloak class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        @forelse ($orders as $order)
+            <x-card class="p-5 sm:p-6 hover:shadow-md transition flex flex-col justify-between space-y-4">
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between flex-wrap gap-2">
+                        <span class="font-black text-base text-slate-900 dark:text-white font-mono">{{ $order->order_number }}</span>
+                        <x-badge variant="neutral" class="{{ $order->status_badge['color'] }}">
+                            {{ __($order->status_badge['label']) }}
+                        </x-badge>
+                    </div>
+
+                    <div class="text-xs text-slate-500 dark:text-slate-400">
+                        {{ $order->created_at->format('d M Y, H:i') }} WIB &bull; 
+                        {{ __('Tujuan') }}: <span class="text-slate-700 dark:text-slate-300 font-medium">{{ $order->recipient_name }}</span>
+                    </div>
+
+                    <!-- Items brief -->
+                    <div class="text-xs text-slate-700 dark:text-slate-300 font-medium">
+                        @foreach ($order->items as $item)
+                            <span class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 rounded-md mr-1 inline-block my-0.5">
+                                {{ $item->quantity }}x {{ $item->product_name }}
+                            </span>
+                        @endforeach
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-between gap-2 text-xs pt-1">
+                        <span class="font-bold text-cyan-600 dark:text-cyan-400 text-sm">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
+                        <x-badge variant="neutral" size="sm" class="{{ $order->payment_method_badge['color'] }}">
+                            <i class="fa-solid {{ $order->payment_method_badge['icon'] }} mr-1 text-[10px]"></i>
+                            {{ __($order->payment_method_badge['label']) }}
+                        </x-badge>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-end gap-2 shrink-0 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    @if ($order->delivery && in_array($order->delivery->status, ['assigned', 'in_transit', 'arrived']))
+                        <x-button :href="route('customer.orders.track', $order)" variant="success" size="sm" icon="fa-solid fa-map-location-dot">
+                            {{ __('Lacak Kurir') }}
+                        </x-button>
+                    @endif
+
+                    <x-button :href="route('customer.orders.show', $order)" variant="secondary" size="sm">
+                        {{ __('Detail Pesanan') }}
+                    </x-button>
+                </div>
+            </x-card>
+        @empty
+            <div class="col-span-full">
+                <x-card class="p-12 text-center">
+                    <x-empty-state 
+                        icon="fa-regular fa-receipt" 
+                        :title="__('Belum Ada Pesanan')" 
+                        :description="__('Anda belum memiliki riwayat pesanan dengan filter status ini.')"
+                    />
+                </x-card>
+            </div>
+        @endforelse
+    </div>
+
+    <!-- Pagination -->
+    <div class="pt-2">
+        {{ $orders->links() }}
     </div>
 
 </div>

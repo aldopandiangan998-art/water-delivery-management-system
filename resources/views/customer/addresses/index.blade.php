@@ -20,12 +20,11 @@
         </div>
     </div>
 
-    <!-- Address Cards (Grid / List View) -->
-    <div :class="viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-3'">
+    <!-- List View -->
+    <div x-show="viewMode === 'list'" x-cloak class="space-y-3">
         @forelse ($addresses as $address)
-            <x-card class="p-5 {{ $address->is_default ? 'ring-2 ring-cyan-500 border-cyan-500/40' : '' }}"
-                    :class="viewMode === 'list' ? 'flex flex-col sm:flex-row sm:items-center justify-between gap-4' : 'flex flex-col justify-between h-full'">
-                <div :class="viewMode === 'list' ? 'flex-1 space-y-1.5' : 'space-y-3'">
+            <x-card class="p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 {{ $address->is_default ? 'ring-2 ring-cyan-500 border-cyan-500/40' : '' }}">
+                <div class="flex-1 space-y-1.5">
                     <div class="flex items-center gap-2">
                         <span class="text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
                             {{ $address->label }}
@@ -61,7 +60,88 @@
                     </div>
                 </div>
 
-                <div :class="viewMode === 'list' ? 'pt-3 sm:pt-0 sm:border-t-0 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between sm:justify-end gap-4 text-xs' : 'pt-4 border-t border-slate-100 dark:border-slate-800 mt-4 flex items-center justify-between text-xs'">
+                <div class="pt-3 sm:pt-0 sm:border-t-0 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between sm:justify-end gap-4 text-xs">
+                    @if (!$address->is_default)
+                        <form method="POST" action="{{ route('customer.addresses.set-default', $address) }}">
+                            @csrf
+                            <button type="submit" class="font-bold text-cyan-600 dark:text-cyan-400 hover:underline cursor-pointer">
+                                {{ __('Jadikan Utama') }}
+                            </button>
+                        </form>
+                    @else
+                        <span class="text-slate-400 dark:text-slate-500 text-[11px] font-medium">{{ __('Alamat Pilihan') }}</span>
+                    @endif
+
+                    <form method="POST" action="{{ route('customer.addresses.destroy', $address) }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="button" 
+                                @click="$dispatch('open-confirm-modal', {
+                                    form: $el.closest('form'),
+                                    title: '{{ __('Hapus Alamat Pengantaran') }}',
+                                    message: '{{ __('Apakah Anda yakin ingin menghapus alamat ini?') }}'
+                                })"
+                                class="text-rose-600 dark:text-rose-400 hover:underline font-bold cursor-pointer inline-flex items-center">
+                            <i class="fa-solid fa-trash mr-1"></i> {{ __('Hapus') }}
+                        </button>
+                    </form>
+                </div>
+            </x-card>
+        @empty
+            <x-card class="p-12 text-center">
+                <x-empty-state 
+                    icon="fa-solid fa-map-location-dot" 
+                    :title="__('Belum Ada Alamat Pengantaran')" 
+                    :description="__('Tambahkan alamat rumah, toko, atau kantor Anda agar pemesanan air galon dapat segera diantar.')"
+                />
+                <div class="mt-4">
+                    <x-button type="button" variant="primary" @click="showModal = true" icon="fa-solid fa-plus">
+                        {{ __('Tambah Alamat Sekarang') }}
+                    </x-button>
+                </div>
+            </x-card>
+        @endforelse
+    </div>
+
+    <!-- Grid View -->
+    <div x-show="viewMode === 'grid'" x-cloak class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @forelse ($addresses as $address)
+            <x-card class="p-5 flex flex-col justify-between h-full {{ $address->is_default ? 'ring-2 ring-cyan-500 border-cyan-500/40' : '' }}">
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-black uppercase tracking-wider px-2.5 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                            {{ $address->label }}
+                        </span>
+                        @if ($address->is_default)
+                            <x-badge variant="info" size="sm">
+                                <i class="fa-solid fa-circle-check mr-1"></i> {{ __('Utama') }}
+                            </x-badge>
+                        @endif
+                    </div>
+
+                    <div>
+                        <div class="font-extrabold text-sm text-slate-900 dark:text-white">{{ $address->recipient_name }}</div>
+                        <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $address->recipient_phone }}</div>
+                    </div>
+
+                    <p class="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                        {{ $address->address_line }}
+                    </p>
+
+                    @if ($address->benchmark)
+                        <div class="text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-950/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                            <span class="font-bold text-slate-700 dark:text-slate-300">{{ __('Patokan') }}:</span> {{ $address->benchmark }}
+                        </div>
+                    @endif
+
+                    @if ($address->serviceArea)
+                        <div class="text-xs font-semibold text-cyan-600 dark:text-cyan-400">
+                            {{ __('Area') }}: {{ $address->serviceArea->name }} ({{ __('Ongkir') }}: Rp {{ number_format($address->serviceArea->delivery_fee, 0, ',', '.') }})
+                        </div>
+                    @endif
+                </div>
+
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-800 mt-4 flex items-center justify-between text-xs">
                     @if (!$address->is_default)
                         <form method="POST" action="{{ route('customer.addresses.set-default', $address) }}">
                             @csrf
