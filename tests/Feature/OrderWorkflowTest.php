@@ -208,4 +208,106 @@ class OrderWorkflowTest extends TestCase
         $this->assertStringContainsString(rawurlencode('17.000'), $url);
         $this->assertStringContainsString(rawurlencode('COD'), $url);
     }
+
+    public function test_admin_order_show_displays_google_maps_view_data(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Depo',
+            'email' => 'admin_map@test.com',
+            'phone' => '081299998888',
+            'role' => 'admin',
+            'is_active' => true,
+            'password' => Hash::make('password'),
+        ]);
+
+        $order = Order::create([
+            'order_number' => 'ORD-MAP-TEST',
+            'user_id' => $this->customer->id,
+            'customer_address_id' => $this->address->id,
+            'recipient_name' => 'Budi Santoso',
+            'recipient_phone' => '08123456789',
+            'delivery_address_text' => 'Jl. Kertajaya Indah No. 25, Surabaya',
+            'delivery_latitude' => -7.2755,
+            'delivery_longitude' => 112.7550,
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+            'payment_method' => 'cod',
+            'subtotal' => 14000,
+            'delivery_fee' => 3000,
+            'total_amount' => 17000,
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('admin.orders.show', $order));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('depotLat');
+        $response->assertViewHas('depotLng');
+        $response->assertViewHas('googleMapsApiKey');
+        $response->assertSee('Peta Rute &amp; Pengantaran Real-Time', false);
+    }
+
+    public function test_admin_can_update_order_coordinates(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Depo',
+            'email' => 'admin_coord@test.com',
+            'phone' => '081299998888',
+            'role' => 'admin',
+            'is_active' => true,
+            'password' => Hash::make('password'),
+        ]);
+
+        $order = Order::create([
+            'order_number' => 'ORD-COORD-TEST',
+            'user_id' => $this->customer->id,
+            'customer_address_id' => $this->address->id,
+            'recipient_name' => 'Budi Santoso',
+            'recipient_phone' => '08123456789',
+            'delivery_address_text' => 'Jl. Kertajaya Indah No. 25, Surabaya',
+            'delivery_latitude' => null,
+            'delivery_longitude' => null,
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+            'payment_method' => 'cod',
+            'subtotal' => 14000,
+            'delivery_fee' => 3000,
+            'total_amount' => 17000,
+        ]);
+
+        $response = $this->actingAs($admin)->postJson(route('admin.orders.coordinates', $order), [
+            'latitude' => -7.276000,
+            'longitude' => 112.756000,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson(['success' => true]);
+
+        $order->refresh();
+        $this->assertEquals(-7.276000, (float) $order->delivery_latitude);
+        $this->assertEquals(112.756000, (float) $order->delivery_longitude);
+    }
+
+    public function test_admin_can_save_google_maps_api_key(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Depo',
+            'email' => 'admin_key@test.com',
+            'phone' => '081299998888',
+            'role' => 'admin',
+            'is_active' => true,
+            'password' => Hash::make('password'),
+        ]);
+
+        $response = $this->actingAs($admin)->postJson(route('admin.orders.save-google-maps-key'), [
+            'api_key' => 'AIzaSyTEST_KEY_123456789',
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+            'api_key' => 'AIzaSyTEST_KEY_123456789',
+        ]);
+
+        $this->assertEquals('AIzaSyTEST_KEY_123456789', \App\Models\BusinessSetting::get('google_maps_api_key'));
+    }
 }

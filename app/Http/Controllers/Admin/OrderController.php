@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\BusinessSetting;
 use App\Models\Delivery;
 use App\Models\DeliveryStatusHistory;
 use App\Models\Order;
@@ -50,6 +51,7 @@ class OrderController extends Controller
     {
         $order->load([
             'user.profile',
+            'address',
             'items.product',
             'statusHistories.changer',
             'delivery.statusHistories.changer',
@@ -59,7 +61,13 @@ class OrderController extends Controller
             'review',
         ]);
 
-        return view('admin.orders.show', compact('order'));
+        $depotLat = (float) BusinessSetting::get('store_latitude', -7.303488);
+        $depotLng = (float) BusinessSetting::get('store_longitude', 112.753373);
+        $companyName = BusinessSetting::get('company_name', 'Toko Nova Jaya - AquaFlow');
+        $companyAddress = BusinessSetting::get('company_address', 'Jl. Bratang Gede VI H No. 130, Kelurahan Ngagelrejo, Kecamatan Wonokromo, Kota Surabaya, Jawa Timur 60245');
+        $googleMapsApiKey = config('services.google_maps.api_key') ?: BusinessSetting::get('google_maps_api_key', '');
+
+        return view('admin.orders.show', compact('order', 'depotLat', 'depotLng', 'companyName', 'companyAddress', 'googleMapsApiKey'));
     }
 
     public function updateStatus(Request $request, Order $order)
@@ -152,5 +160,50 @@ class OrderController extends Controller
         });
 
         return back()->with('success', "Status pembayaran pesanan #{$order->order_number} berhasil diperbarui.");
+    }
+
+    public function updateCoordinates(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
+        ]);
+
+        $order->update([
+            'delivery_latitude' => $validated['latitude'],
+            'delivery_longitude' => $validated['longitude'],
+        ]);
+
+        if ($order->customer_address_id && $order->address && !$order->address->latitude) {
+            $order->address->update([
+                'latitude' => $validated['latitude'],
+                'longitude' => $validated['longitude'],
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Titik koordinat tujuan pengantaran berhasil disimpan.',
+            'latitude' => (float) $order->delivery_latitude,
+            'longitude' => (float) $order->delivery_longitude,
+        ]);
+    }
+
+    public function saveGoogleMapsKey(Request $request)
+    {
+        $validated = $request->validate([
+            'api_key' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $key = trim($validated['api_key'] ?? '');
+        BusinessSetting::set('google_maps_api_key', $key);
+
+        return response()->json([
+            'success' => true,
+            'message' => $key 
+                ? 'Google Maps API Key berhasil disimpan dan diaktifkan.' 
+                : 'Google Maps API Key dihapus. Sistem beralih ke Leaflet OpenStreetMap.',
+            'api_key' => $key,
+        ]);
     }
 }

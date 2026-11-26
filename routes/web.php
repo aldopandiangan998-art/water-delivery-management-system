@@ -96,6 +96,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
     Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');
     Route::put('/orders/{order}/payment', [AdminOrderController::class, 'updatePayment'])->name('orders.payment');
+    Route::post('/orders/{order}/coordinates', [AdminOrderController::class, 'updateCoordinates'])->name('orders.coordinates');
+    Route::post('/orders/save-google-maps-key', [AdminOrderController::class, 'saveGoogleMapsKey'])->name('orders.save-google-maps-key');
 
     Route::get('/deliveries', [AdminDeliveryController::class, 'index'])->name('deliveries.index');
     Route::get('/deliveries/map', [AdminDeliveryController::class, 'map'])->name('deliveries.map');
