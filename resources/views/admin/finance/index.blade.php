@@ -196,7 +196,7 @@
                                 Diterima via <span class="uppercase font-semibold">{{ $pay->payment_method }}</span> &bull; 
                                 {{ $pay->paid_at?->format('H:i, d M') ?? $pay->created_at->format('H:i, d M') }}
                             </div>
-                            <div class="text-[10px] text-slate-400">Penerima: {{ $pay->receiver?->name ?? 'Admin / Kasir' }}</div>
+                            <div class="text-[10px] text-slate-400">Penerima: {{ $pay->receiver?->name ?? 'Kasir' }}</div>
                         </div>
                         <div class="text-right">
                             <span class="font-black text-emerald-600 text-sm">

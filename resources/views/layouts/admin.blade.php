@@ -54,7 +54,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Admin - {{ config('app.name', 'AquaFlow') }} - @yield('page_title', __('Dashboard'))</title>
+    <title>{{ config('app.name', 'AquaFlow') }} - @yield('page_title', __('Dashboard'))</title>
 
     <!-- Vite CSS & JS -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -123,10 +123,6 @@
                 <div class="overflow-hidden">
                     <div class="text-sm font-black text-white tracking-tight flex items-center whitespace-nowrap">
                         <span>Aqua<span class="{{ $theme['accent_text'] }}">Flow</span></span>
-                        <span class="ml-1.5 px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider {{ $theme['role_badge_bg'] }} border flex items-center">
-                            <i class="fa-solid {{ $theme['role_icon'] }} mr-1 text-[7px]"></i>
-                            {{ $theme['role_title'] }}
-                        </span>
                     </div>
                 </div>
             </a>
@@ -400,12 +396,6 @@
                     <p class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{{ __('Sedang Masuk Sebagai') }}</p>
                     <p class="text-xs font-bold text-white truncate mt-0.5">{{ Auth::user()->name }}</p>
                     <p class="text-[10px] text-slate-400 truncate">{{ Auth::user()->email }}</p>
-                    <div class="mt-1.5 flex items-center">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold {{ $theme['profile_role_badge'] }} border">
-                            <i class="fa-solid {{ $theme['role_icon'] }} mr-1.5 text-[9px]"></i>
-                            {{ $theme['role_title'] }}
-                        </span>
-                    </div>
                 </div>
 
                 <!-- Logout Action -->
@@ -432,9 +422,8 @@
                         <div class="text-xs font-bold text-white truncate group-hover:{{ $theme['accent_text'] }} transition">
                             {{ Auth::user()->name }}
                         </div>
-                        <div class="text-[10px] {{ $theme['accent_text'] }} uppercase font-bold tracking-wider flex items-center mt-0.5 whitespace-nowrap">
-                            <i class="fa-solid {{ $theme['role_icon'] }} mr-1 text-[8px]"></i>
-                            <span>{{ $theme['role_title'] }}</span>
+                        <div class="text-[10px] text-slate-400 truncate mt-0.5 whitespace-nowrap">
+                            {{ Auth::user()->email }}
                         </div>
                     </div>
                 </div>
@@ -462,7 +451,7 @@
                 </button>
 
                 <h1 class="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center">
-                    @yield('page_title', __('Admin Panel'))
+                    @yield('page_title', __('Dashboard'))
                 </h1>
             </div>
 

@@ -27,7 +27,7 @@
                 @auth
                     @if (Auth::user()->isAdmin())
                         <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-3.5 py-1.5 rounded-lg text-sm font-semibold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition border border-indigo-200 dark:border-indigo-800">
-                            <i class="fa-solid fa-gauge-high mr-1.5"></i> {{ __('Admin Dashboard') }}
+                            <i class="fa-solid fa-gauge-high mr-1.5"></i> {{ __('Dashboard') }}
                         </a>
                     @endif
 

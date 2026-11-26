@@ -206,7 +206,7 @@
 
             <!-- Quick Action Links -->
             <div class="bg-gradient-to-tr from-slate-900 via-slate-800 to-cyan-950 text-white rounded-2xl p-5 shadow-md space-y-3 border border-slate-800">
-                <h3 class="font-bold text-sm">{{ __('Pintasan Cepat Admin') }}</h3>
+                <h3 class="font-bold text-sm">{{ __('Pintasan Cepat') }}</h3>
                 <div class="grid grid-cols-2 gap-2 text-xs">
                     <a href="{{ route('admin.deliveries.map') }}" class="p-3 bg-white/10 hover:bg-white/20 rounded-xl text-center transition backdrop-blur-xs">
                         <i class="fa-solid fa-map-location-dot text-emerald-400 text-base block mb-1"></i>

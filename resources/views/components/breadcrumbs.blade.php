@@ -20,9 +20,9 @@
     } else {
         $computedItems = [
             [
-                'title' => __('Admin'),
+                'title' => __('Beranda'),
                 'url' => route('admin.dashboard'),
-                'icon' => 'fa-solid fa-shield-halved',
+                'icon' => 'fa-solid fa-house',
             ]
         ];
     }
