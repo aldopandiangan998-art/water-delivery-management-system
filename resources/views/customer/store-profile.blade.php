@@ -78,10 +78,6 @@
                class="px-4 py-2.5 rounded-2xl font-bold text-xs text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition flex items-center shadow-2xs">
                 <i class="fa-brands fa-whatsapp mr-2 text-emerald-600 text-sm"></i> WhatsApp Toko
             </a>
-            <a href="{{ route('customer.orders.create') }}" 
-               class="px-5 py-2.5 rounded-2xl font-extrabold text-xs text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-md hover:shadow-lg transition flex items-center">
-                <i class="fa-solid fa-cart-plus mr-2"></i> Pesan Air Sekarang
-            </a>
         </div>
     </div>
 

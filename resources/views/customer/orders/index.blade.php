@@ -10,9 +10,6 @@
             <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Riwayat Pesanan') }}</h1>
             <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">{{ __('Daftar seluruh transaksi pemesanan air minum Anda.') }}</p>
         </div>
-        <x-button :href="route('customer.orders.create')" variant="primary" icon="fa-solid fa-cart-plus">
-            {{ __('Buat Pesanan Baru') }}
-        </x-button>
     </div>
 
     <!-- Filter status -->
@@ -95,8 +92,6 @@
                     icon="fa-regular fa-receipt" 
                     :title="__('Belum Ada Pesanan')" 
                     :description="__('Anda belum memiliki riwayat pesanan dengan filter status ini.')"
-                    :action-url="route('customer.orders.create')"
-                    :action-label="__('Pesan Air Sekarang')"
                 />
             </x-card>
         @endforelse

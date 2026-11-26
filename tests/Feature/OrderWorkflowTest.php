@@ -77,88 +77,51 @@ class OrderWorkflowTest extends TestCase
         ]);
     }
 
-    public function test_customer_can_place_order_with_gallon_exchange(): void
+    public function test_order_create_and_store_routes_are_removed_for_customer(): void
     {
         $this->actingAs($this->customer);
 
-        $response = $this->post(route('customer.orders.store'), [
-            'customer_address_id' => $this->address->id,
-            'items' => [
-                [
-                    'product_id' => $this->product->id,
-                    'quantity' => 3,
-                    'is_exchange' => 1,
-                ]
-            ],
-            'payment_method' => 'cod',
-            'customer_notes' => 'Tolong diantar sebelum jam 12',
-        ]);
+        $responseCreate = $this->get('/customer/orders/create');
+        $responseCreate->assertStatus(404);
 
-        $this->assertDatabaseHas('orders', [
-            'user_id' => $this->customer->id,
-            'status' => 'pending',
-            'subtotal' => 21000, // 3 * 7000
-            'delivery_fee' => 3000,
-            'total_amount' => 24000,
-            'payment_method' => 'cod',
-        ]);
-
-        $order = Order::where('user_id', $this->customer->id)->first();
-        $response->assertRedirect(route('customer.orders.show', $order));
-
-        // Check stock reduction
-        $this->assertEquals(97, $this->product->fresh()->stock_quantity);
-
-        // Check stock movement log
-        $this->assertDatabaseHas('stock_movements', [
-            'product_id' => $this->product->id,
-            'type' => 'sale',
-            'quantity' => -3,
-            'stock_after' => 97,
-        ]);
-    }
-
-    public function test_customer_can_place_order_without_exchange_adds_deposit(): void
-    {
-        $this->actingAs($this->customer);
-
-        // Buying 2 new gallons without empty bottle exchange
-        $this->post(route('customer.orders.store'), [
-            'customer_address_id' => $this->address->id,
-            'items' => [
-                [
-                    'product_id' => $this->product->id,
-                    'quantity' => 2,
-                    'is_exchange' => 0,
-                ]
-            ],
-            'payment_method' => 'cod',
-        ]);
-
-        // Each gallon is 7000 (water) + 35000 (deposit) = 42000 * 2 = 84000 + 3000 ongkir = 87000
-        $this->assertDatabaseHas('orders', [
-            'user_id' => $this->customer->id,
-            'subtotal' => 84000,
-            'delivery_fee' => 3000,
-            'total_amount' => 87000,
-        ]);
+        $responseStore = $this->post('/customer/orders', []);
+        $responseStore->assertStatus(405);
     }
 
     public function test_customer_can_cancel_pending_order_and_stock_is_returned(): void
     {
         $this->actingAs($this->customer);
 
-        // Place order for 5 gallons
-        $this->post(route('customer.orders.store'), [
+        $this->product->update(['stock_quantity' => 95]);
+
+        $order = Order::create([
+            'order_number' => 'ORD-TEST-CANCEL',
+            'user_id' => $this->customer->id,
             'customer_address_id' => $this->address->id,
-            'items' => [
-                ['product_id' => $this->product->id, 'quantity' => 5, 'is_exchange' => 1]
-            ],
+            'recipient_name' => 'Budi Pelanggan',
+            'recipient_phone' => '08123456789',
+            'delivery_address_text' => 'Jl. Sukajadi No. 50',
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
             'payment_method' => 'cod',
+            'subtotal' => 35000,
+            'delivery_fee' => 3000,
+            'total_amount' => 38000,
+        ]);
+
+        \App\Models\OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $this->product->id,
+            'product_name' => 'Air RO Murni Galon',
+            'unit' => 'galon',
+            'price' => 7000,
+            'cost_price' => 2000,
+            'quantity' => 5,
+            'is_exchange' => true,
+            'subtotal' => 35000,
         ]);
 
         $this->assertEquals(95, $this->product->fresh()->stock_quantity);
-        $order = Order::where('user_id', $this->customer->id)->first();
 
         // Customer cancels order
         $cancelResponse = $this->post(route('customer.orders.cancel', $order), [
@@ -244,27 +207,5 @@ class OrderWorkflowTest extends TestCase
         $this->assertStringContainsString(rawurlencode('Air RO Murni Galon'), $url);
         $this->assertStringContainsString(rawurlencode('17.000'), $url);
         $this->assertStringContainsString(rawurlencode('COD'), $url);
-    }
-
-    public function test_cod_order_sets_auto_open_whatsapp_session(): void
-    {
-        $this->actingAs($this->customer);
-
-        $response = $this->post(route('customer.orders.store'), [
-            'customer_address_id' => $this->address->id,
-            'items' => [
-                [
-                    'product_id' => $this->product->id,
-                    'quantity' => 1,
-                    'is_exchange' => 1,
-                ]
-            ],
-            'payment_method' => 'cod',
-        ]);
-
-        $order = Order::where('user_id', $this->customer->id)->latest()->first();
-        $response->assertRedirect(route('customer.orders.show', $order));
-        $response->assertSessionHas('auto_open_whatsapp', true);
-        $response->assertSessionHas('success');
     }
 }

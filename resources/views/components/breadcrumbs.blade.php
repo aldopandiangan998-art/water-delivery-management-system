@@ -121,11 +121,6 @@
                 $computedItems[] = ['title' => __('Riwayat Pesanan Saya')];
                 break;
 
-            case 'customer.orders.create':
-                $computedItems[] = ['title' => __('Riwayat Pesanan'), 'url' => route('customer.orders.index')];
-                $computedItems[] = ['title' => __('Pesan Air Sekarang')];
-                break;
-
             case 'customer.orders.show':
                 $computedItems[] = ['title' => __('Riwayat Pesanan'), 'url' => route('customer.orders.index')];
                 $computedItems[] = ['title' => __('Rincian Pesanan')];

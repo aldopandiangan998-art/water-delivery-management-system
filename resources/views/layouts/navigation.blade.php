@@ -45,9 +45,6 @@
                             <a href="{{ route('customer.dashboard') }}" class="flex items-center px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">
                                 <i class="fa-solid fa-house mr-2.5 text-slate-400 w-4"></i> {{ __('Dashboard Saya') }}
                             </a>
-                            <a href="{{ route('customer.orders.create') }}" class="flex items-center px-4 py-2 text-sm font-medium text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-slate-700">
-                                <i class="fa-solid fa-cart-plus mr-2.5 text-cyan-500 w-4"></i> {{ __('Pesan Air Sekarang') }}
-                            </a>
                             <a href="{{ route('customer.orders.index') }}" class="flex items-center px-4 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700">
                                 <i class="fa-solid fa-clock-rotate-left mr-2.5 text-slate-400 w-4"></i> {{ __('Riwayat Pesanan') }}
                             </a>
@@ -97,7 +94,7 @@
             @auth
                 <div class="px-3 py-2 text-xs font-semibold text-slate-400 uppercase">{{ __('Akun Pelanggan') }}: {{ Auth::user()->name }}</div>
                 <a href="{{ route('customer.dashboard') }}" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">{{ __('Dashboard Saya') }}</a>
-                <a href="{{ route('customer.orders.create') }}" class="block px-3 py-2 rounded-lg text-base font-medium text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/40">{{ __('Pesan Air Sekarang') }}</a>
+                <a href="{{ route('customer.dashboard') }}" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">{{ __('Dashboard Saya') }}</a>
                 <a href="{{ route('customer.orders.index') }}" class="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800">{{ __('Pesanan Saya') }}</a>
                 @if (Auth::user()->isAdmin())
                     <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 rounded-lg text-base font-medium text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40">{{ __('Admin Dashboard') }}</a>

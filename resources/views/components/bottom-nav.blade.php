@@ -36,17 +36,15 @@
             <span class="text-[10px] mt-1">{{ __('Pesanan') }}</span>
         </a>
         
-        <!-- Elevated Center Order CTA -->
-        <a href="{{ route('customer.orders.create') }}" 
-           class="-mt-5 w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-600 to-blue-600 text-white flex items-center justify-center shadow-lg hover:shadow-xl transition transform hover:scale-105"
-           title="{{ __('Pesan Air') }}">
-            <i class="fa-solid fa-cart-plus text-lg"></i>
-        </a>
-
         <a href="{{ route('customer.addresses.index') }}" 
            class="flex flex-col items-center justify-center p-1 text-center transition {{ request()->routeIs('customer.addresses.*') ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }}">
             <i class="fa-solid fa-location-dot text-base"></i>
             <span class="text-[10px] mt-1">{{ __('Alamat') }}</span>
+        </a>
+        <a href="{{ route('customer.store-profile') }}" 
+           class="flex flex-col items-center justify-center p-1 text-center transition {{ request()->routeIs('customer.store-profile') ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }}">
+            <i class="fa-solid fa-store text-base"></i>
+            <span class="text-[10px] mt-1">{{ __('Toko') }}</span>
         </a>
         <a href="{{ route('customer.profile') }}" 
            class="flex flex-col items-center justify-center p-1 text-center transition {{ request()->routeIs('customer.profile') ? 'text-cyan-600 dark:text-cyan-400 font-bold' : 'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white' }}">

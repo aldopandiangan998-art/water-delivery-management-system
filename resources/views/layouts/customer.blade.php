@@ -127,27 +127,6 @@
                     <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Dashboard Saya') }}</span>
                 </a>
 
-                <!-- Order Water -->
-                @php $isActive = request()->routeIs('customer.orders.create'); @endphp
-                <a href="{{ route('customer.orders.create') }}" 
-                   class="group relative flex items-center rounded-xl transition-all duration-200 {{ $isActive ? 'bg-cyan-600 text-white font-bold shadow-sm' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-between' : 'px-1.5 py-2 justify-center'"
-                   title="{{ __('Pesan Air Galon') }}">
-                    @if ($isActive)
-                        <span class="absolute left-0 top-2 bottom-2 w-1 bg-white rounded-r-full"></span>
-                    @endif
-                    <div class="flex items-center min-w-0">
-                        <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 {{ $isActive ? 'bg-white/10 text-white' : 'text-blue-400 group-hover:text-blue-300 group-hover:bg-blue-500/10' }}"
-                             :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
-                            <i class="fa-solid fa-cart-plus text-sm"></i>
-                        </div>
-                        <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Pesan Air Galon') }}</span>
-                    </div>
-                    <span x-show="sidebarOpen" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-cyan-500 text-white shadow-2xs whitespace-nowrap">
-                        {{ __('Pesan Cepat') }}
-                    </span>
-                </a>
-
                 <!-- Orders History & Tracking -->
                 @php $isActive = request()->routeIs('customer.orders.index') || request()->routeIs('customer.orders.show') || request()->routeIs('customer.orders.track'); @endphp
                 <a href="{{ route('customer.orders.index') }}" 
@@ -341,13 +320,6 @@
 
                 <!-- Theme and Language Switcher -->
                 @include('partials.theme-lang-controls')
-
-                <!-- Direct Order CTA -->
-                <a href="{{ route('customer.orders.create') }}" 
-                   class="px-3.5 py-1.5 rounded-xl text-xs font-extrabold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-sm transition flex items-center">
-                    <i class="fa-solid fa-cart-plus mr-1.5"></i>
-                    <span>{{ __('Pesan Air') }}</span>
-                </a>
             </div>
         </header>
 

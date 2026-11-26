@@ -25,10 +25,7 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-2.5">
-            <x-button :href="route('customer.orders.create')" variant="primary" icon="fa-solid fa-cart-plus">
-                {{ __('Pesan Air Sekarang') }}
-            </x-button>
-            <x-button :href="route('customer.store-profile')" variant="secondary" icon="fa-solid fa-store">
+            <x-button :href="route('customer.store-profile')" variant="primary" icon="fa-solid fa-store">
                 {{ __('Lokasi Depot & Maps') }}
             </x-button>
             <x-button :href="route('customer.addresses.index')" variant="secondary" icon="fa-solid fa-location-dot">
@@ -143,21 +140,18 @@
         </x-card>
     </div>
 
-    <!-- Quick Order / Popular Catalog Section -->
+    <!-- Popular Catalog Showcase Section -->
     <x-card class="p-6 space-y-4">
         <div class="flex items-center justify-between">
             <div>
-                <h2 class="text-base font-black text-slate-900 dark:text-white tracking-tight">{{ __('Pesan Cepat Produk Pilihan') }}</h2>
-                <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Pilih air minum higienis favorit Anda untuk langsung masuk ke keranjang pemesanan.') }}</p>
+                <h2 class="text-base font-black text-slate-900 dark:text-white tracking-tight">{{ __('Katalog Produk Air Minum') }}</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400">{{ __('Daftar produk air minum higienis dan isi ulang resmi Toko Nova Jaya.') }}</p>
             </div>
-            <x-button :href="route('customer.orders.create')" variant="ghost" size="sm" iconRight="fa-solid fa-arrow-right">
-                {{ __('Lihat Semua') }}
-            </x-button>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             @foreach ($popularProducts as $prod)
-                <div class="bg-slate-50 dark:bg-slate-950/60 hover:bg-slate-100 dark:hover:bg-slate-800/80 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col justify-between transition group">
+                <div class="bg-slate-50 dark:bg-slate-950/60 p-4 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col justify-between transition group">
                     <div class="space-y-2">
                         <div class="flex items-center justify-between">
                             <span class="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300">
@@ -170,19 +164,13 @@
                             @endif
                         </div>
 
-                        <h3 class="font-bold text-sm text-slate-900 dark:text-white group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition">
+                        <h3 class="font-bold text-sm text-slate-900 dark:text-white">
                             {{ $prod->name }}
                         </h3>
 
                         <div class="text-xs text-slate-500 dark:text-slate-400">
                             Rp <span class="text-base font-black text-slate-900 dark:text-white">{{ number_format($prod->price, 0, ',', '.') }}</span> / {{ $prod->unit }}
                         </div>
-                    </div>
-
-                    <div class="pt-3 mt-3 border-t border-slate-200/60 dark:border-slate-800">
-                        <x-button :href="route('customer.orders.create')" variant="secondary" size="sm" class="w-full" icon="fa-solid fa-plus">
-                            {{ __('Pesan Produk Ini') }}
-                        </x-button>
                     </div>
                 </div>
             @endforeach
@@ -242,7 +230,7 @@
                 @empty
                     <div class="p-10 text-center text-slate-400 text-xs">
                         <i class="fa-solid fa-receipt text-3xl mb-2 text-slate-300 dark:text-slate-600 block"></i>
-                        {{ __('Belum ada pesanan.') }} <a href="{{ route('customer.orders.create') }}" class="text-cyan-600 dark:text-cyan-400 font-bold underline ml-1">{{ __('Pesan galon air sekarang!') }}</a>
+                        {{ __('Belum ada riwayat pesanan.') }}
                     </div>
                 @endforelse
             </div>

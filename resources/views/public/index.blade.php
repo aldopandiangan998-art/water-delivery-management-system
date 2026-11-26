@@ -3,6 +3,10 @@
 @section('title', 'Air Minum Higienis Antar Cepat')
 
 @section('content')
+@php
+    $waPhone = preg_replace('/[^0-9]/', '', $settings['company_whatsapp'] ?? '6283186109775');
+    $waOrderUrl = "https://wa.me/{$waPhone}?text=" . rawurlencode('Halo Toko Nova Jaya, saya ingin pesan air minum galon.');
+@endphp
 <!-- Hero Section -->
 <section class="relative overflow-hidden bg-gradient-to-b from-cyan-50 via-white to-white py-16 sm:py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,9 +24,9 @@
                     Air minum murni Reverse Osmosis (RO) & Bio-Mineral teruji laboratorium. Kurir kami siap mengantar dan membantu mengangkat galon hingga ke dispenser dapur Anda.
                 </p>
                 <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 justify-center lg:justify-start pt-2">
-                    <a href="{{ route('customer.orders.create') }}" 
+                    <a href="{{ $waOrderUrl }}" target="_blank"
                        class="inline-flex items-center justify-center px-7 py-3.5 rounded-xl font-bold text-white bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5">
-                        <i class="fa-solid fa-cart-shopping mr-2.5"></i> Pesan Air Sekarang
+                        <i class="fa-brands fa-whatsapp mr-2.5 text-lg"></i> Pesan via WhatsApp
                     </a>
                     <a href="#produk" 
                        class="inline-flex items-center justify-center px-6 py-3.5 rounded-xl font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs transition">
@@ -96,8 +100,8 @@
                             <div class="text-xs text-cyan-900 font-semibold">Estimasi Tiba: 8 Menit</div>
                             <div class="text-[11px] text-cyan-700">Driver telah melintasi Jl. Sukajadi</div>
                         </div>
-                        <a href="{{ route('customer.orders.create') }}" class="text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-700 px-3 py-1.5 rounded-lg shadow-xs transition">
-                            Pesan
+                        <a href="{{ $waOrderUrl }}" target="_blank" class="text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-700 px-3 py-1.5 rounded-lg shadow-xs transition">
+                            Pesan via WA
                         </a>
                     </div>
                 </div>
@@ -236,9 +240,9 @@
                             @endif
                         </div>
 
-                        <a href="{{ route('customer.orders.create') }}" 
+                        <a href="{{ $waOrderUrl }}" target="_blank"
                            class="w-full flex items-center justify-center py-2.5 px-4 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-700 text-white transition shadow-xs">
-                            <i class="fa-solid fa-cart-plus mr-1.5"></i> Pesan Sekarang
+                            <i class="fa-brands fa-whatsapp mr-1.5 text-sm"></i> Pesan via WhatsApp
                         </a>
                     </div>
                 </div>
@@ -377,8 +381,8 @@
             <p class="text-cyan-100 text-sm">Pesan sekarang dalam 1 menit, kurir kami siap meluncur ke lokasi Anda.</p>
         </div>
         <div class="mt-6 md:mt-0">
-            <a href="{{ route('customer.orders.create') }}" class="px-8 py-3.5 rounded-xl bg-white text-cyan-700 font-extrabold text-sm shadow-lg hover:bg-cyan-50 transition">
-                Pesan Sekarang &rarr;
+            <a href="{{ $waOrderUrl }}" target="_blank" class="px-8 py-3.5 rounded-xl bg-white text-cyan-700 font-extrabold text-sm shadow-lg hover:bg-cyan-50 transition inline-flex items-center">
+                <i class="fa-brands fa-whatsapp mr-2 text-base text-emerald-600"></i> Pesan via WhatsApp &rarr;
             </a>
         </div>
     </div>

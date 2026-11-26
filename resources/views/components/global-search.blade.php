@@ -16,7 +16,6 @@
                 { title: '{{ __('Area Layanan Pengantaran') }}', category: '{{ __('Pengaturan') }}', icon: 'fa-solid fa-draw-polygon', url: '{{ route('admin.service-areas.index') }}' },
             @elseif(auth()->check())
                 { title: '{{ __('Dashboard Member') }}', category: '{{ __('Navigasi') }}', icon: 'fa-solid fa-house', url: '{{ route('customer.dashboard') }}' },
-                { title: '{{ __('Pesan Air Galon Baru') }}', category: '{{ __('Pesanan') }}', icon: 'fa-solid fa-cart-plus', url: '{{ route('customer.orders.create') }}' },
                 { title: '{{ __('Riwayat Pesanan Saya') }}', category: '{{ __('Pesanan') }}', icon: 'fa-solid fa-clock-rotate-left', url: '{{ route('customer.orders.index') }}' },
                 { title: '{{ __('Buku Alamat Pengantaran') }}', category: '{{ __('Alamat') }}', icon: 'fa-solid fa-location-dot', url: '{{ route('customer.addresses.index') }}' },
                 { title: '{{ __('Profil & Lokasi Depot Nova Jaya') }}', category: '{{ __('Informasi') }}', icon: 'fa-solid fa-store', url: '{{ route('customer.store-profile') }}' },
