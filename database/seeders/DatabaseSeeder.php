@@ -94,16 +94,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 3. Users: Admin and Customers
-        $superAdmin = User::create([
-            'name' => 'Owner Admin',
-            'email' => 'owner@aquaflow.com',
-            'phone' => '0811-1111-2222',
-            'role' => 'admin',
-            'is_active' => true,
-            'password' => Hash::make('password'),
-            'email_verified_at' => now(),
-        ]);
-
         $admin = User::create([
             'name' => 'Admin Operasional',
             'email' => 'admin@aquaflow.com',
@@ -319,7 +309,7 @@ class DatabaseSeeder extends Seeder
                 'reference_type' => 'Initial Stock',
                 'reference_id' => 1,
                 'notes' => 'Stok awal pembukaan sistem',
-                'created_by' => $superAdmin->id,
+                'created_by' => $admin->id,
             ]);
         }
 

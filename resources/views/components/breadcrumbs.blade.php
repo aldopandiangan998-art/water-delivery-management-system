@@ -18,12 +18,11 @@
             ]
         ];
     } else {
-        $roleName = ($user && $user->role === 'super_admin') ? __('Super Admin') : __('Admin');
         $computedItems = [
             [
-                'title' => $roleName,
+                'title' => __('Admin'),
                 'url' => route('admin.dashboard'),
-                'icon' => ($user && $user->role === 'super_admin') ? 'fa-solid fa-shield-virus' : 'fa-solid fa-shield-halved',
+                'icon' => 'fa-solid fa-shield-halved',
             ]
         ];
     }

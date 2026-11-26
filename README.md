@@ -12,11 +12,9 @@ Sistem Manajemen Pemesanan, Distribusi, dan Pengantaran Air Galon berbasis web y
 
 ## 📌 Fitur Utama
 
-### 1. Multi-Role Access Control
-- **Superadmin**: Akses penuh ke seluruh konfigurasi sistem, kelola pengguna & role, pengaturan bisnis/depot, serta audit log.
-- **Admin**: Manajemen katalog produk air, pemrosesan pesanan, penugasan kurir, manajemen deposit galon pelanggan, dan laporan keuangan/penjualan.
-- **Driver (Kurir)**: Antarmuka mobile-friendly untuk daftar pengantaran, pembaruan status pengiriman secara berkala, dan penyiaran koordinat GPS realtime.
-- **Pelanggan (Customer)**: Katalog produk air galon, checkout pemesanan cepat, pemantauan status pesanan, tracking kurir realtime, riwayat saldo galon, dan profil depot resmi.
+### 1. Role Access Control
+- **Admin**: Manajemen operasional penuh, katalog produk air, pemrosesan pesanan, manajemen deposit galon, dan laporan keuangan/penjualan.
+- **Pelanggan (Customer)**: Katalog produk air galon, checkout pemesanan cepat, pemantauan status pesanan, tracking kurir realtime, riwayat saldo galon, dan profil toko.
 
 ### 2. Integrasi Peta & Geolocation Surabaya
 - **Peta Interaktif Toko Nova Jaya**: Menampilkan lokasi fisik depot di Bratang Gede, Wonokromo, Surabaya dengan koordinat presisi (`-7.303488, 112.753373`).

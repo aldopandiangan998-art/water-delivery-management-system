@@ -3,7 +3,6 @@
 
     // Admin Theme Configuration
     $theme = [
-        'is_super_admin'     => false,
         'role_title'         => 'ADMIN',
         'role_icon'          => 'fa-shield-halved text-cyan-400',
         
