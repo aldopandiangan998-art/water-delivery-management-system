@@ -84,7 +84,6 @@
                             <div class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs shadow-lg mx-auto">
                                 <i class="fa-solid fa-motorcycle"></i>
                             </div>
-                            <span class="text-[9px] font-bold text-emerald-700 block mt-0.5 bg-white/90 px-1 rounded shadow-2xs">Armada Depot</span>
                         </div>
                         <!-- Destination point -->
                         <div class="absolute bottom-8 right-10 text-center">
@@ -98,7 +97,7 @@
                     <div class="bg-cyan-50 border border-cyan-100 rounded-xl p-3.5 flex items-center justify-between">
                         <div>
                             <div class="text-xs text-cyan-900 font-semibold">Estimasi Tiba: 8 Menit</div>
-                            <div class="text-[11px] text-cyan-700">Armada telah melintasi Jl. Sukajadi</div>
+                            <div class="text-[11px] text-cyan-700">Pesanan sedang menuju lokasi pengantaran</div>
                         </div>
                         <a href="{{ $waOrderUrl }}" target="_blank" class="text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-700 px-3 py-1.5 rounded-lg shadow-xs transition">
                             Pesan via WA
@@ -356,7 +355,7 @@
                     <i :class="activeFaq === 2 ? 'fa-solid fa-chevron-up text-cyan-600' : 'fa-solid fa-chevron-down text-slate-400'"></i>
                 </button>
                 <div x-show="activeFaq === 2" class="px-5 pb-5 text-sm text-slate-600 leading-relaxed border-t border-slate-100 pt-3">
-                    Saat pesanan Anda diproses dan armada mulai jalan, sistem kami akan memperbarui koordinat GPS secara berkala. Anda dapat membuka menu "Lacak Pesanan" untuk melihat posisi pengantaran di peta.
+                    Saat pesanan Anda diproses dan pengantar mulai jalan, sistem kami akan memperbarui koordinat GPS secara berkala. Anda dapat membuka menu "Lacak Pesanan" untuk melihat posisi pengantaran di peta.
                 </div>
             </div>
 
