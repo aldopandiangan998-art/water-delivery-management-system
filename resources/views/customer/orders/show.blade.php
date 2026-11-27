@@ -33,6 +33,18 @@
         </div>
 
         <div class="flex items-center space-x-2">
+            <a href="{{ route('customer.orders.receipt', $order) }}" target="_blank"
+               class="px-3.5 py-2 rounded-xl text-xs font-bold text-cyan-700 dark:text-cyan-300 hover:bg-cyan-50 dark:hover:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 transition flex items-center cursor-pointer shadow-xs">
+                <i class="fa-solid fa-file-pdf mr-1.5 text-rose-500"></i> {{ __('Unduh Struk') }}
+            </a>
+
+            @if ($order->status === 'completed')
+                <a href="{{ route('customer.orders.reorder', $order) }}"
+                   class="px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-700 text-white shadow-xs transition flex items-center cursor-pointer">
+                    <i class="fa-solid fa-rotate-right mr-1.5"></i> {{ __('Pesan Ulang') }}
+                </a>
+            @endif
+
             @if ($order->status === 'pending')
                 <form id="cancel-order-show-form" method="POST" action="{{ route('customer.orders.cancel', $order) }}" class="inline">
                     @csrf

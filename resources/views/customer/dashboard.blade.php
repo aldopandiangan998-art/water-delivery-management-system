@@ -225,6 +225,14 @@
                                 </x-button>
                             @endif
 
+                            @if ($ord->status === 'completed')
+                                <a href="{{ route('customer.orders.reorder', $ord) }}"
+                                   class="inline-flex items-center px-2.5 py-1.5 rounded-xl text-xs font-bold text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/60 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-200 dark:border-cyan-800 transition"
+                                   title="{{ __('Pesan Ulang Pesanan Ini') }}">
+                                    <i class="fa-solid fa-rotate-right mr-1"></i> {{ __('Pesan Ulang') }}
+                                </a>
+                            @endif
+
                             <x-button :href="route('customer.orders.show', $ord)" variant="secondary" size="sm">
                                 {{ __('Detail') }}
                             </x-button>

@@ -96,6 +96,19 @@
                         </x-button>
                     @endif
 
+                    <a href="{{ route('customer.orders.receipt', $order) }}" target="_blank"
+                       class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition"
+                       title="{{ __('Unduh Struk PDF') }}">
+                        <i class="fa-solid fa-file-pdf mr-1 text-rose-500"></i> {{ __('Struk') }}
+                    </a>
+
+                    @if ($order->status === 'completed')
+                        <a href="{{ route('customer.orders.reorder', $order) }}"
+                           class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/60 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-200 dark:border-cyan-800 transition">
+                            <i class="fa-solid fa-rotate-right mr-1"></i> {{ __('Pesan Ulang') }}
+                        </a>
+                    @endif
+
                     <x-button :href="route('customer.orders.show', $order)" variant="secondary" size="sm">
                         {{ __('Detail Pesanan') }}
                     </x-button>
@@ -178,8 +191,21 @@
                         </x-button>
                     @endif
 
+                    <a href="{{ route('customer.orders.receipt', $order) }}" target="_blank"
+                       class="inline-flex items-center px-2.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 transition"
+                       title="{{ __('Unduh Struk PDF') }}">
+                        <i class="fa-solid fa-file-pdf mr-1 text-rose-500"></i> {{ __('Struk') }}
+                    </a>
+
+                    @if ($order->status === 'completed')
+                        <a href="{{ route('customer.orders.reorder', $order) }}"
+                           class="inline-flex items-center px-2.5 py-1.5 rounded-xl text-xs font-bold text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950/60 hover:bg-cyan-100 dark:hover:bg-cyan-900/60 border border-cyan-200 dark:border-cyan-800 transition">
+                            <i class="fa-solid fa-rotate-right mr-1"></i> {{ __('Pesan Ulang') }}
+                        </a>
+                    @endif
+
                     <x-button :href="route('customer.orders.show', $order)" variant="secondary" size="sm">
-                        {{ __('Detail Pesanan') }}
+                        {{ __('Detail') }}
                     </x-button>
                 </div>
             </x-card>

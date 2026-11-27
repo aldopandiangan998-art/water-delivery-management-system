@@ -83,6 +83,8 @@ Route::middleware(['auth', 'role:customer,admin'])->prefix('customer')->name('cu
     Route::get('/orders/create', [CustomerOrderController::class, 'create'])->name('orders.create');
     Route::post('/orders', [CustomerOrderController::class, 'store'])->name('orders.store');
     Route::get('/orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}/receipt-pdf', [CustomerOrderController::class, 'downloadReceipt'])->name('orders.receipt');
+    Route::get('/orders/{order}/reorder', [CustomerOrderController::class, 'reorder'])->name('orders.reorder');
     Route::put('/orders/{order}/address', [CustomerOrderController::class, 'updateAddress'])->name('orders.update-address');
     Route::post('/orders/{order}/confirm-payment', [CustomerOrderController::class, 'confirmPayment'])->name('orders.confirm-payment');
     Route::post('/orders/{order}/cancel', [CustomerOrderController::class, 'cancel'])->name('orders.cancel');
@@ -109,7 +111,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/profile', [AdminDashboardController::class, 'updateProfile'])->name('profile.update');
 
     Route::get('/orders', [AdminOrderController::class, 'index'])->name('orders.index');
+    Route::get('/api/orders/pending-count', [AdminOrderController::class, 'pendingCount'])->name('orders.pending-count');
     Route::get('/orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}/receipt-pdf', [AdminOrderController::class, 'downloadReceipt'])->name('orders.receipt');
     Route::post('/orders/{order}/start-delivery', [AdminOrderController::class, 'startDelivery'])->name('orders.start-delivery');
     Route::post('/orders/{order}/complete-delivery', [AdminOrderController::class, 'completeDelivery'])->name('orders.complete-delivery');
     Route::put('/orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.status');

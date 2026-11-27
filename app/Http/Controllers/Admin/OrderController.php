@@ -13,6 +13,7 @@ use App\Models\OrderStatusHistory;
 use App\Models\Payment;
 use App\Models\StockMovement;
 use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -371,6 +372,44 @@ class OrderController extends Controller
                 ? 'Google Maps API Key berhasil disimpan dan diaktifkan.' 
                 : 'Google Maps API Key dihapus. Sistem beralih ke Leaflet OpenStreetMap.',
             'api_key' => $key,
+        ]);
+    }
+
+    /**
+     * Download printable 80mm thermal receipt PDF
+     */
+    public function downloadReceipt(Request $request, Order $order)
+    {
+        $order->load(['items.product', 'user', 'address']);
+
+        $pdf = Pdf::loadView('orders.receipt-pdf', compact('order'));
+        $pdf->setPaper([0, 0, 226.77, 600], 'portrait');
+
+        if ($request->has('stream')) {
+            return $pdf->stream("struk-{$order->order_number}.pdf");
+        }
+
+        return $pdf->download("struk-{$order->order_number}.pdf");
+    }
+
+    /**
+     * Get real-time pending orders count and latest pending order info for admin visual alerts
+     */
+    public function pendingCount()
+    {
+        $count = Order::where('status', 'pending')->count();
+        $latest = Order::where('status', 'pending')->latest()->first();
+
+        return response()->json([
+            'count' => $count,
+            'latest' => $latest ? [
+                'id' => $latest->id,
+                'order_number' => $latest->order_number,
+                'recipient_name' => $latest->recipient_name,
+                'total_amount' => number_format($latest->total_amount, 0, ',', '.'),
+                'time_ago' => $latest->created_at->diffForHumans(),
+                'url' => route('admin.orders.show', $latest),
+            ] : null,
         ]);
     }
 }

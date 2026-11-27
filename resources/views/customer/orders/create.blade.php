@@ -14,8 +14,25 @@
      x-data="orderApp({
          products: {{ Js::from($products) }},
          addresses: {{ Js::from($addresses) }},
-         defaultAddressId: {{ $addresses->where('is_default', true)->first()?->id ?? ($addresses->first()?->id ?? 0) }}
+         defaultAddressId: {{ $initialAddressId ?? ($addresses->where('is_default', true)->first()?->id ?? ($addresses->first()?->id ?? 0)) }},
+         initialCart: {{ Js::from($initialCart ?? []) }}
      })">
+
+    @if (!empty($initialCart))
+        <div class="mb-6 p-4 rounded-2xl bg-cyan-50 dark:bg-cyan-950/40 border border-cyan-200 dark:border-cyan-800 text-cyan-900 dark:text-cyan-200 flex items-center justify-between gap-3 shadow-xs">
+            <div class="flex items-center space-x-3 text-sm">
+                <div class="w-9 h-9 rounded-xl bg-cyan-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </div>
+                <div>
+                    <span class="font-bold">{{ __('Mode Pesan Ulang Aktif') }}</span>
+                    <p class="text-xs text-cyan-700 dark:text-cyan-300 mt-0.5">
+                        {{ __('Item produk dan alamat tujuan telah otomatis terisi dari pesanan Anda sebelumnya. Anda dapat langsung mengklik tombol "Pesan Sekarang" atau menyesuaikan kuantitas di bawah.') }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="mb-6">
         <h1 class="text-2xl font-black text-slate-900 dark:text-white tracking-tight">{{ __('Formulir Pemesanan Air Minum') }}</h1>
@@ -381,7 +398,7 @@ function orderApp(config) {
         addresses: config.addresses,
         selectedAddressId: Number(config.defaultAddressId) || (config.addresses.length > 0 ? Number(config.addresses[0].id) : 0),
         paymentMethod: 'cod',
-        cart: {},
+        cart: (config.initialCart && Object.keys(config.initialCart).length > 0) ? { ...config.initialCart } : {},
 
         showAddAddressModal: false,
         savingAddress: false,
@@ -464,7 +481,9 @@ function orderApp(config) {
         },
 
         init() {
-            if (this.products.length > 0) {
+            if (config.initialCart && Object.keys(config.initialCart).length > 0) {
+                this.cart = { ...config.initialCart };
+            } else if (this.products.length > 0) {
                 const first = this.products[0];
                 this.cart[first.id] = {
                     product_id: first.id,

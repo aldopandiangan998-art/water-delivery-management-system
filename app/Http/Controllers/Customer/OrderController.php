@@ -14,6 +14,7 @@ use App\Models\ProductCategory;
 use App\Models\Review;
 use App\Models\StockMovement;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -36,7 +37,7 @@ class OrderController extends Controller
         return view('customer.orders.index', compact('orders'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $user = Auth::user();
         $addresses = CustomerAddress::where('user_id', $user->id)->with('serviceArea')->get();
@@ -46,7 +47,28 @@ class OrderController extends Controller
 
         $products = Product::where('is_active', true)->orderBy('category_id')->get();
 
-        return view('customer.orders.create', compact('user', 'addresses', 'categories', 'products'));
+        $initialCart = [];
+        $initialAddressId = null;
+
+        if ($request->filled('reorder')) {
+            $oldOrder = Order::where('id', $request->reorder)
+                ->where('user_id', $user->id)
+                ->with('items')
+                ->first();
+
+            if ($oldOrder) {
+                $initialAddressId = $oldOrder->customer_address_id;
+                foreach ($oldOrder->items as $item) {
+                    $initialCart[$item->product_id] = [
+                        'product_id' => $item->product_id,
+                        'quantity' => $item->quantity,
+                        'is_exchange' => (bool) $item->is_exchange,
+                    ];
+                }
+            }
+        }
+
+        return view('customer.orders.create', compact('user', 'addresses', 'categories', 'products', 'initialCart', 'initialAddressId'));
     }
 
     public function store(Request $request)
@@ -448,5 +470,39 @@ class OrderController extends Controller
             'payment_status' => $order->payment_status,
             'is_paid' => $order->payment_status === 'paid',
         ]);
+    }
+
+    /**
+     * Download printable 80mm thermal receipt PDF for customer
+     */
+    public function downloadReceipt(Request $request, Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            abort(403, 'Anda tidak memiliki hak untuk mengunduh struk pesanan ini.');
+        }
+
+        $order->load(['items.product', 'user', 'address']);
+
+        $pdf = Pdf::loadView('orders.receipt-pdf', compact('order'));
+        $pdf->setPaper([0, 0, 226.77, 600], 'portrait');
+
+        if ($request->has('stream')) {
+            return $pdf->stream("struk-{$order->order_number}.pdf");
+        }
+
+        return $pdf->download("struk-{$order->order_number}.pdf");
+    }
+
+    /**
+     * 1-Click Reorder: redirect to order create with pre-filled items and address
+     */
+    public function reorder(Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            abort(403, 'Pesanan tidak ditemukan.');
+        }
+
+        return redirect()->route('customer.orders.create', ['reorder' => $order->id])
+            ->with('info', "Memuat rincian dari pesanan #{$order->order_number}. Silakan periksa kembali dan konfirmasi pesanan Anda.");
     }
 }

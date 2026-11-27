@@ -96,7 +96,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased font-sans flex flex-col" x-data="{ sidebarOpen: (window.innerWidth >= 768) }">
+<body class="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased font-sans flex flex-col" x-data="adminLayoutData()">
 
     <!-- Mobile Backdrop Overlay -->
     <div x-show="sidebarOpen" 
@@ -175,17 +175,12 @@
                         <div class="w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 shrink-0 relative {{ $isActive ? $theme['icon_box_active'] : $theme['icon_box_inactive'] }} border border-transparent"
                              :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
                             <i class="fa-solid fa-boxes-stacked text-sm"></i>
-                            @if ($pendingOrdersBadge > 0)
-                                <span x-show="!sidebarOpen" class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse border border-slate-900"></span>
-                            @endif
+                            <span x-show="!sidebarOpen && pendingCount > 0" class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse border border-slate-900"></span>
                         </div>
                         <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Kelola Pesanan') }}</span>
                     </div>
-                    @if ($pendingOrdersBadge > 0)
-                        <span x-show="sidebarOpen" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-slate-950 shadow-xs animate-pulse">
-                            {{ $pendingOrdersBadge }} {{ __('Baru') }}
-                        </span>
-                    @endif
+                    <span x-show="sidebarOpen && pendingCount > 0" class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-xs animate-pulse" x-text="pendingCount + ' {{ __('Baru') }}'">
+                    </span>
                 </a>
 
                 <!-- Deliveries -->
@@ -561,6 +556,102 @@
 
     <!-- Global Quick Search (Ctrl+K or /) -->
     <x-global-search />
+
+    <!-- Real-time Visual Order Notification Toast Banner (No Sound) -->
+    <div x-show="newOrderToast !== null" 
+         x-cloak
+         x-transition:enter="transform ease-out duration-300 transition"
+         x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-4"
+         x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="fixed top-20 right-4 sm:right-6 z-50 max-w-sm w-full bg-white dark:bg-slate-900 border-2 border-rose-500 rounded-2xl shadow-2xl p-4 overflow-hidden"
+         style="display: none;">
+        <div class="flex items-start gap-3">
+            <div class="relative shrink-0">
+                <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500"></span>
+                </span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-black uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+                        <span class="inline-block w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+                        {{ __('Pesanan Baru Masuk!') }}
+                    </span>
+                    <button type="button" @click="newOrderToast = null" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-xs p-1 cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <p class="text-xs font-bold text-slate-900 dark:text-white truncate mt-1">
+                    <span x-text="newOrderToast?.recipient_name"></span>
+                    <span class="text-slate-400 font-mono text-[11px]" x-text="'(#' + (newOrderToast?.order_number || '') + ')'"></span>
+                </p>
+                <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    {{ __('Total') }}: <strong class="text-slate-800 dark:text-slate-200" x-text="'Rp ' + (newOrderToast?.total_amount || '0')"></strong> &bull; <span x-text="newOrderToast?.time_ago"></span>
+                </p>
+                <div class="mt-2.5 flex items-center gap-2">
+                    <a :href="newOrderToast?.url || '{{ route('admin.orders.index') }}'" 
+                       class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-lg text-xs font-bold transition shadow-xs flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i> {{ __('Lihat Pesanan') }}
+                    </a>
+                    <button type="button" @click="newOrderToast = null" class="px-2.5 py-1.5 text-xs font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 cursor-pointer">
+                        {{ __('Tutup') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function adminLayoutData() {
+            return {
+                sidebarOpen: (window.innerWidth >= 768),
+                pendingCount: {{ $pendingOrdersBadge ?? 0 }},
+                newOrderToast: null,
+                pollTimer: null,
+                toastTimer: null,
+
+                init() {
+                    this.pollTimer = setInterval(() => {
+                        this.checkPendingOrders();
+                    }, 15000);
+                },
+
+                async checkPendingOrders() {
+                    try {
+                        const res = await fetch("{{ route('admin.orders.pending-count') }}", {
+                            headers: { 'Accept': 'application/json' }
+                        });
+                        if (!res.ok) return;
+                        const data = await res.json();
+
+                        if (typeof data.count === 'number') {
+                            if (data.count > this.pendingCount && data.latest) {
+                                this.showToast(data.latest);
+                            }
+                            this.pendingCount = data.count;
+                        }
+                    } catch (e) {
+                        // ignore network glitches
+                    }
+                },
+
+                showToast(latest) {
+                    this.newOrderToast = latest;
+                    if (this.toastTimer) clearTimeout(this.toastTimer);
+                    this.toastTimer = setTimeout(() => {
+                        this.newOrderToast = null;
+                    }, 8000);
+                }
+            };
+        }
+    </script>
 
     @stack('scripts')
 </body>

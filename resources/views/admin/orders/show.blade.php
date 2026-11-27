@@ -44,6 +44,10 @@
         </div>
 
         <div class="flex items-center space-x-2">
+            <a href="{{ route('admin.orders.receipt', $order) }}" target="_blank"
+               class="inline-flex items-center px-3.5 py-2 rounded-xl text-xs font-bold bg-cyan-600 hover:bg-cyan-700 text-white shadow-xs transition">
+                <i class="fa-solid fa-file-pdf mr-1.5 text-rose-200"></i> {{ __('Unduh Struk PDF') }}
+            </a>
             <x-button :href="route('admin.orders.index')" variant="secondary" size="sm" icon="fa-solid fa-arrow-left">
                 {{ __('Kembali') }}
             </x-button>
