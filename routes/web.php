@@ -57,6 +57,17 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
 
+Route::get('/dashboard', function () {
+    $user = \Illuminate\Support\Facades\Auth::user();
+    if ($user && $user->isAdmin()) {
+        return redirect()->route('admin.dashboard');
+    }
+    if ($user) {
+        return redirect()->route('customer.dashboard');
+    }
+    return redirect()->route('login');
+})->middleware('auth')->name('dashboard');
+
 /*
 |--------------------------------------------------------------------------
 | Customer Portal Routes

@@ -21,7 +21,9 @@
 
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <x-card class="p-6 sm:p-8">
-            <form class="space-y-5" method="POST" action="{{ route('login') }}" x-data="{ showPassword: false }">
+            <form class="space-y-5" method="POST" action="{{ route('login') }}" 
+                  x-data="{ showPassword: false, isSubmitting: false }" 
+                  @submit="if (isSubmitting) { $event.preventDefault(); return false; } isSubmitting = true">
                 @csrf
 
                 <x-input 
@@ -75,9 +77,17 @@
                 </div>
 
                 <div class="pt-2">
-                    <x-button type="submit" variant="primary" class="w-full py-3" icon="fa-solid fa-right-to-bracket">
-                        {{ __('Masuk') }}
-                    </x-button>
+                    <button type="submit" 
+                            :disabled="isSubmitting"
+                            class="w-full py-3 px-4 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed">
+                        <template x-if="isSubmitting">
+                            <i class="fa-solid fa-spinner fa-spin mr-2"></i>
+                        </template>
+                        <template x-if="!isSubmitting">
+                            <i class="fa-solid fa-right-to-bracket mr-2"></i>
+                        </template>
+                        <span x-text="isSubmitting ? '{{ __('Memproses...') }}' : '{{ __('Masuk') }}'"></span>
+                    </button>
                 </div>
             </form>
         </x-card>

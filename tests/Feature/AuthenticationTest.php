@@ -107,4 +107,51 @@ class AuthenticationTest extends TestCase
         $response->assertRedirect('/');
         $this->assertGuest();
     }
+
+    public function test_authenticated_admin_visiting_login_page_is_redirected_to_admin_dashboard(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin User',
+            'email' => 'admin-guest-test@example.com',
+            'phone' => '081211113333',
+            'role' => 'admin',
+            'is_active' => true,
+            'password' => Hash::make('password123'),
+        ]);
+
+        $response = $this->actingAs($admin)->get('/login');
+
+        $response->assertRedirect(route('admin.dashboard'));
+    }
+
+    public function test_authenticated_customer_visiting_login_page_is_redirected_to_customer_dashboard(): void
+    {
+        $customer = User::create([
+            'name' => 'Customer User',
+            'email' => 'customer-guest-test@example.com',
+            'phone' => '081211114444',
+            'role' => 'customer',
+            'is_active' => true,
+            'password' => Hash::make('password123'),
+        ]);
+
+        $response = $this->actingAs($customer)->get('/login');
+
+        $response->assertRedirect(route('customer.dashboard'));
+    }
+
+    public function test_authenticated_user_accessing_dashboard_fallback_route_redirects_based_on_role(): void
+    {
+        $admin = User::create([
+            'name' => 'Admin Route Test',
+            'email' => 'admin-route-test@example.com',
+            'phone' => '081211115555',
+            'role' => 'admin',
+            'is_active' => true,
+            'password' => Hash::make('password123'),
+        ]);
+
+        $response = $this->actingAs($admin)->get(route('dashboard'));
+        $response->assertRedirect(route('admin.dashboard'));
+    }
 }

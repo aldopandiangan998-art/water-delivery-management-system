@@ -21,6 +21,10 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
+        if (Auth::check()) {
+            return $this->redirectBasedOnRole(Auth::user());
+        }
+
         $credentials = $request->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
