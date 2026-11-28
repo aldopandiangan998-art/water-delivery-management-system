@@ -12,6 +12,11 @@ if [ -z "$DB_CONNECTION" ]; then
     export DB_CONNECTION="sqlite"
 fi
 
+# Sesuaikan port Apache dengan environment variable $PORT (Zeabur/Render/Cloud default)
+export PORT="${PORT:-8080}"
+sed -i "s/Listen .*/Listen ${PORT}/" /etc/apache2/ports.conf
+sed -i "s/<VirtualHost \*:[0-9]*>/<VirtualHost *:${PORT}>/" /etc/apache2/sites-available/*.conf
+
 # Pastikan file SQLite tersedia jika menggunakan koneksi sqlite
 if [ "$DB_CONNECTION" = "sqlite" ]; then
     if [ ! -f /var/www/html/database/database.sqlite ]; then
