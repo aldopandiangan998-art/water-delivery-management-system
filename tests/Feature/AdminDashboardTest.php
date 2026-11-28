@@ -25,6 +25,14 @@ class AdminDashboardTest extends TestCase
         $response->assertDontSee('Buka Web Publik');
     }
 
+    public function test_admin_dashboard_does_not_contain_map_tracking_shortcut(): void
+    {
+        $dashboardViewContent = file_get_contents(resource_path('views/admin/dashboard.blade.php'));
+
+        $this->assertStringNotContainsString('admin.deliveries.map', $dashboardViewContent);
+        $this->assertStringNotContainsString('Peta Pengantaran', $dashboardViewContent);
+    }
+
     public function test_admin_can_view_and_update_profile(): void
     {
         $admin = User::factory()->create([
