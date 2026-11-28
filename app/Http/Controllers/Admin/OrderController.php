@@ -265,6 +265,22 @@ class OrderController extends Controller
                 ]);
             }
 
+            // If cancelled or rejected, cancel linked delivery if active
+            if (in_array($newStatus, ['cancelled', 'rejected'])) {
+                if ($order->delivery && in_array($order->delivery->status, ['assigned', 'not_assigned', 'in_transit'])) {
+                    $order->delivery->update([
+                        'status' => 'cancelled',
+                    ]);
+
+                    DeliveryStatusHistory::create([
+                        'delivery_id' => $order->delivery->id,
+                        'status' => 'cancelled',
+                        'notes' => "Pengantaran dibatalkan karena status pesanan diubah menjadi {$newStatus} oleh admin " . Auth::user()->name,
+                        'changed_by' => Auth::id(),
+                    ]);
+                }
+            }
+
             // If cancelled or rejected, restock inventory
             if (in_array($newStatus, ['cancelled', 'rejected']) && ! in_array($oldStatus, ['cancelled', 'rejected'])) {
                 foreach ($order->items as $item) {

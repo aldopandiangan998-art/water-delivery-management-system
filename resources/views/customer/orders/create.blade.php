@@ -14,6 +14,7 @@
      x-data="orderApp({
          products: {{ Js::from($products) }},
          addresses: {{ Js::from($addresses) }},
+         serviceAreas: {{ Js::from($serviceAreas) }},
          defaultAddressId: {{ $initialAddressId ?? ($addresses->where('is_default', true)->first()?->id ?? ($addresses->first()?->id ?? 0)) }},
          initialCart: {{ Js::from($initialCart ?? []) }}
      })">
@@ -348,6 +349,18 @@
 
                 <div>
                     <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                        {{ __('Wilayah Layanan / Area Pengantaran') }} <span class="text-rose-500">*</span>
+                    </label>
+                    <select x-model="newAddressForm.service_area_id" required
+                            class="w-full text-xs rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-white p-2.5 focus:ring-2 focus:ring-cyan-500 cursor-pointer">
+                        <template x-for="area in serviceAreas" :key="area.id">
+                            <option :value="area.id" x-text="area.name + ' — Ongkir: ' + (Number(area.delivery_fee) > 0 ? 'Rp ' + Number(area.delivery_fee).toLocaleString('id-ID') : 'GRATIS')"></option>
+                        </template>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
                         {{ __('Alamat Lengkap') }} <span class="text-rose-500">*</span>
                     </label>
                     <textarea x-model="newAddressForm.address_line" required rows="2" placeholder="{{ __('Nama jalan, nomor rumah, RT/RW, dsb') }}"
@@ -396,6 +409,7 @@ function orderApp(config) {
     return {
         products: config.products,
         addresses: config.addresses,
+        serviceAreas: config.serviceAreas || [],
         selectedAddressId: Number(config.defaultAddressId) || (config.addresses.length > 0 ? Number(config.addresses[0].id) : 0),
         paymentMethod: 'cod',
         cart: (config.initialCart && Object.keys(config.initialCart).length > 0) ? { ...config.initialCart } : {},
@@ -408,6 +422,7 @@ function orderApp(config) {
             label: 'Rumah',
             recipient_name: '{{ addslashes(auth()->user()->name) }}',
             recipient_phone: '{{ addslashes(auth()->user()->phone ?? '') }}',
+            service_area_id: (config.serviceAreas && config.serviceAreas.length > 0) ? config.serviceAreas[0].id : null,
             address_line: '',
             benchmark: '',
             latitude: null,
@@ -437,8 +452,8 @@ function orderApp(config) {
 
         async saveNewAddress() {
             this.newAddressError = '';
-            if (!this.newAddressForm.label || !this.newAddressForm.recipient_name || !this.newAddressForm.recipient_phone || !this.newAddressForm.address_line) {
-                this.newAddressError = '{{ __("Mohon lengkapi seluruh kolom yang berbintang (*).") }}';
+            if (!this.newAddressForm.label || !this.newAddressForm.recipient_name || !this.newAddressForm.recipient_phone || !this.newAddressForm.address_line || !this.newAddressForm.service_area_id) {
+                this.newAddressError = '{{ __("Mohon lengkapi seluruh kolom yang berbintang (*), termasuk wilayah layanan.") }}';
                 return;
             }
 
@@ -468,8 +483,11 @@ function orderApp(config) {
                         label: 'Rumah',
                         recipient_name: '{{ addslashes(auth()->user()->name) }}',
                         recipient_phone: '{{ addslashes(auth()->user()->phone ?? '') }}',
+                        service_area_id: this.serviceAreas.length > 0 ? this.serviceAreas[0].id : null,
                         address_line: '',
                         benchmark: '',
+                        latitude: null,
+                        longitude: null,
                         is_default: false,
                     };
                 }

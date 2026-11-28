@@ -88,7 +88,7 @@ class OrderWorkflowTest extends TestCase
         $response->assertSee('Rumah Utama');
     }
 
-    public function test_customer_can_place_order_with_delivery_auto_created(): void
+    public function test_customer_can_place_order_and_delivery_created_upon_confirmation(): void
     {
         $this->actingAs($this->customer);
 
@@ -114,12 +114,64 @@ class OrderWorkflowTest extends TestCase
         $this->assertEquals(3000, $order->delivery_fee);
         $this->assertEquals(17000, $order->total_amount);
 
-        // Verify Delivery is auto-created
-        $this->assertNotNull($order->delivery);
-        $this->assertEquals('assigned', $order->delivery->status);
+        // Verify Delivery is NOT active yet while order is still pending
+        $this->assertNull($order->delivery);
 
         // Verify stock decremented
         $this->assertEquals(98, $this->product->fresh()->stock_quantity);
+
+        // When Admin confirms order, delivery is auto-created with 'assigned' status
+        $admin = User::create([
+            'name' => 'Admin Workflow',
+            'email' => 'admin_workflow@test.com',
+            'role' => 'admin',
+            'is_active' => true,
+            'password' => Hash::make('password'),
+        ]);
+
+        $statusResponse = $this->actingAs($admin)->put(route('admin.orders.status', $order), [
+            'status' => 'confirmed',
+            'notes' => 'Pesanan siap disiapkan depot.',
+        ]);
+        $statusResponse->assertSessionHas('success');
+
+        $order->refresh();
+        $this->assertEquals('confirmed', $order->status);
+        $this->assertNotNull($order->delivery);
+        $this->assertEquals('assigned', $order->delivery->status);
+
+        // When order is cancelled, linked delivery is automatically cancelled
+        $cancelResponse = $this->actingAs($this->customer)->post(route('customer.orders.cancel', $order), [
+            'cancellation_reason' => 'Perubahan rencana',
+        ]);
+        $cancelResponse->assertSessionHas('success');
+
+        $order->refresh();
+        $this->assertEquals('cancelled', $order->status);
+        $this->assertEquals('cancelled', $order->delivery->status);
+    }
+
+    public function test_customer_can_add_address_via_checkout_modal_with_service_area(): void
+    {
+        $this->actingAs($this->customer);
+
+        $response = $this->postJson(route('customer.addresses.store'), [
+            'label' => 'Toko Cabang',
+            'recipient_name' => 'Budi Toko',
+            'recipient_phone' => '081233334444',
+            'address_line' => 'Jl. Diponegoro No. 88, Surabaya',
+            'benchmark' => 'Sebelah Bank',
+            'service_area_id' => $this->serviceArea->id,
+            'latitude' => -7.2891,
+            'longitude' => 112.7381,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertJson([
+            'success' => true,
+        ]);
+        $response->assertJsonPath('address.service_area.id', $this->serviceArea->id);
+        $response->assertJsonPath('address.service_area.delivery_fee', '3000.00');
     }
 
     public function test_admin_can_complete_delivery_with_proof_photo_from_order_show(): void

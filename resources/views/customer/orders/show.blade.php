@@ -93,21 +93,48 @@
             </div>
         </div>
     @else
-        <!-- COD Notice Banner -->
+        <!-- COD Notice Banner & Payment Guidance -->
         <div class="bg-gradient-to-r from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-950/40 dark:via-teal-950/40 dark:to-cyan-950/40 border border-emerald-300 dark:border-emerald-700 rounded-3xl p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div class="flex items-start space-x-3.5">
-                <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm text-2xl">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm text-2xl">
                     <i class="fa-solid fa-hand-holding-dollar"></i>
                 </div>
                 <div>
-                    <div class="flex items-center space-x-2">
-                        <h2 class="text-sm sm:text-base font-black text-slate-900 dark:text-white">{{ __('Pesanan Tunai Siap Diproses') }}</h2>
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-700">{{ __('Bayar di Tempat') }}</span>
+                    <div class="flex items-center space-x-2 flex-wrap gap-y-1">
+                        <h2 class="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                            @if ($order->payment_status === 'paid')
+                                {{ __('Pembayaran Tunai Selesai (Lunas)') }}
+                            @else
+                                {{ __('Pembayaran Tunai di Tempat (COD)') }}
+                            @endif
+                        </h2>
+                        @if ($order->payment_status === 'paid')
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-600 text-white shadow-xs">
+                                <i class="fa-solid fa-check mr-1"></i>{{ __('Lunas') }}
+                            </span>
+                        @else
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-700">
+                                {{ __('Siapkan Uang Pas') }}
+                            </span>
+                        @endif
                     </div>
-                    <p class="text-xs text-slate-600 dark:text-slate-300 mt-1 leading-relaxed">
-                        {{ __('Pesanan Anda telah tercatat! Pesanan akan segera disiapkan dan diantar ke alamat Anda.') }}
+                    <p class="text-xs text-slate-700 dark:text-slate-300 mt-1 leading-relaxed">
+                        @if ($order->payment_status === 'paid')
+                            {{ __('Pembayaran sebesar') }} <strong class="text-emerald-700 dark:text-emerald-400">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</strong> {{ __('telah diterima oleh petugas depot.') }}
+                        @else
+                            {{ __('Mohon siapkan uang tunai pas sebesar') }} <strong class="text-emerald-700 dark:text-emerald-400">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</strong> {{ __('saat petugas depot tiba menyerahkan air galon.') }}
+                            @if ($order->empty_gallons_due > 0)
+                                <span class="block mt-0.5 text-slate-600 dark:text-slate-400">
+                                    <i class="fa-solid fa-bottle-water text-cyan-600 mr-1"></i>{{ __('Siapkan juga') }} <strong>{{ $order->empty_gallons_due }} {{ __('galon kosong') }}</strong> {{ __('untuk ditukar.') }}
+                                </span>
+                            @endif
+                        @endif
                     </p>
                 </div>
+            </div>
+            <div class="sm:text-right shrink-0">
+                <span class="text-[11px] text-slate-500 dark:text-slate-400 block">{{ __('Total Tagihan') }}</span>
+                <span class="text-lg font-black text-slate-900 dark:text-white font-mono">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
             </div>
         </div>
     @endif

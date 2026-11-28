@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use App\Models\CustomerAddress;
 use App\Models\Delivery;
+use App\Models\DeliveryStatusHistory;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\OrderStatusHistory;
@@ -12,6 +13,7 @@ use App\Models\Payment;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Review;
+use App\Models\ServiceArea;
 use App\Models\StockMovement;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -41,6 +43,7 @@ class OrderController extends Controller
     {
         $user = Auth::user();
         $addresses = CustomerAddress::where('user_id', $user->id)->with('serviceArea')->get();
+        $serviceAreas = ServiceArea::where('is_active', true)->orderBy('name')->get();
         $categories = ProductCategory::where('is_active', true)->with(['products' => function ($q) {
             $q->where('is_active', true);
         }])->get();
@@ -68,7 +71,7 @@ class OrderController extends Controller
             }
         }
 
-        return view('customer.orders.create', compact('user', 'addresses', 'categories', 'products', 'initialCart', 'initialAddressId'));
+        return view('customer.orders.create', compact('user', 'addresses', 'serviceAreas', 'categories', 'products', 'initialCart', 'initialAddressId'));
     }
 
     public function store(Request $request)
@@ -190,13 +193,6 @@ class OrderController extends Controller
                     ]);
                 }
             }
-
-            // Create initial Delivery record so admin has delivery tracking and route immediately ready
-            Delivery::create([
-                'delivery_number' => 'DEL-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
-                'order_id' => $order->id,
-                'status' => 'assigned',
-            ]);
 
             OrderStatusHistory::create([
                 'order_id' => $order->id,
@@ -412,6 +408,19 @@ class OrderController extends Controller
                         'created_by' => Auth::id(),
                     ]);
                 }
+            }
+
+            if ($order->delivery && in_array($order->delivery->status, ['assigned', 'not_assigned', 'in_transit'])) {
+                $order->delivery->update([
+                    'status' => 'cancelled',
+                ]);
+
+                DeliveryStatusHistory::create([
+                    'delivery_id' => $order->delivery->id,
+                    'status' => 'cancelled',
+                    'notes' => 'Pengantaran dibatalkan karena pesanan dibatalkan oleh pelanggan.',
+                    'changed_by' => Auth::id(),
+                ]);
             }
 
             OrderStatusHistory::create([
