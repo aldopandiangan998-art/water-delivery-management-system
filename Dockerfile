@@ -36,8 +36,8 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
 RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Configure Port dynamically (Render sets $PORT, default 10000)
-ENV PORT=10000
+# Configure Port dynamically (Hugging Face Spaces uses 7860, Render injects $PORT)
+ENV PORT=7860
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf
 
 # Install Composer
@@ -60,7 +60,7 @@ RUN composer dump-autoload --optimize
 
 # Set directory permissions for web server
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
+    && chmod -R 777 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 
 # Setup entrypoint
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
