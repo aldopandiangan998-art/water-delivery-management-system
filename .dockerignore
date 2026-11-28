@@ -1,6 +1,12 @@
+node_modules
+vendor
 .git
 .github
 .env
-.env.backup
-node_modules
-/tests
+database/database.sqlite
+storage/*.key
+storage/logs/*.log
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+tests

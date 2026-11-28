@@ -1,60 +1,72 @@
-FROM php:8.3-fpm-alpine
+# ===================================================
+# Stage 1: Build Frontend Assets (Vite & Tailwind CSS)
+# ===================================================
+FROM node:20-alpine AS frontend
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-# Install system dependencies & PHP extensions
-RUN apk add --no-cache \
-    bash \
-    nginx \
-    supervisor \
-    curl \
-    sqlite \
-    libzip \
-    icu-libs \
-    libpng \
-    libjpeg-turbo \
-    freetype \
-    && apk add --no-cache --virtual .build-deps \
-    $PHPIZE_DEPS \
-    libzip-dev \
-    icu-dev \
+# ===================================================
+# Stage 2: PHP 8.3 Apache Production Server
+# ===================================================
+FROM php:8.3-apache
+
+# Install Linux system tools & PHP extensions
+RUN apt-get update && apt-get install -y \
     libpng-dev \
-    libjpeg-turbo-dev \
-    freetype-dev \
-    sqlite-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    git \
+    sqlite3 \
+    libsqlite3-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_sqlite intl zip gd opcache bcmath \
-    && apk del .build-deps
+    && docker-php-ext-install gd pdo pdo_sqlite pdo_mysql zip opcache \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy Composer binary
+# Enable Apache mod_rewrite for Laravel routing
+RUN a2enmod rewrite
+
+# Configure Apache DocumentRoot to Laravel /public directory
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Configure Port dynamically (Render sets $PORT, default 10000)
+ENV PORT=10000
+RUN sed -i 's/80/${PORT}/g' /etc/apache2/ports.conf /etc/apache2/sites-available/*.conf
+
+# Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Copy configuration files
-RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
-COPY conf/php/docker-vars.ini /usr/local/etc/php/conf.d/docker-vars.ini
-COPY conf/php/www-overrides.conf /usr/local/etc/php-fpm.d/zz-overrides.conf
-COPY conf/nginx/nginx-site.conf /etc/nginx/http.d/default.conf
-COPY conf/supervisor/supervisord.conf /etc/supervisord.conf
-COPY conf/start.sh /start.sh
-RUN sed -i 's/\r$//' /start.sh && chmod +x /start.sh
-
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy application files
+# Install Composer dependencies (caching layer)
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-scripts
+
+# Copy application source code
 COPY . .
 
-# Install PHP dependencies
-ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
+# Copy compiled frontend assets from Stage 1
+COPY --from=frontend /app/public/build ./public/build
 
-# Ensure proper ownership
-RUN chown -R www-data:www-data storage bootstrap/cache database
+# Complete autoload dump
+RUN composer dump-autoload --optimize
 
-# Environment Defaults
-ENV APP_ENV=production
-ENV APP_DEBUG=false
-ENV LOG_CHANNEL=stderr
-ENV DB_CONNECTION=sqlite
+# Set directory permissions for web server
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/database
 
-EXPOSE 80 10000
+# Setup entrypoint
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
 
-CMD ["/bin/bash", "/start.sh"]
+EXPOSE ${PORT}
+
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["apache2-foreground"]
