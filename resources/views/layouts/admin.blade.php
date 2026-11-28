@@ -351,18 +351,6 @@
                     </div>
                     <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Manajemen Pengguna') }}</span>
                 </a>
-
-                <!-- View Public Web -->
-                <a href="{{ route('home') }}" target="_blank"
-                   class="group flex items-center rounded-xl {{ $theme['nav_inactive'] }} transition-all duration-200"
-                   :class="sidebarOpen ? 'px-3 py-2 justify-start' : 'px-1.5 py-2 justify-center'"
-                   title="{{ __('Buka Web Publik') }}">
-                    <div class="w-8 h-8 rounded-lg {{ $theme['icon_box_inactive'] }} border border-transparent flex items-center justify-center transition-all duration-200 shrink-0"
-                         :class="sidebarOpen ? 'mr-2.5' : 'mr-0'">
-                        <i class="fa-solid fa-arrow-up-right-from-square text-sm"></i>
-                    </div>
-                    <span x-show="sidebarOpen" class="truncate whitespace-nowrap">{{ __('Buka Web Publik') }}</span>
-                </a>
             </div>
 
         </nav>

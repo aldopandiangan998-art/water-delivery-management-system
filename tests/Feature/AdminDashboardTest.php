@@ -22,6 +22,7 @@ class AdminDashboardTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Ringkasan Bisnis');
         $response->assertSee('Profil Akun');
+        $response->assertDontSee('Buka Web Publik');
     }
 
     public function test_admin_can_view_and_update_profile(): void
